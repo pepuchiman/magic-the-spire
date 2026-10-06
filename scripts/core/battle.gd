@@ -108,7 +108,11 @@ func can_play(hand_index: int) -> PlayResult:
 		return PlayResult.NOT_PLAYER_TURN
 	if hand_index < 0 or hand_index >= deck.hand.size():
 		return PlayResult.INVALID_CARD
-	var card: CardData = deck.hand[hand_index]
+	return get_cost_problem(deck.hand[hand_index])
+
+
+## マナと必要触媒だけを見て、そのカードが使えるかを返す（手番かどうかは見ない。画面でカードを暗くする判定に使う）
+func get_cost_problem(card: CardData) -> PlayResult:
 	if hero.mana < card.cost_mana:
 		return PlayResult.NOT_ENOUGH_MANA
 	if not hero.meets_catalyst(card):

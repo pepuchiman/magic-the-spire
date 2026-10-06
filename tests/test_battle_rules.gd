@@ -42,6 +42,19 @@ func test_card_needs_mana() -> void:
 	assert_eq(battle.play_card(0, battle.main_enemy), Battle.PlayResult.NOT_ENOUGH_MANA, "マナが足りないと使えない")
 
 
+func test_cost_problem_ignores_phase() -> void:
+	var card := H.damage_card(&"a", 1, 3)
+	card.required_blue = 1
+	var battle := H.battle(H.hero([card]), H.enemy())
+	battle.start()
+	assert_eq(battle.get_cost_problem(card), Battle.PlayResult.CATALYST_NOT_MET, "触媒が足りない")
+	battle.hero.catalyst_blue = 1
+	battle.hero.mana = 2
+	assert_eq(battle.get_cost_problem(card), Battle.PlayResult.NOT_ENOUGH_MANA, "マナが足りない")
+	battle.hero.mana = 3
+	assert_eq(battle.get_cost_problem(card), Battle.PlayResult.OK)
+
+
 func test_mana_base_bonus_applies_from_next_turn() -> void:
 	var surge := H.modify_card(&"surge", Param.MANA_BASE, 1, Duration.BATTLE)
 	surge.cost_mana = 1

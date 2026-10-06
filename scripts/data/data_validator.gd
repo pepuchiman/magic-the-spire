@@ -6,6 +6,10 @@ extends RefCounted
 const DATA_DIR := "res://data"
 const INDEX_PATH := "res://data/data_index.tres"
 const LOCALIZATION_DIR := "res://localization"
+## 画面の文章のキーを探すフォルダ
+const UI_SOURCE_DIRS := ["res://scenes", "res://ui", "res://scripts"]
+## 画面の文章のキーの接頭辞（キーを探す時に使う）
+const UI_KEY_PREFIXES := ["UI", "CARD_TYPE", "RARITY", "PARAM"]
 
 
 ## 実際のプロジェクトのデータをすべて検証する（索引・登録漏れ・翻訳キー）
@@ -20,7 +24,31 @@ static func validate_project() -> PackedStringArray:
 	var texts := load_translation_texts(LOCALIZATION_DIR)
 	errors.append_array(check_translation_keys(index, texts))
 	errors.append_array(check_description_placeholders(index, texts))
+	errors.append_array(check_ui_keys(find_ui_keys(UI_SOURCE_DIRS), texts))
 	return errors
+
+
+## 画面やスクリプトで使っている翻訳キー（UI_～ など）と、列挙型から作るキーが、翻訳ファイルにあるかを調べる
+static func check_ui_keys(used_keys: PackedStringArray, texts: Dictionary) -> PackedStringArray:
+	var errors := PackedStringArray()
+	var all_keys := used_keys.duplicate()
+	all_keys.append_array(TextKeys.all_enum_keys())
+	for key: String in all_keys:
+		if not texts.has(key):
+			errors.append("翻訳ファイルにないキーが使われています：%s" % key)
+	return errors
+
+
+## フォルダ内の .gd と .tscn から、"UI_～" のように書かれた翻訳キーを集める
+static func find_ui_keys(dirs: Array) -> PackedStringArray:
+	var regex := RegEx.create_from_string("\"((?:%s)_[A-Z0-9_]*[A-Z0-9])\"" % "|".join(PackedStringArray(UI_KEY_PREFIXES)))
+	var found: Dictionary = {}
+	for dir_path: String in dirs:
+		for path: String in find_files(dir_path, PackedStringArray([".gd", ".tscn"])):
+			var content := FileAccess.get_file_as_string(path)
+			for match_result: RegExMatch in regex.search_all(content):
+				found[match_result.get_string(1)] = true
+	return PackedStringArray(found.keys())
 
 
 ## 索引の中身の検証（IDの重複、値の矛盾、参照の抜け）
@@ -123,12 +151,19 @@ static func load_translation_texts(dir_path: String) -> Dictionary:
 
 ## フォルダ内の .tres を再帰的に集める
 static func find_tres_paths(dir_path: String) -> PackedStringArray:
+	return find_files(dir_path, PackedStringArray([".tres"]))
+
+
+## フォルダ内の、指定した拡張子のファイルを再帰的に集める
+static func find_files(dir_path: String, extensions: PackedStringArray) -> PackedStringArray:
 	var paths := PackedStringArray()
 	for file_name: String in DirAccess.get_files_at(dir_path):
-		if file_name.ends_with(".tres"):
-			paths.append(dir_path.path_join(file_name))
+		for extension: String in extensions:
+			if file_name.ends_with(extension):
+				paths.append(dir_path.path_join(file_name))
+				break
 	for sub_dir: String in DirAccess.get_directories_at(dir_path):
-		paths.append_array(find_tres_paths(dir_path.path_join(sub_dir)))
+		paths.append_array(find_files(dir_path.path_join(sub_dir), extensions))
 	return paths
 
 

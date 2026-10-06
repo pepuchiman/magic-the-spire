@@ -1,0 +1,416 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/battle/battle_screen.gd" id="1_screen"]
+[ext_resource type="Script" path="res://ui/fit_label.gd" id="2_fit"]
+[ext_resource type="Script" path="res://ui/hand_view.gd" id="3_hand"]
+[ext_resource type="Script" path="res://ui/select_banner.gd" id="4_select"]
+[ext_resource type="Script" path="res://ui/card_zoom_popup.gd" id="5_zoom"]
+[ext_resource type="Script" path="res://ui/pile_popup.gd" id="6_pile"]
+[ext_resource type="Script" path="res://ui/result_overlay.gd" id="7_result"]
+
+[node name="BattleScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_screen")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.1, 0.08, 0.19, 1)
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 36
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 20
+
+[node name="Main" type="VBoxContainer" parent="SafeArea"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="PanelContainer" parent="SafeArea/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 8.0
+mouse_filter = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="SafeArea/Main/Header"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="DungeonLabel" type="Label" parent="SafeArea/Main/Header/HeaderRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+vertical_alignment = 1
+auto_translate_mode = 2
+script = ExtResource("2_fit")
+max_font_size = 28
+min_font_size = 12
+
+[node name="FloorLabel" type="Label" parent="SafeArea/Main/Header/HeaderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+size_flags_vertical = 1
+horizontal_alignment = 1
+vertical_alignment = 1
+auto_translate_mode = 2
+script = ExtResource("2_fit")
+max_font_size = 26
+min_font_size = 12
+
+[node name="SettingsButton" type="Button" parent="SafeArea/Main/Header/HeaderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "UI_SETTINGS"
+autowrap_mode = 3
+
+[node name="EnemyArea" type="HBoxContainer" parent="SafeArea/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 30.0
+mouse_filter = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="AllyArea" type="HBoxContainer" parent="SafeArea/Main"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 18.0
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="HeroHolder" type="HBoxContainer" parent="SafeArea/Main/AllyArea"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="AllyRow" type="HBoxContainer" parent="SafeArea/Main/AllyArea"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 8
+alignment = 2
+
+[node name="StatusBar" type="PanelContainer" parent="SafeArea/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 8.0
+mouse_filter = 2
+
+[node name="StatusRow" type="HBoxContainer" parent="SafeArea/Main/StatusBar"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="CatalystRedLabel" type="Label" parent="SafeArea/Main/StatusBar/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+horizontal_alignment = 1
+vertical_alignment = 1
+auto_translate_mode = 2
+script = ExtResource("2_fit")
+max_font_size = 22
+min_font_size = 10
+
+[node name="CatalystBlueLabel" type="Label" parent="SafeArea/Main/StatusBar/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+horizontal_alignment = 1
+vertical_alignment = 1
+auto_translate_mode = 2
+script = ExtResource("2_fit")
+max_font_size = 22
+min_font_size = 10
+
+[node name="CatalystGreenLabel" type="Label" parent="SafeArea/Main/StatusBar/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+horizontal_alignment = 1
+vertical_alignment = 1
+auto_translate_mode = 2
+script = ExtResource("2_fit")
+max_font_size = 22
+min_font_size = 10
+
+[node name="DeckButton" type="Button" parent="SafeArea/Main/StatusBar/StatusRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+auto_translate_mode = 2
+autowrap_mode = 3
+
+[node name="DiscardButton" type="Button" parent="SafeArea/Main/StatusBar/StatusRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+auto_translate_mode = 2
+autowrap_mode = 3
+
+[node name="HandArea" type="Control" parent="SafeArea/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 24.0
+mouse_filter = 2
+script = ExtResource("3_hand")
+
+[node name="ControlBar" type="HBoxContainer" parent="SafeArea/Main"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 12.0
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="ManaPanel" type="PanelContainer" parent="SafeArea/Main/ControlBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ManaLabel" type="Label" parent="SafeArea/Main/ControlBar/ManaPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 1
+horizontal_alignment = 1
+vertical_alignment = 1
+auto_translate_mode = 2
+script = ExtResource("2_fit")
+max_font_size = 34
+min_font_size = 14
+
+[node name="Spacer" type="Control" parent="SafeArea/Main/ControlBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="EndTurnButton" type="Button" parent="SafeArea/Main/ControlBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "UI_TURN_END"
+autowrap_mode = 3
+
+[node name="SelectBanner" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.545
+anchor_right = 1.0
+anchor_bottom = 0.625
+offset_left = 12.0
+offset_right = -12.0
+grow_horizontal = 2
+script = ExtResource("4_select")
+
+[node name="SelectRow" type="HBoxContainer" parent="SelectBanner"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SelectLabel" type="Label" parent="SelectBanner/SelectRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+vertical_alignment = 1
+autowrap_mode = 3
+auto_translate_mode = 2
+script = ExtResource("2_fit")
+max_font_size = 22
+min_font_size = 10
+
+[node name="SelectConfirmButton" type="Button" parent="SelectBanner/SelectRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "UI_CONFIRM"
+autowrap_mode = 3
+
+[node name="SelectCancelButton" type="Button" parent="SelectBanner/SelectRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "UI_CANCEL"
+autowrap_mode = 3
+
+[node name="ToastLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.47
+anchor_right = 1.0
+anchor_bottom = 0.53
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 36
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+auto_translate_mode = 2
+
+[node name="EffectLayer" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CardZoomPopup" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_zoom")
+
+[node name="PilePopup" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("6_pile")
+
+[node name="PileMargin" type="MarginContainer" parent="PilePopup"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 24
+
+[node name="PileVBox" type="VBoxContainer" parent="PilePopup/PileMargin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PileTitle" type="Label" parent="PilePopup/PileMargin/PileVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+autowrap_mode = 3
+auto_translate_mode = 2
+
+[node name="PileScroll" type="ScrollContainer" parent="PilePopup/PileMargin/PileVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="PileGrid" type="GridContainer" parent="PilePopup/PileMargin/PileVBox/PileScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 6
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 3
+
+[node name="PileCloseButton" type="Button" parent="PilePopup/PileMargin/PileVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 90)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "UI_CLOSE"
+
+[node name="ResultOverlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_result")
+
+[node name="ResultTitle" type="Label" parent="ResultOverlay"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.3
+anchor_right = 1.0
+anchor_bottom = 0.42
+grow_horizontal = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 80
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+auto_translate_mode = 2
+
+[node name="ResultDetail" type="Label" parent="ResultOverlay"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.43
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+auto_translate_mode = 2
+
+[node name="BackToTitleButton" type="Button" parent="ResultOverlay"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.2
+anchor_top = 0.72
+anchor_right = 0.8
+anchor_bottom = 0.8
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 34
+text = "UI_BACK_TO_TITLE"
+autowrap_mode = 3

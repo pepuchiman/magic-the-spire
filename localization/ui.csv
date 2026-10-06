@@ -2,3 +2,55 @@ keys,ja
 UI_GAME_TITLE,Magic The Spire
 UI_GAME_SUBTITLE,魔法使いのカードバトル
 UI_START,ゲームを始める
+UI_TURN_END,ターン終了
+UI_DECK,デッキ {count}
+UI_DISCARD_PILE,ゴミ箱 {count}
+UI_DECK_TITLE,デッキ（残り{count}枚）
+UI_DISCARD_TITLE,ゴミ箱（{count}枚）
+UI_MANA,マナ {current}/{base}
+UI_FLOOR,{floor}階
+UI_SETTINGS,設定
+UI_COMING_SOON,準備中です
+UI_HP,{hp}/{max}
+UI_ARMOR,アーマー {armor}
+UI_CATALYST,{color} {value}（+{power}）
+UI_CATALYST_RED,赤
+UI_CATALYST_BLUE,青
+UI_CATALYST_GREEN,緑
+UI_INTENT_ATTACK,攻撃 {min}〜{max}
+UI_INTENT_ATTACK_FIXED,攻撃 {amount}
+UI_INTENT_DEFEND,防御 {amount}
+UI_INTENT_SUMMON,仲間を呼ぶ
+UI_INTENT_NONE,様子見
+UI_STATUS_TURNS,{param}{amount}（残り{turns}）
+UI_STATUS_BATTLE,{param}{amount}（バトル中）
+UI_TURN_BANNER,ターン {turn}
+UI_ENEMY_TURN,敵のターン
+UI_DISCARD_PROMPT,捨てるカードを選んでください（あと{count}枚）
+UI_REPLACE_PROMPT,入れ替える仲間を選んでください
+UI_CONFIRM,決定
+UI_CANCEL,やめる
+UI_CLOSE,閉じる
+UI_CANNOT_PLAY_MANA,マナが足りません
+UI_CANNOT_PLAY_CATALYST,魔法触媒が足りません
+UI_VICTORY,勝利！
+UI_DEFEAT,敗北…
+UI_RESULT_TURNS,{turns}ターンで決着
+UI_BACK_TO_TITLE,タイトルへ
+CARD_TYPE_SUMMON,召喚
+CARD_TYPE_ATTACK,攻撃
+CARD_TYPE_BUFF,付与
+CARD_TYPE_SPACE,空間
+RARITY_COMMON,コモン
+RARITY_UNCOMMON,アンコモン
+RARITY_RARE,レア
+RARITY_LEGEND,レジェンド
+PARAM_MAX_HP,最大HP
+PARAM_MANA_BASE,マナ基準値
+PARAM_CATALYST_POWER_RED,赤の毎ターン増加
+PARAM_CATALYST_POWER_BLUE,青の毎ターン増加
+PARAM_CATALYST_POWER_GREEN,緑の毎ターン増加
+PARAM_DRAW_COUNT,ドロー数
+PARAM_MAX_HAND,最大手札数
+PARAM_DEFENSE,防御力
+PARAM_TARGET_RATE,ターゲット率
