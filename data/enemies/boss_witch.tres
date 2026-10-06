@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/enemy_action_data.gd" id="1_fcipq"]
+[ext_resource type="Resource" path="res://data/enemies/slime.tres" id="2_wsd1h"]
+[ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="3_qbj3x"]
+
+[sub_resource type="Resource" id="Resource_1furh"]
+script = ExtResource("1_fcipq")
+
+[sub_resource type="Resource" id="Resource_wx4p2"]
+script = ExtResource("1_fcipq")
+
+[sub_resource type="Resource" id="Resource_vukon"]
+script = ExtResource("1_fcipq")
+action_type = 2
+summon_enemy = ExtResource("2_wsd1h")
+
+[resource]
+script = ExtResource("3_qbj3x")
+id = &"boss_witch"
+name_key = &"ENEMY_BOSS_WITCH_NAME"
+max_hp = 80
+defense = 1
+attack_min = 6
+attack_max = 10
+pattern = Array[ExtResource("1_fcipq")]([SubResource("Resource_1furh"), SubResource("Resource_wx4p2"), SubResource("Resource_vukon")])

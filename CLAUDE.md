@@ -82,4 +82,7 @@
 - Godot のバージョン確認：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --version
 - テストの実行（GUT、画面なし）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit
 - 翻訳CSV・フォントなどの再読み込み：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless --import
-- データ索引の再生成：（フェーズ1で確定したら追記する）
+- データ索引の再生成：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/rebuild_data_index.gd
+- データの検証（エラーがあれば終了コード1）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/validate_data.gd
+- サンプルデータの生成（既存ファイルは上書きしない）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/generate_sample_data.gd
+- スクリプトを追加・名前変更した後は、先に --headless --import を実行する（クラス名の登録のため）

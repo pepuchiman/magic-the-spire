@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/enemy_action_data.gd" id="1_f5jfp"]
+[ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="2_s20qs"]
+
+[sub_resource type="Resource" id="Resource_n28aa"]
+script = ExtResource("1_f5jfp")
+
+[sub_resource type="Resource" id="Resource_nl3q0"]
+script = ExtResource("1_f5jfp")
+
+[sub_resource type="Resource" id="Resource_r0o31"]
+script = ExtResource("1_f5jfp")
+action_type = 1
+amount = 4
+
+[resource]
+script = ExtResource("2_s20qs")
+id = &"slime"
+name_key = &"ENEMY_SLIME_NAME"
+max_hp = 20
+attack_min = 3
+attack_max = 5
+pattern = Array[ExtResource("1_f5jfp")]([SubResource("Resource_n28aa"), SubResource("Resource_nl3q0"), SubResource("Resource_r0o31")])

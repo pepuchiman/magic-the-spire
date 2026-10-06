@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_yd8pd"]
+[ext_resource type="Script" path="res://scripts/resources/modify_param_effect.gd" id="2_cqa5r"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_y1jsr"]
+
+[sub_resource type="Resource" id="Resource_hl0tr"]
+script = ExtResource("2_cqa5r")
+amount = 1
+
+[resource]
+script = ExtResource("3_y1jsr")
+id = &"mana_surge"
+name_key = &"CARD_MANA_SURGE_NAME"
+card_type = 2
+rarity = 2
+usable_heroes = Array[StringName]([&"flame_mage"])
+targets = Array[int]([2])
+cost_mana = 1
+duration = 2
+effects = Array[ExtResource("1_yd8pd")]([SubResource("Resource_hl0tr")])
+description_key = &"CARD_MANA_SURGE_DESC"

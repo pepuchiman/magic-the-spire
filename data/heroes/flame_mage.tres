@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="HeroData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/hero_data.gd" id="1_mnaov"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="2_xk3s1"]
+[ext_resource type="Resource" path="res://data/cards/spark.tres" id="3_0xfqe"]
+[ext_resource type="Resource" path="res://data/cards/guard.tres" id="4_qygxs"]
+[ext_resource type="Resource" path="res://data/cards/fireball.tres" id="5_alvep"]
+[ext_resource type="Resource" path="res://data/cards/summon_sprite.tres" id="6_lic68"]
+
+[resource]
+script = ExtResource("1_mnaov")
+id = &"flame_mage"
+name_key = &"HERO_FLAME_MAGE_NAME"
+catalyst_red = 1
+catalyst_power_red = 1
+starting_deck = Array[ExtResource("2_xk3s1")]([ExtResource("3_0xfqe"), ExtResource("3_0xfqe"), ExtResource("3_0xfqe"), ExtResource("3_0xfqe"), ExtResource("4_qygxs"), ExtResource("4_qygxs"), ExtResource("4_qygxs"), ExtResource("5_alvep"), ExtResource("5_alvep"), ExtResource("6_lic68")])

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_7y00n"]
+[ext_resource type="Script" path="res://scripts/resources/armor_effect.gd" id="2_10vm7"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_38wg3"]
+
+[sub_resource type="Resource" id="Resource_xwcnm"]
+script = ExtResource("2_10vm7")
+amount = 5
+
+[resource]
+script = ExtResource("3_38wg3")
+id = &"guard"
+name_key = &"CARD_GUARD_NAME"
+card_type = 2
+usable_heroes = Array[StringName]([&"flame_mage"])
+targets = Array[int]([2])
+cost_mana = 1
+effects = Array[ExtResource("1_7y00n")]([SubResource("Resource_xwcnm")])
+description_key = &"CARD_GUARD_DESC"

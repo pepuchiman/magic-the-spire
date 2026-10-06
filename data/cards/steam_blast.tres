@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_rafry"]
+[ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_iwypk"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_n1ykf"]
+
+[sub_resource type="Resource" id="Resource_ed61r"]
+script = ExtResource("2_iwypk")
+amount = 18
+
+[resource]
+script = ExtResource("3_n1ykf")
+id = &"steam_blast"
+name_key = &"CARD_STEAM_BLAST_NAME"
+rarity = 1
+usable_heroes = Array[StringName]([&"flame_mage"])
+targets = Array[int]([0])
+cost_mana = 3
+required_red = 1
+required_blue = 1
+effects = Array[ExtResource("1_rafry")]([SubResource("Resource_ed61r")])
+description_key = &"CARD_STEAM_BLAST_DESC"

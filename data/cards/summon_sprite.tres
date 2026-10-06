@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_3ixq3"]
+[ext_resource type="Resource" path="res://data/allies/fire_sprite.tres" id="2_8trpm"]
+[ext_resource type="Script" path="res://scripts/resources/summon_effect.gd" id="3_xmgx7"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="4_lecug"]
+
+[sub_resource type="Resource" id="Resource_vlanr"]
+script = ExtResource("3_xmgx7")
+ally = ExtResource("2_8trpm")
+
+[resource]
+script = ExtResource("4_lecug")
+id = &"summon_sprite"
+name_key = &"CARD_SUMMON_SPRITE_NAME"
+card_type = 0
+usable_heroes = Array[StringName]([&"flame_mage"])
+targets = Array[int]([5])
+cost_mana = 2
+required_red = 1
+effects = Array[ExtResource("1_3ixq3")]([SubResource("Resource_vlanr")])
+description_key = &"CARD_SUMMON_SPRITE_DESC"

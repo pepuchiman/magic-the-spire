@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_s15rb"]
+[ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_px2ex"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_ulhns"]
+
+[sub_resource type="Resource" id="Resource_nftl5"]
+script = ExtResource("2_px2ex")
+amount = 10
+
+[resource]
+script = ExtResource("3_ulhns")
+id = &"frost_lance"
+name_key = &"CARD_FROST_LANCE_NAME"
+usable_heroes = Array[StringName]([&"flame_mage"])
+targets = Array[int]([0])
+cost_mana = 2
+required_blue = 1
+effects = Array[ExtResource("1_s15rb")]([SubResource("Resource_nftl5")])
+description_key = &"CARD_FROST_LANCE_DESC"

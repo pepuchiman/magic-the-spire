@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_u1cho"]
+[ext_resource type="Resource" path="res://data/allies/forest_wolf.tres" id="2_wywsg"]
+[ext_resource type="Script" path="res://scripts/resources/summon_effect.gd" id="3_x0ra0"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="4_l186h"]
+
+[sub_resource type="Resource" id="Resource_b62ik"]
+script = ExtResource("3_x0ra0")
+ally = ExtResource("2_wywsg")
+
+[resource]
+script = ExtResource("4_l186h")
+id = &"summon_wolf"
+name_key = &"CARD_SUMMON_WOLF_NAME"
+card_type = 0
+rarity = 1
+usable_heroes = Array[StringName]([&"flame_mage"])
+targets = Array[int]([5])
+cost_mana = 3
+required_green = 1
+effects = Array[ExtResource("1_u1cho")]([SubResource("Resource_b62ik")])
+description_key = &"CARD_SUMMON_WOLF_DESC"

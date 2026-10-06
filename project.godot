@@ -1,13 +1,20 @@
 ; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
 config_version=5
 
 [application]
 
 config/name="Magic The Spire"
 run/main_scene="res://scenes/title/title_screen.tscn"
-config/features=PackedStringArray("4.7")
 config/use_custom_user_dir=true
 config/custom_user_dir_name="MagicTheSpire"
+config/features=PackedStringArray("4.7")
 
 [display]
 
@@ -27,6 +34,6 @@ theme/custom_font="res://assets/fonts/NotoSansJP-VF.ttf"
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://localization/ui.ja.translation")
-locale/fallback="ja"
+locale/translations=PackedStringArray("res://localization/ui.ja.translation", "res://localization/cards.ja.translation", "res://localization/characters.ja.translation", "res://localization/dungeons.ja.translation")
 locale/test="ja"
+locale/fallback="ja"

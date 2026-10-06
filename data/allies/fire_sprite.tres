@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AllyData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/ally_data.gd" id="1_w5dtl"]
+
+[resource]
+script = ExtResource("1_w5dtl")
+id = &"fire_sprite"
+name_key = &"ALLY_FIRE_SPRITE_NAME"
+attack_min = 3
+attack_max = 5
+race = 1
+attack_effect = 3
