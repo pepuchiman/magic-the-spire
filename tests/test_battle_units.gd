@@ -54,26 +54,83 @@ func test_ally_target_respects_race() -> void:
 
 # ---------- 敵 ----------
 
-func test_enemy_does_not_summon_when_three_allies() -> void:
-	var minion := H.enemy(10, 0)
-	minion.id = &"minion"
+func _summon_action(minion: EnemyData) -> EnemyActionData:
 	var summon := H.action(ActionType.SUMMON)
 	summon.summon_enemy = minion
-	var boss := H.enemy(100, 0, [summon])
+	return summon
+
+
+func test_enemy_does_nothing_when_no_action_is_executable() -> void:
+	var boss := H.enemy(100, 0, [_summon_action(H.enemy(10, 0))])  # 「味方を呼ぶ」しか持たない
 	var battle := H.battle(H.hero([H.filler()]), boss)
 	watch_signals(battle)
 	battle.start()
 	for i in 4:
 		H.end_turn(battle)
 	assert_eq(battle.enemy_allies.size(), 3, "敵の仲間は3体まで")
-	assert_signal_emitted(battle, "enemy_action_skipped", "3体いる時は呼ばない")
+	assert_null(battle.main_enemy.intent, "実行できる行動がない")
+	assert_signal_emitted(battle, "enemy_action_skipped", "実行できる行動がない時だけ、何もしない")
+
+
+func test_enemy_chooses_other_action_when_three_allies() -> void:
+	var boss := H.enemy(100, 0, [_summon_action(H.enemy(10, 0)), H.action(ActionType.DEFEND, 5)])
+	var battle := H.battle(H.hero([H.filler()]), boss)
+	watch_signals(battle)
+	battle.start()
+	for i in 5:
+		H.end_turn(battle)  # 呼ぶ→防御→呼ぶ→防御→呼ぶ（3体）
+	assert_eq(battle.enemy_allies.size(), 3)
+	var armor_before := battle.main_enemy.armor
+	for i in 3:
+		assert_eq(battle.main_enemy.intent.action_type, ActionType.DEFEND, "3体いる時は「味方を呼ぶ」の代わりに別の行動をする")
+		H.end_turn(battle)
+	assert_eq(battle.main_enemy.armor, armor_before + 15, "防御を3回行った")
+	assert_signal_not_emitted(battle, "enemy_action_skipped", "何もしないターンはない")
+
+
+func test_enemy_reselects_when_summon_becomes_impossible() -> void:
+	# 敵の仲間Aは「味方を呼ぶ→防御」。予告した後に、別の敵が先に呼んで3体になった場合
+	var minion_b := H.enemy(10, 0)
+	var minion_a := H.enemy(10, 0, [_summon_action(minion_b), H.action(ActionType.DEFEND, 3)])
+	var boss := H.enemy(100, 0, [_summon_action(minion_a)])
+	var battle := H.battle(H.hero([H.filler()]), boss)
+	battle.start()
+	H.end_turn(battle)  # ボスがA1を呼ぶ（1体）
+	H.end_turn(battle)  # ボスがA2を呼ぶ（2体。A2は「呼ぶ」を予告）→ A1がBを呼ぶ（3体）
+	var a2 := battle.enemy_allies[1]
+	assert_eq(a2.intent.action_type, ActionType.SUMMON, "A2は呼べる時に「味方を呼ぶ」を予告していた")
+	H.end_turn(battle)
+	assert_eq(battle.enemy_allies.size(), 3, "4体目は呼ばない")
+	assert_eq(a2.armor, 3, "実行の瞬間に呼べなくなっていたので、防御に変更した")
+
+
+func test_loop_skips_unexecutable_action() -> void:
+	var pattern := [H.action(ActionType.ATTACK), _summon_action(H.enemy()), H.action(ActionType.DEFEND, 3)]
+	var enemy := EnemyCombatant.new(H.enemy(10, 0, pattern), true)
+	var order: Array = []
+	for i in 4:
+		enemy.decide_next_action(false)  # 呼べない状態
+		order.append(enemy.intent.action_type)
+	assert_eq(order, [ActionType.ATTACK, ActionType.DEFEND, ActionType.ATTACK, ActionType.DEFEND], "「味方を呼ぶ」を飛ばして次の行動にする")
+
+
+func test_unexecutable_conditional_action_is_ignored() -> void:
+	var call_help := _summon_action(H.enemy())
+	call_help.condition = GameEnums.EnemyActionCondition.HP_PERCENT_BELOW
+	call_help.condition_value = 50
+	var enemy := EnemyCombatant.new(H.enemy(10, 0, [H.action(ActionType.ATTACK), call_help]), true)
+	enemy.hp = 3
+	enemy.decide_next_action(true)
+	assert_eq(enemy.intent, call_help, "条件を満たし、実行できれば優先する")
+	enemy.decide_next_action(false)
+	assert_eq(enemy.intent.action_type, ActionType.ATTACK, "条件を満たしても、実行できなければ無視して他の行動をする")
 
 
 func test_enemy_loops_pattern() -> void:
 	var enemy := EnemyCombatant.new(H.enemy(10, 0, [H.action(ActionType.ATTACK), H.action(ActionType.DEFEND, 3)]), true)
 	var order: Array = []
 	for i in 4:
-		enemy.decide_next_action()
+		enemy.decide_next_action(true)
 		order.append(enemy.intent.action_type)
 	assert_eq(order, [ActionType.ATTACK, ActionType.DEFEND, ActionType.ATTACK, ActionType.DEFEND])
 
@@ -83,13 +140,13 @@ func test_conditional_action_has_priority() -> void:
 	rage.condition = GameEnums.EnemyActionCondition.HP_PERCENT_BELOW
 	rage.condition_value = 50
 	var enemy := EnemyCombatant.new(H.enemy(10, 0, [H.action(ActionType.ATTACK), rage, H.action(ActionType.DEFEND, 1)]), true)
-	enemy.decide_next_action()
+	enemy.decide_next_action(true)
 	assert_eq(enemy.intent.action_type, ActionType.ATTACK, "条件を満たさなければループ通り")
 	enemy.hp = 5
-	enemy.decide_next_action()
+	enemy.decide_next_action(true)
 	assert_eq(enemy.intent, rage, "残りHPが50%以下なら条件付き行動を優先")
 	enemy.hp = 10
-	enemy.decide_next_action()
+	enemy.decide_next_action(true)
 	assert_eq(enemy.intent.amount, 1, "条件付き行動ではループの位置は進まない（次はループの2番目）")
 
 

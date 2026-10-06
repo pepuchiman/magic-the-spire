@@ -49,7 +49,8 @@ signal modifier_added(target: Combatant, modifier: StatModifier)
 signal modifier_expired(target: Combatant, modifier: StatModifier)
 signal ally_summoned(ally: AllyCombatant, replaced: AllyCombatant)
 signal enemy_summoned(summoner: EnemyCombatant, summoned: EnemyCombatant)
-signal enemy_action_skipped(enemy: EnemyCombatant, action: EnemyActionData)
+## 実行できる行動が1つもなく、何もしなかった時
+signal enemy_action_skipped(enemy: EnemyCombatant)
 signal enemy_intent_changed(enemy: EnemyCombatant)
 signal combatant_died(combatant: Combatant)
 signal discard_required(count: int)
@@ -273,8 +274,15 @@ func _finish_turn() -> void:
 
 
 func _do_enemy_action(enemy: EnemyCombatant) -> void:
+	# 予告した後に状況が変わり、実行できなくなっていたら（例：別の敵が先に仲間を呼んで3体になった）、別の行動を選び直す
+	if enemy.intent != null and not EnemyCombatant.is_executable(enemy.intent, _can_enemy_summon()):
+		_log("%s 行動を変更" % enemy.id)
+		_decide_intent(enemy)
 	var action := enemy.intent
-	if action != null:
+	if action == null:
+		_log("%s 実行できる行動がない" % enemy.id)
+		enemy_action_skipped.emit(enemy)
+	else:
 		match action.action_type:
 			GameEnums.EnemyActionType.ATTACK:
 				# 攻撃対象は、攻撃の瞬間にターゲット率で抽選する
@@ -290,12 +298,13 @@ func _do_enemy_action(enemy: EnemyCombatant) -> void:
 	_decide_intent(enemy)
 
 
+## 敵の仲間を呼べるか（敵の仲間が3体いる時は、追加で呼ばない）
+func _can_enemy_summon() -> bool:
+	return enemy_allies.size() < MAX_ENEMY_ALLIES
+
+
 func _enemy_summon(summoner: EnemyCombatant, action: EnemyActionData) -> void:
-	# 敵の仲間が3体いる時は、追加で呼ばない（この行動は何もせず、ループは進む）
-	if enemy_allies.size() >= MAX_ENEMY_ALLIES or action.summon_enemy == null:
-		_log("%s 味方を呼べない" % summoner.id)
-		enemy_action_skipped.emit(summoner, action)
-		return
+	# 実行前に選び直しているので、ここに来る時は必ず呼べる
 	var summoned := EnemyCombatant.new(action.summon_enemy, false)
 	enemy_allies.append(summoned)
 	_log("%s が %s を呼んだ" % [summoner.id, summoned.id])
@@ -304,7 +313,7 @@ func _enemy_summon(summoner: EnemyCombatant, action: EnemyActionData) -> void:
 
 
 func _decide_intent(enemy: EnemyCombatant) -> void:
-	enemy.decide_next_action()
+	enemy.decide_next_action(_can_enemy_summon())
 	enemy_intent_changed.emit(enemy)
 
 
