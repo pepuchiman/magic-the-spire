@@ -7,7 +7,7 @@ extends Resource
 
 @export_group("基本パラメーター")
 ## 初期HP（挑戦開始時のHP）
-@export_range(0, 9999) var hp: int = 20
+@export_range(1, 9999) var hp: int = 20
 @export_range(1, 9999) var max_hp: int = 20
 @export_range(0, 99) var mana_base: int = 5
 @export_range(0, 9999) var target_rate: int = 100

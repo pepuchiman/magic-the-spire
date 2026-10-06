@@ -68,4 +68,4 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/font_size = 40
 text = "UI_START"
-clip_text = true
+autowrap_mode = 3

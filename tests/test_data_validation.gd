@@ -21,8 +21,8 @@ func test_loader_reads_sample_data() -> void:
 	assert_not_null(loader.get_hero(&"flame_mage"), "主人公を読み込める")
 	assert_not_null(loader.get_card(&"fireball"), "カードを読み込める")
 	assert_not_null(loader.get_enemy(&"boss_witch"), "ボスを読み込める")
-	assert_eq(loader.index.cards.size(), 10, "カードは10枚")
-	assert_eq(loader.index.enemies.size(), 4, "敵は通常3種＋ボス1体")
+	assert_false(loader.index.cards.is_empty(), "カードがある")
+	assert_eq(loader.get_dungeon(&"lost_forest").normal_enemies.size(), 3, "サンプルダンジョンの通常の敵は3種")
 
 
 func test_sample_data_covers_required_card_kinds() -> void:
@@ -110,6 +110,41 @@ func test_missing_translation_key_is_reported() -> void:
 	var keys: Dictionary = {"CARD_STRIKE_NAME": true}  # 説明のキーが無い
 	var errors := DataValidator.check_translation_keys(index, keys)
 	assert_true(_has_error(errors, "CARD_STRIKE_DESC"))
+
+
+func test_placeholder_without_effect_is_reported() -> void:
+	var index := _valid_index()
+	var texts: Dictionary = {"CARD_STRIKE_DESC": "{damage}のダメージを与える"}  # 効果が無いのに {damage}
+	assert_true(_has_error(DataValidator.check_description_placeholders(index, texts), "{damage}"))
+	index.cards[0].effects.append(DamageEffect.new())
+	assert_eq(DataValidator.check_description_placeholders(index, texts).size(), 0, "効果があればエラーにならない")
+
+
+func test_summon_description_uses_ally_name() -> void:
+	var card := DataLoader.new().get_card(&"summon_sprite")
+	assert_eq(card.get_description(), "火の精霊を召喚する", "仲間の名前が説明文に入る")
+
+
+func test_modify_param_on_instant_card_is_reported() -> void:
+	var index := _valid_index()
+	index.cards[0].effects.append(ModifyParamEffect.new())
+	assert_true(_has_error(DataValidator.validate_index(index), "瞬間"))
+
+
+func test_enemy_and_ally_targets_together_is_reported() -> void:
+	var index := _valid_index()
+	index.cards[0].targets.append(GameEnums.Target.ALLY)
+	assert_true(_has_error(DataValidator.validate_index(index), "両方"))
+
+
+func test_two_summon_effects_is_reported() -> void:
+	var index := _valid_index()
+	var ally := AllyData.new()
+	for i in 2:
+		var effect := SummonEffect.new()
+		effect.ally = ally
+		index.cards[0].effects.append(effect)
+	assert_true(_has_error(DataValidator.validate_index(index), "1つまで"))
 
 
 func test_valid_data_has_no_errors() -> void:

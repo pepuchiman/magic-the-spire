@@ -10,6 +10,8 @@ extends Resource
 ## 利用できる主人公のID
 @export var usable_heroes: Array[StringName] = []
 @export var targets: Array[GameEnums.Target] = []
+## ターゲットが「味方」の時に、対象にできる種族（空なら種族を限定しない）
+@export var target_races: Array[GameEnums.Race] = []
 @export_range(0, 99) var cost_mana: int = 0
 
 @export_group("必要触媒")

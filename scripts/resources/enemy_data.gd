@@ -4,7 +4,7 @@ extends Resource
 
 @export var id: StringName
 @export var name_key: StringName
-@export_range(0, 9999) var max_hp: int = 10
+@export_range(1, 9999) var max_hp: int = 10
 @export_range(0, 9999) var defense: int = 0
 @export_range(0, 9999) var armor: int = 0
 @export_range(0, 9999) var attack_min: int = 0

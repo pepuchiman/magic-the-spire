@@ -17,7 +17,9 @@ static func validate_project() -> PackedStringArray:
 		return errors
 	errors.append_array(validate_index(index))
 	errors.append_array(check_unregistered(index, find_tres_paths(DATA_DIR)))
-	errors.append_array(check_translation_keys(index, load_translation_keys(LOCALIZATION_DIR)))
+	var texts := load_translation_texts(LOCALIZATION_DIR)
+	errors.append_array(check_translation_keys(index, texts))
+	errors.append_array(check_description_placeholders(index, texts))
 	return errors
 
 
@@ -83,8 +85,24 @@ static func check_translation_keys(index: DataIndex, keys: Dictionary) -> Packed
 	return errors
 
 
-## localization/ 内の CSV から、登録されているキーを集める（キー → true）
-static func load_translation_keys(dir_path: String) -> Dictionary:
+## カードの説明文にある差し込みの目印（{damage} など）が、カードの効果の値で埋まるかを調べる
+## texts は「キー → 文章」
+static func check_description_placeholders(index: DataIndex, texts: Dictionary) -> PackedStringArray:
+	var errors := PackedStringArray()
+	var regex := RegEx.create_from_string("\\{(\\w+)\\}")
+	for card: CardData in index.cards:
+		if card == null or not texts.has(String(card.description_key)):
+			continue
+		var params := card.get_text_params()
+		for found: RegExMatch in regex.search_all(str(texts[String(card.description_key)])):
+			var placeholder := found.get_string(1)
+			if not params.has(placeholder):
+				errors.append("カード %s：説明文の {%s} に入れる値がありません（対応する効果がない）" % [card.id, placeholder])
+	return errors
+
+
+## localization/ 内の CSV から、キーと文章（最初の言語の列）を集める（キー → 文章）
+static func load_translation_texts(dir_path: String) -> Dictionary:
 	var keys: Dictionary = {}
 	for file_name: String in DirAccess.get_files_at(dir_path):
 		if not file_name.ends_with(".csv"):
@@ -99,7 +117,7 @@ static func load_translation_keys(dir_path: String) -> Dictionary:
 				first_line = false
 				continue
 			if row.size() > 0 and row[0] != "":
-				keys[row[0]] = true
+				keys[row[0]] = row[1] if row.size() > 1 else ""
 	return keys
 
 
@@ -151,13 +169,22 @@ static func _check_card(card: CardData, hero_ids: Dictionary) -> PackedStringArr
 			errors.append("%s：存在しない主人公IDが利用キャラクターに指定されています（%s）" % [label, hero_id])
 	if card.targets.is_empty():
 		errors.append("%s：ターゲットが指定されていません" % label)
+	if card.targets.has(GameEnums.Target.ENEMY) and card.targets.has(GameEnums.Target.ALLY):
+		errors.append("%s：「敵」と「味方」を両方選ぶカードには、まだ対応していません" % label)
 	if card.duration == GameEnums.Duration.TURNS and card.duration_turns < 1:
 		errors.append("%s：効果ターン数が「〇〇ターン」なのに、ターン数が0です" % label)
+	var summon_count := 0
 	for effect: EffectData in card.effects:
 		if effect == null:
 			errors.append("%s：空（未設定）の効果があります" % label)
-		elif effect is SummonEffect and (effect as SummonEffect).ally == null:
-			errors.append("%s：召喚効果に仲間が設定されていません" % label)
+		elif effect is SummonEffect:
+			summon_count += 1
+			if (effect as SummonEffect).ally == null:
+				errors.append("%s：召喚効果に仲間が設定されていません" % label)
+		elif effect is ModifyParamEffect and card.duration == GameEnums.Duration.INSTANT:
+			errors.append("%s：パラメーター変更の効果は、効果ターン数が「瞬間」のカードには使えません" % label)
+	if summon_count > 1:
+		errors.append("%s：召喚効果は1枚のカードに1つまでです" % label)
 	return errors
 
 

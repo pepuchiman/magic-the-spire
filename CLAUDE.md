@@ -85,4 +85,5 @@
 - データ索引の再生成：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/rebuild_data_index.gd
 - データの検証（エラーがあれば終了コード1）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/validate_data.gd
 - サンプルデータの生成（既存ファイルは上書きしない）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/generate_sample_data.gd
+- バトルの自動実行（コンソールに経過を表示。-- の後ろは省略可）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/simulate_battle.gd -- seed=1 enemy=boss_witch hero=flame_mage
 - スクリプトを追加・名前変更した後は、先に --headless --import を実行する（クラス名の登録のため）
