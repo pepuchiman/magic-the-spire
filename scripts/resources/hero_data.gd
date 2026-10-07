@@ -10,7 +10,6 @@ extends Resource
 @export_range(1, 9999) var hp: int = 20
 @export_range(1, 9999) var max_hp: int = 20
 @export_range(0, 99) var mana_base: int = 5
-@export_range(0, 9999) var target_rate: int = 100
 @export_range(0, 9999) var defense: int = 0
 @export_range(1, 99) var max_hand: int = 5
 @export_range(1, 99) var draw_count: int = 3

@@ -204,8 +204,12 @@ static func _check_card(card: CardData, hero_ids: Dictionary) -> PackedStringArr
 			errors.append("%s：存在しない主人公IDが利用キャラクターに指定されています（%s）" % [label, hero_id])
 	if card.targets.is_empty():
 		errors.append("%s：ターゲットが指定されていません" % label)
-	if card.targets.has(GameEnums.Target.ENEMY) and card.targets.has(GameEnums.Target.ALLY):
-		errors.append("%s：「敵」と「味方」を両方選ぶカードには、まだ対応していません" % label)
+	var single_choice_count := 0
+	for single_type: GameEnums.Target in [GameEnums.Target.ENEMY, GameEnums.Target.ALLY, GameEnums.Target.ANY]:
+		if card.targets.has(single_type):
+			single_choice_count += 1
+	if single_choice_count > 1:
+		errors.append("%s：1体を選ぶターゲット（敵・自分のクリーチャー・いずれか1体）は、1枚のカードに1つまでです" % label)
 	if card.duration == GameEnums.Duration.TURNS and card.duration_turns < 1:
 		errors.append("%s：効果ターン数が「〇〇ターン」なのに、ターン数が0です" % label)
 	var summon_count := 0

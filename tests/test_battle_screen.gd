@@ -38,9 +38,9 @@ func test_unplayable_cards_are_dimmed() -> void:
 
 
 func test_discard_selection_flow() -> void:
-	var extra := screen.battle.deck.hand[0]
+	var extra := screen.battle.deck.hand[0].data
 	for i in 3:
-		screen.battle.deck.hand.append(extra)  # 手札を6枚にする（最大5枚）
+		screen.battle.deck.hand.append(CardInstance.new(extra))  # 手札を6枚にする（最大5枚）
 	screen.request_end_turn()
 	assert_eq(screen.mode, BattleScreen.Mode.DISCARD_SELECT, "捨てるカードの選択に切り替わる")
 	screen.confirm_discard()
@@ -55,10 +55,10 @@ func test_discard_selection_flow() -> void:
 
 func test_replace_selection_flow() -> void:
 	var battle := screen.battle
-	for i in 3:
+	for i in Battle.MAX_ALLIES:
 		battle.allies.append(AllyCombatant.new(H.ally(StringName("a%d" % i)), 1))
 	var sprite_card := DataLoader.new().get_card(&"summon_sprite")
-	battle.deck.hand.append(sprite_card)
+	battle.deck.hand.append(CardInstance.new(sprite_card))
 	battle.hero.catalyst_red = 5
 	screen._refresh_all()
 	var index := battle.deck.hand.size() - 1
@@ -70,7 +70,7 @@ func test_replace_selection_flow() -> void:
 	screen.try_play_card(index)
 	var oldest := battle.allies[0]
 	screen.choose_replace(oldest)
-	assert_eq(battle.allies.size(), 3)
+	assert_eq(battle.allies.size(), Battle.MAX_ALLIES)
 	assert_false(battle.allies.has(oldest), "選んだ仲間と入れ替わる")
 	assert_eq(screen.mode, BattleScreen.Mode.NORMAL)
 
@@ -83,12 +83,28 @@ func test_intent_text() -> void:
 
 func test_deck_list_does_not_reveal_order() -> void:
 	var loader := DataLoader.new()
-	var cards: Array[CardData] = [loader.get_card(&"spark"), loader.get_card(&"fireball"), loader.get_card(&"guard")]
+	var cards: Array[CardInstance] = []
+	for id: StringName in [&"spark", &"fireball", &"guard"]:
+		cards.append(CardInstance.new(loader.get_card(id)))
 	var sorted := PilePopup.sorted_by_name(cards)
-	var names: Array = sorted.map(func(c: CardData) -> String: return UiText.t(c.name_key))
+	var names: Array = sorted.map(func(c: CardInstance) -> String: return UiText.t(c.data.name_key))
 	var expected := names.duplicate()
 	expected.sort()
 	assert_eq(names, expected, "デッキの一覧は名前順（実際の並び順を見せない）")
+
+
+func test_uses_left_and_exhaust_pile_are_shown() -> void:
+	var battle := screen.battle
+	var once := DataLoader.new().get_card(&"mana_surge")  # 使用回数1のサンプルカード
+	battle.deck.hand.append(CardInstance.new(once))
+	screen._refresh_all()
+	var hand: HandView = screen.get_node("%HandArea")
+	var view := hand.get_view(battle.deck.hand.size() - 1)
+	assert_eq(view.uses_left, 1, "使用回数のあるカードは残り回数を表示する")
+	assert_eq(hand.get_view(0).uses_left, -1, "制限なしのカードは表示しない")
+	screen.try_play_card(battle.deck.hand.size() - 1)
+	assert_eq(battle.deck.exhausted_pile.size(), 1)
+	assert_eq(screen.get_node("%ExhaustButton").text, "破棄 1", "破棄されたカードの枚数を表示する")
 
 
 func test_ui_keys_are_registered() -> void:
@@ -104,10 +120,10 @@ func test_ui_keys_are_registered() -> void:
 func _play_any_card() -> bool:
 	var battle := screen.battle
 	for i in battle.deck.hand.size():
-		var card: CardData = battle.deck.hand[i]
+		var card: CardData = battle.deck.hand[i].data
 		if battle.get_cost_problem(card) != Battle.PlayResult.OK:
 			continue
-		var target: Combatant = battle.main_enemy if battle.needs_enemy_target(card) else null
+		var target := AutoPlayer.choose_target(battle, card)
 		var result := screen.try_play_card(i, target)
 		if result == Battle.PlayResult.NEEDS_REPLACE:
 			screen.choose_replace(battle.allies[0])

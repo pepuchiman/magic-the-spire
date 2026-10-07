@@ -20,14 +20,14 @@ UI_CATALYST_GREEN,緑
 UI_INTENT_ATTACK,攻撃 {min}〜{max}
 UI_INTENT_ATTACK_FIXED,攻撃 {amount}
 UI_INTENT_DEFEND,防御 {amount}
-UI_INTENT_SUMMON,仲間を呼ぶ
+UI_INTENT_SUMMON,クリーチャーを呼ぶ
 UI_INTENT_NONE,様子見
 UI_STATUS_TURNS,{param}{amount}（残り{turns}）
 UI_STATUS_BATTLE,{param}{amount}（バトル中）
 UI_TURN_BANNER,ターン {turn}
 UI_ENEMY_TURN,敵のターン
 UI_DISCARD_PROMPT,捨てるカードを選んでください（あと{count}枚）
-UI_REPLACE_PROMPT,入れ替える仲間を選んでください
+UI_REPLACE_PROMPT,入れ替えるクリーチャーを選んでください
 UI_CONFIRM,決定
 UI_CANCEL,やめる
 UI_CLOSE,閉じる
@@ -53,4 +53,6 @@ PARAM_CATALYST_POWER_GREEN,緑の毎ターン増加
 PARAM_DRAW_COUNT,ドロー数
 PARAM_MAX_HAND,最大手札数
 PARAM_DEFENSE,防御力
-PARAM_TARGET_RATE,ターゲット率
+UI_USES_LEFT,残り{count}回
+UI_EXHAUST_PILE,破棄 {count}
+UI_EXHAUST_TITLE,破棄されたカード（{count}枚）

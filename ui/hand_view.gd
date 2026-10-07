@@ -18,7 +18,7 @@ func _ready() -> void:
 
 
 ## 手札を表示し直す。playable_flags[i] が false のカードは暗く表示する
-func show_cards(cards: Array[CardData], playable_flags: Array[bool], selected_indices: Array[int] = []) -> void:
+func show_cards(cards: Array[CardInstance], playable_flags: Array[bool], selected_indices: Array[int] = []) -> void:
 	for view: CardView in card_views:
 		view.queue_free()
 	card_views.clear()
@@ -26,7 +26,7 @@ func show_cards(cards: Array[CardData], playable_flags: Array[bool], selected_in
 		var view: CardView = CARD_SCENE.instantiate()
 		view.hand_index = i
 		add_child(view)
-		view.set_card(cards[i])
+		view.set_instance(cards[i])
 		view.set_playable(playable_flags[i])
 		view.set_selected(selected_indices.has(i))
 		view.pressed.connect(card_pressed.emit)

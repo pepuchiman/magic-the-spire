@@ -1,21 +1,17 @@
 class_name Targeting
 extends RefCounted
-## ターゲット率による攻撃対象の抽選
-## 確率 ＝ そのキャラクターのターゲット率 ÷ 全候補のターゲット率の合計
-## （全員のターゲット率が0の時は、均等に選ぶ。仕様に記載がないための仮の扱い）
+## 自動の攻撃（仲間の攻撃・敵の攻撃）の対象を決める（Game_Rule.md「攻撃対象の決定」）
+## ・相手側に仲間がいれば、後から召喚された仲間を狙う
+## ・仲間がいなければ、相手の本体（主人公・敵本体）を狙う
+## ※プレイヤーのカードはこの制限を受けない（ターゲットを自由に選べる）
 
 
-static func pick(candidates: Array[Combatant], rng: RandomNumberGenerator) -> Combatant:
-	if candidates.is_empty():
-		return null
-	var total := 0
-	for candidate: Combatant in candidates:
-		total += candidate.get_target_rate()
-	if total <= 0:
-		return candidates[rng.randi_range(0, candidates.size() - 1)]
-	var roll := rng.randi_range(1, total)
-	for candidate: Combatant in candidates:
-		roll -= candidate.get_target_rate()
-		if roll <= 0:
+## body：相手の本体。summoned：相手側の仲間（召喚された順に並んでいる）
+static func pick_attack_target(body: Combatant, summoned: Array) -> Combatant:
+	for i in range(summoned.size() - 1, -1, -1):
+		var candidate: Combatant = summoned[i]
+		if candidate.is_alive():
 			return candidate
-	return candidates[candidates.size() - 1]
+	if body != null and body.is_alive():
+		return body
+	return null

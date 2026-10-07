@@ -69,6 +69,7 @@ var _toast_tween: Tween
 @onready var _catalyst_labels: Array[FitLabel] = [%CatalystRedLabel, %CatalystBlueLabel, %CatalystGreenLabel]
 @onready var _deck_button: Button = %DeckButton
 @onready var _discard_button: Button = %DiscardButton
+@onready var _exhaust_button: Button = %ExhaustButton
 @onready var _hand_view: HandView = %HandArea
 @onready var _mana_panel: PanelContainer = %ManaPanel
 @onready var _mana_label: FitLabel = %ManaLabel
@@ -90,6 +91,7 @@ func _ready() -> void:
 	_end_turn_button.pressed.connect(request_end_turn)
 	_deck_button.pressed.connect(_open_deck)
 	_discard_button.pressed.connect(_open_discard_pile)
+	_exhaust_button.pressed.connect(_open_exhaust_pile)
 	_settings_button.pressed.connect(func() -> void: _show_toast(UiText.t("UI_COMING_SOON")))
 	_select_banner.confirmed.connect(confirm_discard)
 	_select_banner.cancelled.connect(cancel_selection)
@@ -314,8 +316,8 @@ func _refresh_all() -> void:
 
 func _refresh_hand() -> void:
 	var flags: Array[bool] = []
-	for card: CardData in battle.deck.hand:
-		flags.append(mode == Mode.DISCARD_SELECT or battle.get_cost_problem(card) == Battle.PlayResult.OK)
+	for card: CardInstance in battle.deck.hand:
+		flags.append(mode == Mode.DISCARD_SELECT or battle.get_cost_problem(card.data) == Battle.PlayResult.OK)
 	_hand_view.show_cards(battle.deck.hand, flags, _discard_selection)
 
 
@@ -330,6 +332,7 @@ func _refresh_status() -> void:
 		_catalyst_labels[i].set_fitted_text(UiText.fmt("UI_CATALYST", {"color": UiText.t(names[i]), "value": values[i], "power": powers[i]}))
 	_deck_button.text = UiText.fmt("UI_DECK", {"count": battle.deck.draw_pile.size()})
 	_discard_button.text = UiText.fmt("UI_DISCARD_PILE", {"count": battle.deck.discard_pile.size()})
+	_exhaust_button.text = UiText.fmt("UI_EXHAUST_PILE", {"count": battle.deck.exhausted_pile.size()})
 	_mana_label.set_fitted_text(UiText.fmt("UI_MANA", {"current": hero.mana, "base": hero.get_mana_base()}))
 	_floor_label.set_fitted_text(UiText.fmt("UI_FLOOR", {"floor": floor_number}))
 
@@ -412,7 +415,7 @@ func _apply_styles() -> void:
 	_mana_panel.add_theme_stylebox_override("panel", UiPalette.make_box(UiPalette.PANEL, UiPalette.MANA, 3, 14))
 	_mana_label.add_theme_color_override("font_color", UiPalette.MANA)
 	UiPalette.style_button(_end_turn_button, UiPalette.BUTTON_ACCENT)
-	for button: Button in [_settings_button, _deck_button, _discard_button]:
+	for button: Button in [_settings_button, _deck_button, _discard_button, _exhaust_button]:
 		UiPalette.style_button(button, UiPalette.BUTTON)
 
 
@@ -476,7 +479,7 @@ func _end_drag(pos: Vector2) -> void:
 	var moved: bool = _drag["moved"]
 	_drag = {}
 	if not moved:
-		_zoom_popup.open(view.card)  # タップ → 拡大表示
+		_zoom_popup.open(view.card, view.uses_left)  # タップ → 拡大表示
 		return
 	if _drag_ghost == null:
 		return  # 使えないカードだった
@@ -487,7 +490,7 @@ func _end_drag(pos: Vector2) -> void:
 		_drag_target = null
 	view.modulate.a = 1.0
 	var card := view.card
-	if battle.needs_enemy_target(card) or battle.needs_ally_target(card):
+	if battle.needs_target(card):
 		var target_view := _unit_view_at(pos, card)
 		if target_view != null:
 			try_play_card(view.hand_index, target_view.combatant)
@@ -500,7 +503,7 @@ func _end_drag(pos: Vector2) -> void:
 
 ## 指の位置にいる、そのカードの対象にできるキャラクター
 func _unit_view_at(pos: Vector2, card: CardData) -> UnitView:
-	if not (battle.needs_enemy_target(card) or battle.needs_ally_target(card)):
+	if not battle.needs_target(card):
 		return null
 	for view: UnitView in _views.values():
 		if view.get_global_rect().has_point(pos) and battle.is_valid_target(card, view.combatant):
@@ -543,6 +546,10 @@ func _open_deck() -> void:
 
 func _open_discard_pile() -> void:
 	_pile_popup.open(UiText.fmt("UI_DISCARD_TITLE", {"count": battle.deck.discard_pile.size()}), battle.deck.discard_pile)
+
+
+func _open_exhaust_pile() -> void:
+	_pile_popup.open(UiText.fmt("UI_EXHAUST_TITLE", {"count": battle.deck.exhausted_pile.size()}), battle.deck.exhausted_pile)
 
 
 func _go_to_title() -> void:

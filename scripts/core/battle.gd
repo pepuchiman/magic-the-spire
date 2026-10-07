@@ -34,14 +34,17 @@ enum Timing {
 	ENEMY_TURN_END,  ## 12. 敵のターン終了時
 }
 
-const MAX_ALLIES := 3
-const MAX_ENEMY_ALLIES := 3
+## 仲間の上限（自分側・敵側とも）
+const MAX_ALLIES := 2
+const MAX_ENEMY_ALLIES := 2
 
 signal timing_reached(timing: Timing)
 signal turn_started(turn_number: int)
-signal cards_drawn(cards: Array[CardData])
+signal cards_drawn(cards: Array[CardInstance])
 signal deck_reshuffled
-signal card_played(card: CardData, target: Combatant)
+signal card_played(card: CardInstance, target: Combatant)
+## 使用回数を使い切ったカードが破棄された時
+signal card_exhausted(card: CardInstance)
 signal damage_dealt(source: Combatant, target: Combatant, detail: Dictionary)
 signal armor_gained(target: Combatant, amount: int)
 signal healed(target: Combatant, amount: int)
@@ -54,7 +57,7 @@ signal enemy_action_skipped(enemy: EnemyCombatant)
 signal enemy_intent_changed(enemy: EnemyCombatant)
 signal combatant_died(combatant: Combatant)
 signal discard_required(count: int)
-signal cards_discarded(cards: Array[CardData])
+signal cards_discarded(cards: Array[CardInstance])
 signal battle_ended(result: BattleResult)
 
 var hero: HeroCombatant
@@ -108,7 +111,7 @@ func can_play(hand_index: int) -> PlayResult:
 		return PlayResult.NOT_PLAYER_TURN
 	if hand_index < 0 or hand_index >= deck.hand.size():
 		return PlayResult.INVALID_CARD
-	return get_cost_problem(deck.hand[hand_index])
+	return get_cost_problem(deck.hand[hand_index].data)
 
 
 ## マナと必要触媒だけを見て、そのカードが使えるかを返す（手番かどうかは見ない。画面でカードを暗くする判定に使う）
@@ -127,7 +130,8 @@ func play_card(hand_index: int, target: Combatant = null, replace_ally: AllyComb
 	var check := can_play(hand_index)
 	if check != PlayResult.OK:
 		return check
-	var card: CardData = deck.hand[hand_index]
+	var instance: CardInstance = deck.hand[hand_index]
+	var card := instance.data
 	if not is_valid_target(card, target):
 		return PlayResult.INVALID_TARGET
 	if needs_replace(card) and (replace_ally == null or not allies.has(replace_ally)):
@@ -136,13 +140,17 @@ func play_card(hand_index: int, target: Combatant = null, replace_ally: AllyComb
 	hero.mana -= card.cost_mana  # 触媒は消費しない
 	deck.take_from_hand(hand_index)
 	_log("カード使用 %s 対象:%s" % [card.id, target.id if target != null else "-"])
-	card_played.emit(card, target)
+	card_played.emit(instance, target)
 	var targets := _resolve_targets(card, target)
+	var damage_targets := _resolve_targets(card, target, true)
 	for effect: EffectData in card.effects:
-		_apply_effect(card, effect, targets, replace_ally)
+		_apply_effect(card, effect, targets, damage_targets, replace_ally)
 		if phase == Phase.ENDED:
 			break
-	deck.discard_pile.append(card)
+	# 使ったカードはゴミ箱へ。使用回数を使い切ったら破棄（そのバトル中は戻らない）
+	if deck.put_used_card(instance):
+		_log("カード破棄 %s（使用回数を使い切った）" % card.id)
+		card_exhausted.emit(instance)
 	return PlayResult.OK
 
 
@@ -186,6 +194,16 @@ func needs_ally_target(card: CardData) -> bool:
 	return card.targets.has(GameEnums.Target.ALLY)
 
 
+## 「敵と自分とクリーチャーのいずれか1体」を選ぶカードか
+func needs_any_target(card: CardData) -> bool:
+	return card.targets.has(GameEnums.Target.ANY)
+
+
+## 使う時に相手を1体選ぶ必要があるカードか（敵／自分のクリーチャー／いずれか1体）
+func needs_target(card: CardData) -> bool:
+	return needs_enemy_target(card) or needs_ally_target(card) or needs_any_target(card)
+
+
 ## 仲間が上限で、入れ替えが必要な召喚カードか
 func needs_replace(card: CardData) -> bool:
 	if allies.size() < MAX_ALLIES:
@@ -203,7 +221,16 @@ func is_valid_target(card: CardData, target: Combatant) -> bool:
 		if not (target is AllyCombatant and allies.has(target)):
 			return false
 		return card.target_races.is_empty() or card.target_races.has((target as AllyCombatant).data.race)
+	if needs_any_target(card):
+		return target != null and get_all_living_units().has(target)
 	return true
+
+
+## 場にいる全員（自分側も敵側も）
+func get_all_living_units() -> Array[Combatant]:
+	var result_list := get_living_friends()
+	result_list.append_array(get_living_enemies())
+	return result_list
 
 
 func get_living_enemies() -> Array[Combatant]:
@@ -245,11 +272,11 @@ func _start_player_turn() -> void:
 ## 8〜13
 func _finish_turn() -> void:
 	phase = Phase.ENEMY_TURN
-	# 8. 味方の攻撃（召喚したターンから参加）
+	# 8. 味方の攻撃（召喚したターンから参加。敵の仲間がいれば、後から呼ばれた敵の仲間を狙う）
 	for ally: AllyCombatant in allies.duplicate():
 		if not ally.is_alive():
 			continue
-		var target := Targeting.pick(get_living_enemies(), rng)
+		var target := Targeting.pick_attack_target(main_enemy, enemy_allies)
 		if target == null:
 			break
 		_deal_damage(ally, target, ally.roll_attack(rng))
@@ -278,7 +305,7 @@ func _finish_turn() -> void:
 
 
 func _do_enemy_action(enemy: EnemyCombatant) -> void:
-	# 予告した後に状況が変わり、実行できなくなっていたら（例：別の敵が先に仲間を呼んで3体になった）、別の行動を選び直す
+	# 予告した後に状況が変わり、実行できなくなっていたら（例：別の敵が先に仲間を呼んで上限になった）、別の行動を選び直す
 	if enemy.intent != null and not EnemyCombatant.is_executable(enemy.intent, _can_enemy_summon()):
 		_log("%s 行動を変更" % enemy.id)
 		_decide_intent(enemy)
@@ -289,8 +316,8 @@ func _do_enemy_action(enemy: EnemyCombatant) -> void:
 	else:
 		match action.action_type:
 			GameEnums.EnemyActionType.ATTACK:
-				# 攻撃対象は、攻撃の瞬間にターゲット率で抽選する
-				var target := Targeting.pick(get_living_friends(), rng)
+				# 攻撃対象は攻撃の瞬間に決める（仲間がいれば後から召喚された仲間、いなければ主人公）
+				var target := Targeting.pick_attack_target(hero, allies)
 				if target != null:
 					_deal_damage(enemy, target, enemy.roll_attack(rng))
 			GameEnums.EnemyActionType.DEFEND:
@@ -302,7 +329,7 @@ func _do_enemy_action(enemy: EnemyCombatant) -> void:
 	_decide_intent(enemy)
 
 
-## 敵の仲間を呼べるか（敵の仲間が3体いる時は、追加で呼ばない）
+## 敵の仲間を呼べるか（敵の仲間が上限の時は、追加で呼ばない）
 func _can_enemy_summon() -> bool:
 	return enemy_allies.size() < MAX_ENEMY_ALLIES
 
@@ -323,21 +350,32 @@ func _decide_intent(enemy: EnemyCombatant) -> void:
 
 # ---------- カードの効果 ----------
 
-## カードのターゲット種別から、効果を与える相手の一覧を作る
-func _resolve_targets(card: CardData, chosen: Combatant) -> Array[Combatant]:
+## カードのターゲット種別から、効果を与える相手の一覧を作る。
+## for_damage が true の時は、ダメージを与える相手の一覧を作る：
+## 自分側だけを指すターゲット種別（自分・自分のクリーチャーなど）は除く。
+## 「敵」「いずれか1体」「全員」は、選んだ相手・含まれる相手にそのままダメージを与える（自分側でも）
+func _resolve_targets(card: CardData, chosen: Combatant, for_damage: bool = false) -> Array[Combatant]:
 	var list: Array[Combatant] = []
 	for target_type: GameEnums.Target in card.targets:
 		match target_type:
-			GameEnums.Target.ENEMY, GameEnums.Target.ALLY:
+			GameEnums.Target.ENEMY, GameEnums.Target.ANY:
 				if chosen != null:
 					list.append(chosen)
+			GameEnums.Target.EVERYONE:
+				list.append_array(get_all_living_units())
+			GameEnums.Target.ALLY:
+				if chosen != null and not for_damage:
+					list.append(chosen)
 			GameEnums.Target.SELF:
-				list.append(hero)
+				if not for_damage:
+					list.append(hero)
 			GameEnums.Target.ALL_ALLIES:
-				list.append_array(allies)
+				if not for_damage:
+					list.append_array(allies)
 			GameEnums.Target.SELF_AND_ALL_ALLIES:
-				list.append(hero)
-				list.append_array(allies)
+				if not for_damage:
+					list.append(hero)
+					list.append_array(allies)
 			GameEnums.Target.SPACE:
 				pass  # 空間に作用する効果は、まだ無い
 	# 同じ相手が2回入らないようにする
@@ -348,10 +386,11 @@ func _resolve_targets(card: CardData, chosen: Combatant) -> Array[Combatant]:
 	return unique
 
 
-func _apply_effect(card: CardData, effect: EffectData, targets: Array[Combatant], replace_ally: AllyCombatant) -> void:
+func _apply_effect(card: CardData, effect: EffectData, targets: Array[Combatant],
+		damage_targets: Array[Combatant], replace_ally: AllyCombatant) -> void:
 	if effect is DamageEffect:
-		for target: Combatant in targets:
-			if target is EnemyCombatant and target.is_alive():
+		for target: Combatant in damage_targets:
+			if target.is_alive():
 				_deal_damage(hero, target, (effect as DamageEffect).amount)
 				if phase == Phase.ENDED:
 					return
@@ -434,8 +473,8 @@ func _draw(count: int) -> void:
 	var drawn := deck.draw(count)
 	if not drawn.is_empty():
 		var ids := PackedStringArray()
-		for card: CardData in drawn:
-			ids.append(String(card.id))
+		for card: CardInstance in drawn:
+			ids.append(String(card.data.id))
 		_log("ドロー %s" % ", ".join(ids))
 		cards_drawn.emit(drawn)
 

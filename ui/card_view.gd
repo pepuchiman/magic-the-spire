@@ -14,6 +14,8 @@ const BASE_SIZE := Vector2(140, 200)
 @export var art_texture: Texture2D
 
 var card: CardData
+## 残りの使用回数（-1 なら表示しない。使用回数の制限がないカードや、バトル外の表示）
+var uses_left: int = -1
 ## 手札の何番目か（手札以外では -1）
 var hand_index: int = -1
 var playable: bool = true
@@ -25,6 +27,7 @@ var selected: bool = false
 @onready var _type_label: FitLabel = %TypeLabel
 @onready var _art_background: ColorRect = %ArtBackground
 @onready var _art: TextureRect = %Art
+@onready var _uses_label: FitLabel = %UsesLabel
 @onready var _catalysts: HBoxContainer = %Catalysts
 @onready var _desc_label: FitLabel = %DescLabel
 
@@ -47,6 +50,12 @@ func set_card(value: CardData) -> void:
 		refresh()
 
 
+## バトル中のカード（残りの使用回数つき）を表示する
+func set_instance(instance: CardInstance) -> void:
+	uses_left = instance.uses_left if instance.has_use_limit() else -1
+	set_card(instance.data)
+
+
 func set_playable(value: bool) -> void:
 	playable = value
 	_update_look()
@@ -67,6 +76,7 @@ func refresh() -> void:
 	_desc_label.set_fitted_text(card.get_description())
 	_art_background.color = UiPalette.card_type_color(card.card_type)
 	_art.texture = art_texture
+	_uses_label.set_fitted_text(UiText.fmt("UI_USES_LEFT", {"count": uses_left}) if uses_left >= 0 else "")
 	_rebuild_catalysts()
 	_update_look()
 
@@ -121,5 +131,6 @@ func _apply_scale() -> void:
 	_type_label.custom_minimum_size.y = 18 * card_scale
 	_type_label.max_font_size = int(13 * card_scale)
 	_art_background.custom_minimum_size.y = 24 * card_scale
+	_uses_label.max_font_size = int(13 * card_scale)
 	_catalysts.custom_minimum_size.y = 20 * card_scale
 	_desc_label.max_font_size = int(14 * card_scale)

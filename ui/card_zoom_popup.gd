@@ -14,11 +14,13 @@ func _ready() -> void:
 	hide()
 
 
-func open(card: CardData) -> void:
+## uses_left：残りの使用回数（-1 なら表示しない）
+func open(card: CardData, uses_left: int = -1) -> void:
 	if _view != null:
 		_view.queue_free()
 	_view = CARD_SCENE.instantiate()
 	_view.card_scale = ZOOM
+	_view.uses_left = uses_left
 	_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_view)
 	_view.set_card(card)

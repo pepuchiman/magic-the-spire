@@ -167,7 +167,7 @@ min_font_size = 10
 
 [node name="DeckButton" type="Button" parent="SafeArea/Main/StatusBar/StatusRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 0)
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 auto_translate_mode = 2
@@ -175,7 +175,15 @@ autowrap_mode = 3
 
 [node name="DiscardButton" type="Button" parent="SafeArea/Main/StatusBar/StatusRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(130, 0)
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+auto_translate_mode = 2
+autowrap_mode = 3
+
+[node name="ExhaustButton" type="Button" parent="SafeArea/Main/StatusBar/StatusRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 auto_translate_mode = 2

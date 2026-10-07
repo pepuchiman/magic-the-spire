@@ -9,7 +9,6 @@ var hp: int = 1
 var armor: int = 0
 var base_max_hp: int = 1
 var base_defense: int = 0
-var base_target_rate: int = 100
 var modifiers: Array[StatModifier] = []
 
 
@@ -23,10 +22,6 @@ func get_max_hp() -> int:
 
 func get_defense() -> int:
 	return maxi(0, base_defense + get_modifier_total(GameEnums.Param.DEFENSE))
-
-
-func get_target_rate() -> int:
-	return maxi(0, base_target_rate + get_modifier_total(GameEnums.Param.TARGET_RATE))
 
 
 ## 指定したパラメーターに掛かっている補正の合計

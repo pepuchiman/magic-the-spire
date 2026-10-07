@@ -17,7 +17,6 @@ func _init(hero_data: HeroData, current_hp: int = -1, carried_modifiers: Array[S
 	name_key = data.name_key
 	base_max_hp = data.max_hp
 	base_defense = data.defense
-	base_target_rate = data.target_rate
 	modifiers.append_array(carried_modifiers)
 	hp = mini(data.hp if current_hp < 0 else current_hp, get_max_hp())
 	# 魔法触媒はバトル開始時に初期値にリセットされる

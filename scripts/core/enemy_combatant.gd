@@ -20,7 +20,6 @@ func _init(enemy_data: EnemyData, main: bool) -> void:
 	hp = data.max_hp
 	base_defense = data.defense
 	armor = data.armor
-	base_target_rate = data.target_rate
 
 
 ## 攻撃のダメージ値（攻撃力最少値〜最大値でランダム）
@@ -28,11 +27,11 @@ func roll_attack(rng: RandomNumberGenerator) -> int:
 	return rng.randi_range(data.attack_min, data.attack_max)
 
 
-## 次の行動を決める。実行できない行動（例：仲間が3体いる時の「味方を呼ぶ」）は無視する。
+## 次の行動を決める。実行できない行動（例：敵の仲間が上限の時の「味方を呼ぶ」）は無視する。
 ## ・条件付きの行動で、条件を満たし、実行できるものがあれば優先する（ループの位置は進めない）
 ## ・なければ、条件なしの行動を順番にループする。順番が来た行動が実行できなければ、その次の行動にする
 ## ・実行できる行動が1つもなければ、intent は null（何もしない）
-## can_summon：敵の仲間を呼べる状態か（敵の仲間が3体未満か）
+## can_summon：敵の仲間を呼べる状態か（敵の仲間が上限未満か）
 func decide_next_action(can_summon: bool) -> void:
 	intent = null
 	var loop_actions: Array[EnemyActionData] = []

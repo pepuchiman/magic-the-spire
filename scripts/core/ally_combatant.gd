@@ -1,6 +1,8 @@
 class_name AllyCombatant
 extends Combatant
-## バトル中の仲間（召喚された味方）
+## バトル中の自分側のクリーチャー（召喚された味方）。
+## ※仕様書の「クリーチャー」のこと。プログラム内では ally（仲間）と呼んでいる。
+## 敵側のクリーチャーは EnemyCombatant（is_main が false のもの）で表す
 
 var data: AllyData
 ## 召喚されたターン
@@ -15,7 +17,6 @@ func _init(ally_data: AllyData, turn: int) -> void:
 	hp = data.max_hp
 	base_defense = data.defense
 	armor = data.armor
-	base_target_rate = data.target_rate
 	summoned_turn = turn
 
 

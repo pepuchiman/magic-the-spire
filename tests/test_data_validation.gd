@@ -134,7 +134,9 @@ func test_modify_param_on_instant_card_is_reported() -> void:
 func test_enemy_and_ally_targets_together_is_reported() -> void:
 	var index := _valid_index()
 	index.cards[0].targets.append(GameEnums.Target.ALLY)
-	assert_true(_has_error(DataValidator.validate_index(index), "両方"))
+	assert_true(_has_error(DataValidator.validate_index(index), "1つまで"))
+	index.cards[0].targets.assign([GameEnums.Target.ANY, GameEnums.Target.SELF])
+	assert_false(_has_error(DataValidator.validate_index(index), "1つまで"), "選ぶターゲットが1つなら、他と組み合わせてよい")
 
 
 func test_two_summon_effects_is_reported() -> void:

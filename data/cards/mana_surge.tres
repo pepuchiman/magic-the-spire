@@ -17,6 +17,7 @@ rarity = 2
 usable_heroes = Array[StringName]([&"flame_mage"])
 targets = Array[int]([2])
 cost_mana = 1
+uses_per_battle = 1
 duration = 2
 effects = Array[ExtResource("1_yd8pd")]([SubResource("Resource_hl0tr")])
 description_key = &"CARD_MANA_SURGE_DESC"

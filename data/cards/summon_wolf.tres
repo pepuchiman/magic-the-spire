@@ -18,6 +18,7 @@ rarity = 1
 usable_heroes = Array[StringName]([&"flame_mage"])
 targets = Array[int]([5])
 cost_mana = 3
+uses_per_battle = 1
 required_green = 1
 effects = Array[ExtResource("1_u1cho")]([SubResource("Resource_b62ik")])
 description_key = &"CARD_SUMMON_WOLF_DESC"

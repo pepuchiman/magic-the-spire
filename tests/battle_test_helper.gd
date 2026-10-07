@@ -58,13 +58,12 @@ static func hero(deck: Array, hp: int = 20) -> HeroData:
 	return result
 
 
-static func ally(id: StringName = &"test_ally", attack: int = 0, target_rate: int = 100) -> AllyData:
+static func ally(id: StringName = &"test_ally", attack: int = 0) -> AllyData:
 	var result := AllyData.new()
 	result.id = id
 	result.max_hp = 10
 	result.attack_min = attack
 	result.attack_max = attack
-	result.target_rate = target_rate
 	return result
 
 
@@ -96,7 +95,7 @@ static func battle(hero_data: HeroData, enemy_data: EnemyData, seed_value: int =
 ## 手札から指定IDのカードの位置を探す（無ければ -1）
 static func hand_index(battle_obj: Battle, id: StringName) -> int:
 	for i in battle_obj.deck.hand.size():
-		if battle_obj.deck.hand[i].id == id:
+		if battle_obj.deck.hand[i].data.id == id:
 			return i
 	return -1
 

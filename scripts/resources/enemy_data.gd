@@ -9,7 +9,6 @@ extends Resource
 @export_range(0, 9999) var armor: int = 0
 @export_range(0, 9999) var attack_min: int = 0
 @export_range(0, 9999) var attack_max: int = 0
-@export_range(0, 9999) var target_rate: int = 100
 @export var race: GameEnums.Race = GameEnums.Race.MONSTER
 @export var attack_effect: GameEnums.AttackEffect = GameEnums.AttackEffect.BLOW
 ## 行動パターン

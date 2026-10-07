@@ -1,7 +1,7 @@
 class_name AutoPlayer
 extends RefCounted
 ## 簡単な自動プレイ（動作確認・テスト用。ゲームのAIではない）
-## ・使えるカードを手札の先頭から順に使う（敵が対象なら敵本体、味方が対象なら最初に選べる仲間）
+## ・使えるカードを手札の先頭から順に使う（相手の選び方は choose_target を参照）
 ## ・仲間の入れ替えは、いちばん古い仲間
 ## ・手札が多すぎる時は、先頭から捨てる
 
@@ -38,18 +38,29 @@ static func _play_one(battle: Battle) -> bool:
 	for i in battle.deck.hand.size():
 		if battle.can_play(i) != Battle.PlayResult.OK:
 			continue
-		var card: CardData = battle.deck.hand[i]
-		var target: Combatant = null
-		if battle.needs_enemy_target(card):
-			target = battle.main_enemy
-		elif battle.needs_ally_target(card):
-			target = _first_valid_ally(battle, card)
-			if target == null:
-				continue
+		var card: CardData = battle.deck.hand[i].data
+		var target := choose_target(battle, card)
+		if battle.needs_target(card) and target == null:
+			continue
 		var replace: AllyCombatant = battle.allies[0] if battle.needs_replace(card) else null
 		if battle.play_card(i, target, replace) == Battle.PlayResult.OK:
 			return true
 	return false
+
+
+## カードの相手を選ぶ（選ぶ必要がないカードは null）。
+## 「いずれか1体」のカードは、ダメージを与えるなら敵本体、それ以外（回復・アーマーなど）なら主人公を選ぶ
+static func choose_target(battle: Battle, card: CardData) -> Combatant:
+	if battle.needs_enemy_target(card):
+		return battle.main_enemy
+	if battle.needs_any_target(card):
+		for effect: EffectData in card.effects:
+			if effect is DamageEffect:
+				return battle.main_enemy
+		return battle.hero
+	if battle.needs_ally_target(card):
+		return _first_valid_ally(battle, card)
+	return null
 
 
 static func _first_valid_ally(battle: Battle, card: CardData) -> AllyCombatant:

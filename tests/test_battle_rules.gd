@@ -144,18 +144,32 @@ func test_battle_ends_when_card_kills_main_enemy() -> void:
 
 
 func test_hero_death_is_game_over_even_with_allies() -> void:
-	var protector := H.ally(&"protector", 0, 0)  # ターゲット率0 → 主人公だけが狙われる
-	var hero := H.hero([H.summon_card(&"call", protector)], 3)
-	var enemy := H.enemy(100, 10, [H.action(GameEnums.EnemyActionType.ATTACK)])
-	var battle := H.battle(hero, enemy)
+	# 今の仕様では、仲間がいる間は敵の攻撃で主人公は狙われない。
+	# 将来の効果（全体攻撃など）で主人公が倒れた場合に備え、ダメージを直接与えて確認する
+	var hero := H.hero([H.summon_card(&"call", H.ally(&"protector"))], 3)
+	var battle := H.battle(hero, H.enemy())
 	battle.start()
 	battle.play_card(0)
 	assert_eq(battle.allies.size(), 1)
-	H.end_turn(battle)
+	battle._deal_damage(battle.main_enemy, battle.hero, 10)
 	assert_eq(battle.phase, Battle.Phase.ENDED)
 	assert_false(battle.result.won, "仲間が残っていてもゲームオーバー")
 	assert_eq(battle.allies.size(), 1, "仲間は生きている")
 	assert_eq(battle.result.hero_hp, 0)
+
+
+func test_hero_is_attacked_after_allies_are_defeated() -> void:
+	var hero := H.hero([H.summon_card(&"call", H.ally(&"protector"))], 3)
+	var enemy := H.enemy(100, 10, [H.action(GameEnums.EnemyActionType.ATTACK)])
+	var battle := H.battle(hero, enemy)
+	battle.start()
+	battle.play_card(0)
+	H.end_turn(battle)
+	assert_eq(battle.allies.size(), 0, "仲間（HP10）が先に倒される")
+	assert_eq(battle.hero.hp, 3, "主人公はまだ攻撃されていない")
+	H.end_turn(battle)
+	assert_eq(battle.phase, Battle.Phase.ENDED)
+	assert_false(battle.result.won, "仲間がいなくなると主人公が狙われる")
 
 
 # ---------- 同じシード ----------

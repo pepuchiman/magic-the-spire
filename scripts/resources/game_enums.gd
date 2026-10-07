@@ -11,7 +11,17 @@ enum CardType { SUMMON, ATTACK, BUFF, SPACE }  # 召喚・攻撃・付与・空�
 enum Rarity { COMMON, UNCOMMON, RARE, LEGEND }  # コモン・アンコモン・レア・レジェンド
 
 ## カードのターゲット（魔法の対象）
-enum Target { ENEMY, ALLY, SELF, ALL_ALLIES, SELF_AND_ALL_ALLIES, SPACE }  # 敵・味方・自分・味方全員・自分を含む味方全員・空間
+## ※プログラム内の ALLY（味方）は、仕様書の「自分のクリーチャー」のこと
+enum Target {
+	ENEMY,  ## 敵（敵本体または敵のクリーチャーから1体）
+	ALLY,  ## 自分のクリーチャーから1体
+	SELF,  ## 自分
+	ALL_ALLIES,  ## 自分のクリーチャー全員
+	SELF_AND_ALL_ALLIES,  ## 自分と自分のクリーチャー全員
+	SPACE,  ## 空間
+	ANY,  ## 敵と自分とクリーチャーのいずれか1体（敵側・自分側を問わない）
+	EVERYONE,  ## 敵と自分とクリーチャー全員（場にいる全員）
+}
 
 ## 効果ターン数の種類
 enum Duration { INSTANT, TURNS, BATTLE, PERMANENT }  # 瞬間・〇〇ターン・バトル中・永続
@@ -26,7 +36,8 @@ enum AttackEffect { BLOW, SLASH, PIERCE, FIRE, WATER, WIND }  # 打撃・斬撃�
 enum EquipmentType { RING, WEAPON, ARMOR }  # 指輪・武器・鎧
 
 ## 「パラメーター変更」効果で変えられるパラメーター
-enum Param { MAX_HP, MANA_BASE, CATALYST_POWER_RED, CATALYST_POWER_BLUE, CATALYST_POWER_GREEN, DRAW_COUNT, MAX_HAND, DEFENSE, TARGET_RATE }
+## （ターゲット率は仕様変更で廃止。最後の値だったため、削除しても他の値はずれない）
+enum Param { MAX_HP, MANA_BASE, CATALYST_POWER_RED, CATALYST_POWER_BLUE, CATALYST_POWER_GREEN, DRAW_COUNT, MAX_HAND, DEFENSE }
 
 ## 敵の行動の種類
 enum EnemyActionType { ATTACK, DEFEND, SUMMON }  # 攻撃・防御・味方を呼ぶ

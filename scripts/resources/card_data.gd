@@ -13,6 +13,9 @@ extends Resource
 ## ターゲットが「味方」の時に、対象にできる種族（空なら種族を限定しない）
 @export var target_races: Array[GameEnums.Race] = []
 @export_range(0, 99) var cost_mana: int = 0
+## 1回のバトルで使える回数（カード1枚ごと）。0 なら制限なし。
+## 使い切ると、そのバトル中は破棄される（ゴミ箱にもデッキにも戻らない）
+@export_range(0, 99) var uses_per_battle: int = 0
 
 @export_group("必要触媒")
 @export_range(0, 99) var required_red: int = 0

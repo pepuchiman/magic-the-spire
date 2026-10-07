@@ -19,17 +19,22 @@ func _init() -> void:
 	wolf = results[1]
 
 	# --- カード ---
-	var spark := _card(&"spark", "SPARK", GameEnums.CardType.ATTACK, GameEnums.Rarity.COMMON, [GameEnums.Target.ENEMY], 1, 0, 0, 0, [_damage(6)])
-	var guard := _card(&"guard", "GUARD", GameEnums.CardType.BUFF, GameEnums.Rarity.COMMON, [GameEnums.Target.SELF], 1, 0, 0, 0, [_armor(5)])
-	var fireball := _card(&"fireball", "FIREBALL", GameEnums.CardType.ATTACK, GameEnums.Rarity.COMMON, [GameEnums.Target.ENEMY], 2, 1, 0, 0, [_damage(12)])
-	var frost_lance := _card(&"frost_lance", "FROST_LANCE", GameEnums.CardType.ATTACK, GameEnums.Rarity.COMMON, [GameEnums.Target.ENEMY], 2, 0, 1, 0, [_damage(10)])
+	# 単体が対象のカードは「敵と自分とクリーチャーのいずれか1体」（ANY）にする
+	var spark := _card(&"spark", "SPARK", GameEnums.CardType.ATTACK, GameEnums.Rarity.COMMON, [GameEnums.Target.ANY], 1, 0, 0, 0, [_damage(6)])
+	var guard := _card(&"guard", "GUARD", GameEnums.CardType.BUFF, GameEnums.Rarity.COMMON, [GameEnums.Target.ANY], 1, 0, 0, 0, [_armor(5)])
+	var fireball := _card(&"fireball", "FIREBALL", GameEnums.CardType.ATTACK, GameEnums.Rarity.COMMON, [GameEnums.Target.ANY], 2, 1, 0, 0, [_damage(12)])
+	var frost_lance := _card(&"frost_lance", "FROST_LANCE", GameEnums.CardType.ATTACK, GameEnums.Rarity.COMMON, [GameEnums.Target.ANY], 2, 0, 1, 0, [_damage(10)])
 	var meditation := _card(&"meditation", "MEDITATION", GameEnums.CardType.BUFF, GameEnums.Rarity.UNCOMMON, [GameEnums.Target.SELF], 1, 0, 0, 0, [_draw(2)])
-	var heal := _card(&"heal", "HEAL", GameEnums.CardType.BUFF, GameEnums.Rarity.COMMON, [GameEnums.Target.SELF], 2, 0, 0, 1, [_heal(6)])
-	var steam_blast := _card(&"steam_blast", "STEAM_BLAST", GameEnums.CardType.ATTACK, GameEnums.Rarity.UNCOMMON, [GameEnums.Target.ENEMY], 3, 1, 1, 0, [_damage(18)])
+	var heal := _card(&"heal", "HEAL", GameEnums.CardType.BUFF, GameEnums.Rarity.COMMON, [GameEnums.Target.ANY], 2, 0, 0, 1, [_heal(6)])
+	var steam_blast := _card(&"steam_blast", "STEAM_BLAST", GameEnums.CardType.ATTACK, GameEnums.Rarity.UNCOMMON, [GameEnums.Target.ANY], 3, 1, 1, 0, [_damage(18)])
 	var summon_sprite := _card(&"summon_sprite", "SUMMON_SPRITE", GameEnums.CardType.SUMMON, GameEnums.Rarity.COMMON, [GameEnums.Target.SPACE], 2, 1, 0, 0, [_summon(sprite)])
 	var summon_wolf := _card(&"summon_wolf", "SUMMON_WOLF", GameEnums.CardType.SUMMON, GameEnums.Rarity.UNCOMMON, [GameEnums.Target.SPACE], 3, 0, 0, 1, [_summon(wolf)])
 	var mana_surge := _card(&"mana_surge", "MANA_SURGE", GameEnums.CardType.BUFF, GameEnums.Rarity.RARE, [GameEnums.Target.SELF], 1, 0, 0, 0, [_modify(GameEnums.Param.MANA_BASE, 1)])
 	mana_surge.duration = GameEnums.Duration.BATTLE
+	# 1戦闘あたりの使用回数（仮の値。0 は制限なし）
+	steam_blast.uses_per_battle = 2
+	summon_wolf.uses_per_battle = 1
+	mana_surge.uses_per_battle = 1
 
 	var cards: Array = [spark, guard, fireball, frost_lance, meditation, heal, steam_blast, summon_sprite, summon_wolf, mana_surge]
 	for i in cards.size():
