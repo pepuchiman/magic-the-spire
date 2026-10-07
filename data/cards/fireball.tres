@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="CardData" format=3]
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://2w0uyps04nfg"]
 
-[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_7gd24"]
-[ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_j11nj"]
-[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_5x1qm"]
+[ext_resource type="Script" uid="uid://gpf1c6fjtfqf" path="res://scripts/resources/effect_data.gd" id="1_7gd24"]
+[ext_resource type="Script" uid="uid://coten65ftr5k3" path="res://scripts/resources/damage_effect.gd" id="2_j11nj"]
+[ext_resource type="Script" uid="uid://d00tdimu0d8d5" path="res://scripts/resources/card_data.gd" id="3_5x1qm"]
 
 [sub_resource type="Resource" id="Resource_t81un"]
 script = ExtResource("2_j11nj")
@@ -15,6 +15,7 @@ name_key = &"CARD_FIREBALL_NAME"
 usable_heroes = Array[StringName]([&"flame_mage"])
 targets = Array[int]([6])
 cost_mana = 2
+uses_per_battle = 1
 required_red = 1
 effects = Array[ExtResource("1_7gd24")]([SubResource("Resource_t81un")])
 description_key = &"CARD_FIREBALL_DESC"

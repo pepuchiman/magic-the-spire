@@ -9,7 +9,7 @@ const LOCALIZATION_DIR := "res://localization"
 ## 画面の文章のキーを探すフォルダ
 const UI_SOURCE_DIRS := ["res://scenes", "res://ui", "res://scripts"]
 ## 画面の文章のキーの接頭辞（キーを探す時に使う）
-const UI_KEY_PREFIXES := ["UI", "CARD_TYPE", "RARITY", "PARAM"]
+const UI_KEY_PREFIXES := ["UI", "CARD_TYPE", "RARITY", "PARAM", "MAP_NODE"]
 
 
 ## 実際のプロジェクトのデータをすべて検証する（索引・登録漏れ・翻訳キー）
@@ -61,7 +61,7 @@ static func validate_index(index: DataIndex) -> PackedStringArray:
 
 	errors.append_array(_check_ids("カード", index.cards))
 	errors.append_array(_check_ids("主人公", index.heroes))
-	errors.append_array(_check_ids("仲間", index.allies))
+	errors.append_array(_check_ids("クリーチャー", index.allies))
 	errors.append_array(_check_ids("敵", index.enemies))
 	errors.append_array(_check_ids("装備", index.equipment))
 	errors.append_array(_check_ids("イベント", index.events))
@@ -75,13 +75,18 @@ static func validate_index(index: DataIndex) -> PackedStringArray:
 			errors.append_array(_check_hero(hero))
 	for ally: AllyData in index.allies:
 		if ally != null:
-			errors.append_array(_check_attack_range("仲間 %s" % ally.id, ally.attack_min, ally.attack_max))
+			errors.append_array(_check_attack_range("クリーチャー %s" % ally.id, ally.attack_min, ally.attack_max))
 	for enemy: EnemyData in index.enemies:
 		if enemy != null:
 			errors.append_array(_check_enemy(enemy))
 	for dungeon: DungeonData in index.dungeons:
 		if dungeon != null:
 			errors.append_array(_check_dungeon(dungeon))
+	for event: EventData in index.events:
+		if event != null:
+			errors.append_array(_check_event(event))
+	if index.config == null:
+		errors.append("ゲーム全体の設定（data/config/game_config.tres）が索引にありません")
 	return errors
 
 
@@ -89,6 +94,8 @@ static func validate_index(index: DataIndex) -> PackedStringArray:
 static func check_unregistered(index: DataIndex, tres_paths: PackedStringArray) -> PackedStringArray:
 	var errors := PackedStringArray()
 	var registered: Dictionary = {}
+	if index.config != null:
+		registered[index.config.resource_path] = true
 	for list: Array in _all_lists(index):
 		for item: Resource in list:
 			if item != null:
@@ -251,7 +258,7 @@ static func _check_enemy(enemy: EnemyData) -> PackedStringArray:
 		if action == null:
 			errors.append("%s：行動パターンに空（未設定）の項目があります" % label)
 		elif action.action_type == GameEnums.EnemyActionType.SUMMON and action.summon_enemy == null:
-			errors.append("%s：「味方を呼ぶ」行動に呼ぶ敵が設定されていません" % label)
+			errors.append("%s：「クリーチャーを呼ぶ」行動に呼ぶ敵が設定されていません" % label)
 	return errors
 
 
@@ -262,6 +269,28 @@ static func _check_dungeon(dungeon: DungeonData) -> PackedStringArray:
 		errors.append("%s：ボスが設定されていません" % label)
 	if dungeon.normal_enemies.is_empty():
 		errors.append("%s：通常戦の敵が1体も設定されていません" % label)
+	if dungeon.battle_weight + dungeon.event_weight + dungeon.rest_weight <= 0:
+		errors.append("%s：ノードの出やすさ（重み）がすべて0です" % label)
+	if dungeon.event_weight > 0 and dungeon.events.is_empty():
+		errors.append("%s：イベントの出やすさが0より大きいのに、イベントが登録されていません" % label)
+	for event: EventData in dungeon.events:
+		if event == null:
+			errors.append("%s：イベントに空（未設定）の項目があります" % label)
+	return errors
+
+
+static func _check_event(event: EventData) -> PackedStringArray:
+	var errors := PackedStringArray()
+	var label := "イベント %s" % event.id
+	if event.choices.is_empty():
+		errors.append("%s：選択肢がありません" % label)
+	for choice: EventChoiceData in event.choices:
+		if choice == null:
+			errors.append("%s：空（未設定）の選択肢があります" % label)
+			continue
+		for outcome: EventOutcome in choice.outcomes:
+			if outcome == null:
+				errors.append("%s：選択肢の結果に空（未設定）の項目があります" % label)
 	return errors
 
 
@@ -277,7 +306,7 @@ static func _collect_translation_keys(index: DataIndex) -> Array[Array]:
 			result.append(["主人公 %s の名前" % hero.id, hero.name_key])
 	for ally: AllyData in index.allies:
 		if ally != null:
-			result.append(["仲間 %s の名前" % ally.id, ally.name_key])
+			result.append(["クリーチャー %s の名前" % ally.id, ally.name_key])
 	for enemy: EnemyData in index.enemies:
 		if enemy != null:
 			result.append(["敵 %s の名前" % enemy.id, enemy.name_key])

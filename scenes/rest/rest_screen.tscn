@@ -1,0 +1,106 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/rest/rest_screen.gd" id="1_screen"]
+
+[node name="RestScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_screen")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.1, 0.08, 0.19, 1)
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 32
+
+[node name="Content" type="VBoxContainer" parent="SafeArea"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="TitleLabel" type="Label" parent="SafeArea/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 52
+text = "UI_REST_TITLE"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Art" type="ColorRect" parent="SafeArea/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+color = Color(0.45, 0.3, 0.15, 1)
+
+[node name="HpLabel" type="Label" parent="SafeArea/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+auto_translate_mode = 2
+
+[node name="MessageLabel" type="Label" parent="SafeArea/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+auto_translate_mode = 2
+
+[node name="Choices" type="VBoxContainer" parent="SafeArea/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="HealButton" type="Button" parent="SafeArea/Content/Choices"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+auto_translate_mode = 2
+autowrap_mode = 3
+
+[node name="RemoveButton" type="Button" parent="SafeArea/Content/Choices"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "UI_REST_REMOVE"
+autowrap_mode = 3
+
+[node name="ExchangeButton" type="Button" parent="SafeArea/Content/Choices"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "UI_REST_EXCHANGE"
+autowrap_mode = 3
+
+[node name="ProceedButton" type="Button" parent="SafeArea/Content"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "UI_PROCEED"
+autowrap_mode = 3

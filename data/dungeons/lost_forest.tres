@@ -3,8 +3,11 @@
 [ext_resource type="Resource" path="res://data/enemies/boss_witch.tres" id="1_fs8ae"]
 [ext_resource type="Script" path="res://scripts/resources/event_data.gd" id="2_tes4l"]
 [ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="3_6aos1"]
+[ext_resource type="Resource" path="res://data/events/altar.tres" id="3_fjkxm"]
 [ext_resource type="Resource" path="res://data/enemies/slime.tres" id="4_fjkxm"]
+[ext_resource type="Resource" path="res://data/events/lost_spirit.tres" id="4_ihtdj"]
 [ext_resource type="Resource" path="res://data/enemies/goblin.tres" id="5_ihtdj"]
+[ext_resource type="Resource" path="res://data/events/traveling_mage.tres" id="5_kj40p"]
 [ext_resource type="Resource" path="res://data/enemies/bat.tres" id="6_kj40p"]
 [ext_resource type="Script" path="res://scripts/resources/dungeon_data.gd" id="7_rfc6l"]
 
@@ -14,3 +17,4 @@ id = &"lost_forest"
 name_key = &"DUNGEON_LOST_FOREST_NAME"
 normal_enemies = Array[ExtResource("3_6aos1")]([ExtResource("4_fjkxm"), ExtResource("5_ihtdj"), ExtResource("6_kj40p")])
 boss = ExtResource("1_fs8ae")
+events = Array[ExtResource("2_tes4l")]([ExtResource("3_fjkxm"), ExtResource("4_ihtdj"), ExtResource("5_kj40p")])

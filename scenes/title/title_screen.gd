@@ -1,12 +1,14 @@
 extends Control
-## タイトル画面。今は「ゲームを始める」でサンプル戦へ進む（フェーズ4でダンジョン選択へ変える）
-
-const BATTLE_SCENE := "res://scenes/battle/battle_screen.tscn"
+## タイトル画面。「はじめから」でダンジョン選択へ進む。
+## 「続きから」「設定」はフェーズ6で使えるようにする（今は押せない）
 
 
 func _ready() -> void:
-	$StartButton.pressed.connect(_on_start_pressed)
+	UiPalette.style_button(%NewGameButton, UiPalette.BUTTON_ACCENT)
+	UiPalette.style_button(%ContinueButton, UiPalette.BUTTON)
+	UiPalette.style_button(%SettingsButton, UiPalette.BUTTON)
+	%NewGameButton.pressed.connect(_on_new_game_pressed)
 
 
-func _on_start_pressed() -> void:
-	get_tree().change_scene_to_file(BATTLE_SCENE)
+func _on_new_game_pressed() -> void:
+	Game.go_to(Game.Screen.DUNGEON_SELECT)

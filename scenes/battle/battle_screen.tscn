@@ -1,14 +1,14 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene format=3 uid="uid://dghproxrs8o3g"]
 
-[ext_resource type="Script" path="res://scenes/battle/battle_screen.gd" id="1_screen"]
-[ext_resource type="Script" path="res://ui/fit_label.gd" id="2_fit"]
-[ext_resource type="Script" path="res://ui/hand_view.gd" id="3_hand"]
-[ext_resource type="Script" path="res://ui/select_banner.gd" id="4_select"]
-[ext_resource type="Script" path="res://ui/card_zoom_popup.gd" id="5_zoom"]
-[ext_resource type="Script" path="res://ui/pile_popup.gd" id="6_pile"]
-[ext_resource type="Script" path="res://ui/result_overlay.gd" id="7_result"]
+[ext_resource type="Script" uid="uid://xmncoho20rvw" path="res://scenes/battle/battle_screen.gd" id="1_screen"]
+[ext_resource type="Script" uid="uid://bpn2jcrmtuagy" path="res://ui/fit_label.gd" id="2_fit"]
+[ext_resource type="Script" uid="uid://curb5sh2vqppx" path="res://ui/hand_view.gd" id="3_hand"]
+[ext_resource type="Script" uid="uid://b4eebhmlvun0x" path="res://ui/select_banner.gd" id="4_select"]
+[ext_resource type="Script" uid="uid://cs3l20ktxg5h" path="res://ui/card_zoom_popup.gd" id="5_zoom"]
+[ext_resource type="Script" uid="uid://bg7ty3vk1hfgc" path="res://ui/pile_popup.gd" id="6_pile"]
+[ext_resource type="Script" uid="uid://dimg3py4ltxlp" path="res://ui/result_overlay.gd" id="7_result"]
 
-[node name="BattleScreen" type="Control"]
+[node name="BattleScreen" type="Control" unique_id=1262949869]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,7 +17,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_screen")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=1502586997]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,7 +27,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.1, 0.08, 0.19, 1)
 
-[node name="SafeArea" type="MarginContainer" parent="."]
+[node name="SafeArea" type="MarginContainer" parent="." unique_id=519137858]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,47 +40,47 @@ theme_override_constants/margin_top = 36
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 20
 
-[node name="Main" type="VBoxContainer" parent="SafeArea"]
+[node name="Main" type="VBoxContainer" parent="SafeArea" unique_id=1038292888]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 6
 
-[node name="Header" type="PanelContainer" parent="SafeArea/Main"]
+[node name="Header" type="PanelContainer" parent="SafeArea/Main" unique_id=1019811259]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 8.0
 mouse_filter = 2
 
-[node name="HeaderRow" type="HBoxContainer" parent="SafeArea/Main/Header"]
+[node name="HeaderRow" type="HBoxContainer" parent="SafeArea/Main/Header" unique_id=96970473]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 10
 
-[node name="DungeonLabel" type="Label" parent="SafeArea/Main/Header/HeaderRow"]
+[node name="DungeonLabel" type="Label" parent="SafeArea/Main/Header/HeaderRow" unique_id=347460512]
 unique_name_in_owner = true
+auto_translate_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 vertical_alignment = 1
-auto_translate_mode = 2
 script = ExtResource("2_fit")
 max_font_size = 28
 min_font_size = 12
 
-[node name="FloorLabel" type="Label" parent="SafeArea/Main/Header/HeaderRow"]
+[node name="FloorLabel" type="Label" parent="SafeArea/Main/Header/HeaderRow" unique_id=1262921526]
 unique_name_in_owner = true
+auto_translate_mode = 2
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 size_flags_vertical = 1
 horizontal_alignment = 1
 vertical_alignment = 1
-auto_translate_mode = 2
 script = ExtResource("2_fit")
 max_font_size = 26
 min_font_size = 12
 
-[node name="SettingsButton" type="Button" parent="SafeArea/Main/Header/HeaderRow"]
+[node name="SettingsButton" type="Button" parent="SafeArea/Main/Header/HeaderRow" unique_id=1232960518]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
@@ -88,7 +88,7 @@ theme_override_font_sizes/font_size = 22
 text = "UI_SETTINGS"
 autowrap_mode = 3
 
-[node name="EnemyArea" type="HBoxContainer" parent="SafeArea/Main"]
+[node name="EnemyArea" type="HBoxContainer" parent="SafeArea/Main" unique_id=1587385869]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -97,19 +97,19 @@ mouse_filter = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="AllyArea" type="HBoxContainer" parent="SafeArea/Main"]
+[node name="AllyArea" type="HBoxContainer" parent="SafeArea/Main" unique_id=607719210]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 18.0
 mouse_filter = 2
 theme_override_constants/separation = 8
 
-[node name="HeroHolder" type="HBoxContainer" parent="SafeArea/Main/AllyArea"]
+[node name="HeroHolder" type="HBoxContainer" parent="SafeArea/Main/AllyArea" unique_id=15968404]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 
-[node name="AllyRow" type="HBoxContainer" parent="SafeArea/Main/AllyArea"]
+[node name="AllyRow" type="HBoxContainer" parent="SafeArea/Main/AllyArea" unique_id=1330112259]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -117,79 +117,76 @@ mouse_filter = 2
 theme_override_constants/separation = 8
 alignment = 2
 
-[node name="StatusBar" type="PanelContainer" parent="SafeArea/Main"]
+[node name="StatusBar" type="PanelContainer" parent="SafeArea/Main" unique_id=270722212]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 8.0
 mouse_filter = 2
 
-[node name="StatusRow" type="HBoxContainer" parent="SafeArea/Main/StatusBar"]
+[node name="StatusRow" type="HBoxContainer" parent="SafeArea/Main/StatusBar" unique_id=367583906]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 6
 
-[node name="CatalystRedLabel" type="Label" parent="SafeArea/Main/StatusBar/StatusRow"]
+[node name="CatalystRedLabel" type="Label" parent="SafeArea/Main/StatusBar/StatusRow" unique_id=1979961093]
 unique_name_in_owner = true
+auto_translate_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 horizontal_alignment = 1
 vertical_alignment = 1
-auto_translate_mode = 2
 script = ExtResource("2_fit")
 max_font_size = 22
-min_font_size = 10
 
-[node name="CatalystBlueLabel" type="Label" parent="SafeArea/Main/StatusBar/StatusRow"]
+[node name="CatalystBlueLabel" type="Label" parent="SafeArea/Main/StatusBar/StatusRow" unique_id=200892020]
 unique_name_in_owner = true
+auto_translate_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 horizontal_alignment = 1
 vertical_alignment = 1
-auto_translate_mode = 2
 script = ExtResource("2_fit")
 max_font_size = 22
-min_font_size = 10
 
-[node name="CatalystGreenLabel" type="Label" parent="SafeArea/Main/StatusBar/StatusRow"]
+[node name="CatalystGreenLabel" type="Label" parent="SafeArea/Main/StatusBar/StatusRow" unique_id=1882334822]
 unique_name_in_owner = true
+auto_translate_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 horizontal_alignment = 1
 vertical_alignment = 1
-auto_translate_mode = 2
 script = ExtResource("2_fit")
 max_font_size = 22
-min_font_size = 10
 
-[node name="DeckButton" type="Button" parent="SafeArea/Main/StatusBar/StatusRow"]
+[node name="DeckButton" type="Button" parent="SafeArea/Main/StatusBar/StatusRow" unique_id=1956594442]
 unique_name_in_owner = true
+auto_translate_mode = 2
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-auto_translate_mode = 2
 autowrap_mode = 3
 
-[node name="DiscardButton" type="Button" parent="SafeArea/Main/StatusBar/StatusRow"]
+[node name="DiscardButton" type="Button" parent="SafeArea/Main/StatusBar/StatusRow" unique_id=1713580515]
 unique_name_in_owner = true
+auto_translate_mode = 2
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-auto_translate_mode = 2
 autowrap_mode = 3
 
-[node name="ExhaustButton" type="Button" parent="SafeArea/Main/StatusBar/StatusRow"]
+[node name="ExhaustButton" type="Button" parent="SafeArea/Main/StatusBar/StatusRow" unique_id=1197016054]
 unique_name_in_owner = true
+auto_translate_mode = 2
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-auto_translate_mode = 2
 autowrap_mode = 3
 
-[node name="HandArea" type="Control" parent="SafeArea/Main"]
+[node name="HandArea" type="Control" parent="SafeArea/Main" unique_id=2104572826]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -197,36 +194,36 @@ size_flags_stretch_ratio = 24.0
 mouse_filter = 2
 script = ExtResource("3_hand")
 
-[node name="ControlBar" type="HBoxContainer" parent="SafeArea/Main"]
+[node name="ControlBar" type="HBoxContainer" parent="SafeArea/Main" unique_id=474292655]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 12.0
 mouse_filter = 2
 theme_override_constants/separation = 12
 
-[node name="ManaPanel" type="PanelContainer" parent="SafeArea/Main/ControlBar"]
+[node name="ManaPanel" type="PanelContainer" parent="SafeArea/Main/ControlBar" unique_id=331003760]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="ManaLabel" type="Label" parent="SafeArea/Main/ControlBar/ManaPanel"]
+[node name="ManaLabel" type="Label" parent="SafeArea/Main/ControlBar/ManaPanel" unique_id=877171876]
 unique_name_in_owner = true
+auto_translate_mode = 2
 layout_mode = 2
 size_flags_vertical = 1
 horizontal_alignment = 1
 vertical_alignment = 1
-auto_translate_mode = 2
 script = ExtResource("2_fit")
 max_font_size = 34
 min_font_size = 14
 
-[node name="Spacer" type="Control" parent="SafeArea/Main/ControlBar"]
+[node name="Spacer" type="Control" parent="SafeArea/Main/ControlBar" unique_id=813745594]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="EndTurnButton" type="Button" parent="SafeArea/Main/ControlBar"]
+[node name="EndTurnButton" type="Button" parent="SafeArea/Main/ControlBar" unique_id=577973616]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(260, 0)
 layout_mode = 2
@@ -234,7 +231,7 @@ theme_override_font_sizes/font_size = 32
 text = "UI_TURN_END"
 autowrap_mode = 3
 
-[node name="SelectBanner" type="PanelContainer" parent="."]
+[node name="SelectBanner" type="PanelContainer" parent="." unique_id=1735124387]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
@@ -246,23 +243,22 @@ offset_right = -12.0
 grow_horizontal = 2
 script = ExtResource("4_select")
 
-[node name="SelectRow" type="HBoxContainer" parent="SelectBanner"]
+[node name="SelectRow" type="HBoxContainer" parent="SelectBanner" unique_id=100294946]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="SelectLabel" type="Label" parent="SelectBanner/SelectRow"]
+[node name="SelectLabel" type="Label" parent="SelectBanner/SelectRow" unique_id=2043124382]
 unique_name_in_owner = true
+auto_translate_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 vertical_alignment = 1
 autowrap_mode = 3
-auto_translate_mode = 2
 script = ExtResource("2_fit")
 max_font_size = 22
-min_font_size = 10
 
-[node name="SelectConfirmButton" type="Button" parent="SelectBanner/SelectRow"]
+[node name="SelectConfirmButton" type="Button" parent="SelectBanner/SelectRow" unique_id=411086266]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(120, 80)
 layout_mode = 2
@@ -270,7 +266,7 @@ theme_override_font_sizes/font_size = 24
 text = "UI_CONFIRM"
 autowrap_mode = 3
 
-[node name="SelectCancelButton" type="Button" parent="SelectBanner/SelectRow"]
+[node name="SelectCancelButton" type="Button" parent="SelectBanner/SelectRow" unique_id=1478358701]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(120, 80)
 layout_mode = 2
@@ -278,8 +274,9 @@ theme_override_font_sizes/font_size = 24
 text = "UI_CANCEL"
 autowrap_mode = 3
 
-[node name="ToastLabel" type="Label" parent="."]
+[node name="ToastLabel" type="Label" parent="." unique_id=1203280704]
 unique_name_in_owner = true
+auto_translate_mode = 2
 visible = false
 layout_mode = 1
 anchors_preset = -1
@@ -287,16 +284,14 @@ anchor_top = 0.47
 anchor_right = 1.0
 anchor_bottom = 0.53
 grow_horizontal = 2
-mouse_filter = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 10
 theme_override_font_sizes/font_size = 36
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
-auto_translate_mode = 2
 
-[node name="EffectLayer" type="Control" parent="."]
+[node name="EffectLayer" type="Control" parent="." unique_id=107662156]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -306,7 +301,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="CardZoomPopup" type="ColorRect" parent="."]
+[node name="CardZoomPopup" type="ColorRect" parent="." unique_id=55220823]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -316,7 +311,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("5_zoom")
 
-[node name="PilePopup" type="ColorRect" parent="."]
+[node name="PilePopup" type="ColorRect" parent="." unique_id=1650008443]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -326,7 +321,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("6_pile")
 
-[node name="PileMargin" type="MarginContainer" parent="PilePopup"]
+[node name="PileMargin" type="MarginContainer" parent="PilePopup" unique_id=255609401]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -338,24 +333,24 @@ theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 24
 
-[node name="PileVBox" type="VBoxContainer" parent="PilePopup/PileMargin"]
+[node name="PileVBox" type="VBoxContainer" parent="PilePopup/PileMargin" unique_id=112883151]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="PileTitle" type="Label" parent="PilePopup/PileMargin/PileVBox"]
+[node name="PileTitle" type="Label" parent="PilePopup/PileMargin/PileVBox" unique_id=959973857]
 unique_name_in_owner = true
+auto_translate_mode = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 autowrap_mode = 3
-auto_translate_mode = 2
 
-[node name="PileScroll" type="ScrollContainer" parent="PilePopup/PileMargin/PileVBox"]
+[node name="PileScroll" type="ScrollContainer" parent="PilePopup/PileMargin/PileVBox" unique_id=88012896]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="PileGrid" type="GridContainer" parent="PilePopup/PileMargin/PileVBox/PileScroll"]
+[node name="PileGrid" type="GridContainer" parent="PilePopup/PileMargin/PileVBox/PileScroll" unique_id=1885876482]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 6
@@ -363,14 +358,14 @@ theme_override_constants/h_separation = 12
 theme_override_constants/v_separation = 12
 columns = 3
 
-[node name="PileCloseButton" type="Button" parent="PilePopup/PileMargin/PileVBox"]
+[node name="PileCloseButton" type="Button" parent="PilePopup/PileMargin/PileVBox" unique_id=2022606477]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "UI_CLOSE"
 
-[node name="ResultOverlay" type="ColorRect" parent="."]
+[node name="ResultOverlay" type="ColorRect" parent="." unique_id=1935808088]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -380,8 +375,9 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("7_result")
 
-[node name="ResultTitle" type="Label" parent="ResultOverlay"]
+[node name="ResultTitle" type="Label" parent="ResultOverlay" unique_id=607234768]
 unique_name_in_owner = true
+auto_translate_mode = 2
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.3
@@ -394,10 +390,10 @@ theme_override_font_sizes/font_size = 80
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
-auto_translate_mode = 2
 
-[node name="ResultDetail" type="Label" parent="ResultOverlay"]
+[node name="ResultDetail" type="Label" parent="ResultOverlay" unique_id=1124098726]
 unique_name_in_owner = true
+auto_translate_mode = 2
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.43
@@ -408,9 +404,8 @@ theme_override_font_sizes/font_size = 30
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
-auto_translate_mode = 2
 
-[node name="BackToTitleButton" type="Button" parent="ResultOverlay"]
+[node name="BackToTitleButton" type="Button" parent="ResultOverlay" unique_id=464761264]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1

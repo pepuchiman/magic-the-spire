@@ -10,3 +10,5 @@ extends Resource
 @export var equipment: Array[EquipmentData] = []
 @export var events: Array[EventData] = []
 @export var dungeons: Array[DungeonData] = []
+## ゲーム全体の数値の設定
+@export var config: GameConfig

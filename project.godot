@@ -16,6 +16,10 @@ config/use_custom_user_dir=true
 config/custom_user_dir_name="MagicTheSpire"
 config/features=PackedStringArray("4.7")
 
+[autoload]
+
+Game="*res://scripts/autoload/game.gd"
+
 [display]
 
 window/size/viewport_width=720
@@ -34,6 +38,6 @@ theme/custom_font="res://assets/fonts/NotoSansJP-VF.ttf"
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://localization/ui.ja.translation", "res://localization/cards.ja.translation", "res://localization/characters.ja.translation", "res://localization/dungeons.ja.translation")
+locale/translations=PackedStringArray("res://localization/ui.ja.translation", "res://localization/cards.ja.translation", "res://localization/characters.ja.translation", "res://localization/dungeons.ja.translation", "res://localization/events.ja.translation")
 locale/test="ja"
 locale/fallback="ja"

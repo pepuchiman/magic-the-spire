@@ -1,0 +1,17 @@
+keys,ja
+EVENT_ALTAR_NAME,祭壇
+EVENT_ALTAR_DESC,古びた祭壇がある。血を捧げれば、強い魔法を授かれるかもしれない。
+EVENT_ALTAR_ACCEPT,HPを{hp}捧げて、レアカードを得る
+EVENT_ALTAR_ACCEPT_RESULT,HPを{hp}失い、新しいカードを授かった。
+EVENT_LOST_SPIRIT_NAME,迷子の精霊
+EVENT_LOST_SPIRIT_DESC,道に迷った小さな精霊が、こちらをじっと見ている。
+EVENT_LOST_SPIRIT_ACCEPT,精霊を連れていく（召喚カードを得る）
+EVENT_LOST_SPIRIT_ACCEPT_RESULT,精霊がついてきた。召喚カードを手に入れた。
+EVENT_TRAVELING_MAGE_NAME,旅の魔法使い
+EVENT_TRAVELING_MAGE_DESC,旅の魔法使いが、カードの交換を持ちかけてきた。
+EVENT_TRAVELING_MAGE_ACCEPT,カードを1枚渡して交換する（同じレアリティ以上のカードになる）
+EVENT_TRAVELING_MAGE_ACCEPT_RESULT,カードを交換した。
+EVENT_LEAVE,立ち去る
+EVENT_LEAVE_RESULT,何もせずに立ち去った。
+EVENT_DECLINE,断る
+EVENT_DECLINE_RESULT,交換を断った。

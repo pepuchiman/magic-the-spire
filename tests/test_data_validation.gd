@@ -149,6 +149,20 @@ func test_two_summon_effects_is_reported() -> void:
 	assert_true(_has_error(DataValidator.validate_index(index), "1つまで"))
 
 
+func test_missing_config_is_reported() -> void:
+	var index := _valid_index()
+	index.config = null
+	assert_true(_has_error(DataValidator.validate_index(index), "ゲーム全体の設定"))
+
+
+func test_event_without_choices_is_reported() -> void:
+	var index := _valid_index()
+	var event := EventData.new()
+	event.id = &"empty_event"
+	index.events.append(event)
+	assert_true(_has_error(DataValidator.validate_index(index), "選択肢がありません"))
+
+
 func test_valid_data_has_no_errors() -> void:
 	var index := _valid_index()
 	assert_eq(DataValidator.validate_index(index).size(), 0)
@@ -192,4 +206,5 @@ func _valid_index() -> DataIndex:
 	enemy.attack_max = 2
 	enemy.pattern.append(EnemyActionData.new())
 	index.enemies.append(enemy)
+	index.config = GameConfig.new()
 	return index

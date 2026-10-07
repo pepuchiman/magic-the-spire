@@ -71,6 +71,8 @@ var phase: Phase = Phase.NOT_STARTED
 var result: BattleResult
 ## 捨てる必要がある枚数（DISCARDING の時）
 var pending_discard_count: int = 0
+## 倒した敵の数（敵本体・敵のクリーチャー）
+var enemies_defeated: int = 0
 ## 起きたことの記録（同じシードで同じ結果になるかの確認や、不具合調査に使う）
 var history: PackedStringArray = []
 
@@ -452,6 +454,8 @@ func _gain_armor(target: Combatant, amount: int) -> void:
 
 func _on_died(combatant: Combatant) -> void:
 	_log("%s 死亡" % combatant.id)
+	if combatant is EnemyCombatant:
+		enemies_defeated += 1
 	combatant_died.emit(combatant)
 	if combatant == hero:
 		_end(false)  # 仲間が残っていてもゲームオーバー
@@ -483,7 +487,7 @@ func _end(won: bool) -> void:
 	if phase == Phase.ENDED:
 		return
 	phase = Phase.ENDED
-	result = BattleResult.new(won, hero.hp, hero.get_permanent_modifiers(), turn)
+	result = BattleResult.new(won, hero.hp, hero.get_permanent_modifiers(), turn, enemies_defeated)
 	_log("バトル終了 %s（%dターン、主人公HP%d）" % ["勝利" if won else "敗北", turn, result.hero_hp])
 	battle_ended.emit(result)
 

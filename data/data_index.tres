@@ -1,36 +1,42 @@
 [gd_resource type="Resource" script_class="DataIndex" format=3]
 
-[ext_resource type="Script" path="res://scripts/resources/ally_data.gd" id="1_2fg1l"]
-[ext_resource type="Resource" path="res://data/allies/fire_sprite.tres" id="2_cj4eb"]
-[ext_resource type="Resource" path="res://data/allies/forest_wolf.tres" id="3_dokyu"]
-[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="4_eseqg"]
-[ext_resource type="Resource" path="res://data/cards/fireball.tres" id="5_tvgyh"]
-[ext_resource type="Resource" path="res://data/cards/frost_lance.tres" id="6_4ta4n"]
-[ext_resource type="Resource" path="res://data/cards/guard.tres" id="7_n033e"]
-[ext_resource type="Resource" path="res://data/cards/heal.tres" id="8_7npnf"]
-[ext_resource type="Resource" path="res://data/cards/mana_surge.tres" id="9_egprj"]
-[ext_resource type="Resource" path="res://data/cards/meditation.tres" id="10_dqufw"]
-[ext_resource type="Resource" path="res://data/cards/spark.tres" id="11_jg1rw"]
-[ext_resource type="Resource" path="res://data/cards/steam_blast.tres" id="12_cl7vb"]
-[ext_resource type="Resource" path="res://data/cards/summon_sprite.tres" id="13_q1h5l"]
-[ext_resource type="Resource" path="res://data/cards/summon_wolf.tres" id="14_nf0hf"]
-[ext_resource type="Script" path="res://scripts/resources/dungeon_data.gd" id="15_lfruj"]
-[ext_resource type="Resource" path="res://data/dungeons/lost_forest.tres" id="16_xxd6f"]
-[ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="17_t8sec"]
-[ext_resource type="Resource" path="res://data/enemies/bat.tres" id="18_bwg4o"]
-[ext_resource type="Resource" path="res://data/enemies/boss_witch.tres" id="19_06hu2"]
-[ext_resource type="Resource" path="res://data/enemies/goblin.tres" id="20_vhu84"]
-[ext_resource type="Resource" path="res://data/enemies/slime.tres" id="21_w4ud7"]
-[ext_resource type="Script" path="res://scripts/resources/equipment_data.gd" id="22_mr43a"]
-[ext_resource type="Script" path="res://scripts/resources/event_data.gd" id="23_0l0gt"]
-[ext_resource type="Script" path="res://scripts/resources/hero_data.gd" id="24_1y5w0"]
-[ext_resource type="Resource" path="res://data/heroes/flame_mage.tres" id="25_5lb3t"]
-[ext_resource type="Script" path="res://scripts/data/data_index.gd" id="26_7cw7y"]
+[ext_resource type="Script" path="res://scripts/resources/ally_data.gd" id="1_tvgyh"]
+[ext_resource type="Resource" path="res://data/allies/fire_sprite.tres" id="2_4ta4n"]
+[ext_resource type="Resource" path="res://data/allies/forest_wolf.tres" id="3_n033e"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="4_7npnf"]
+[ext_resource type="Resource" path="res://data/cards/fireball.tres" id="5_egprj"]
+[ext_resource type="Resource" path="res://data/cards/frost_lance.tres" id="6_dqufw"]
+[ext_resource type="Resource" path="res://data/cards/guard.tres" id="7_jg1rw"]
+[ext_resource type="Resource" path="res://data/cards/heal.tres" id="8_cl7vb"]
+[ext_resource type="Resource" path="res://data/cards/mana_surge.tres" id="9_q1h5l"]
+[ext_resource type="Resource" path="res://data/cards/meditation.tres" id="10_nf0hf"]
+[ext_resource type="Resource" path="res://data/cards/spark.tres" id="11_lfruj"]
+[ext_resource type="Resource" path="res://data/cards/steam_blast.tres" id="12_xxd6f"]
+[ext_resource type="Resource" path="res://data/cards/summon_sprite.tres" id="13_t8sec"]
+[ext_resource type="Resource" path="res://data/cards/summon_wolf.tres" id="14_bwg4o"]
+[ext_resource type="Resource" path="res://data/config/game_config.tres" id="15_06hu2"]
+[ext_resource type="Script" path="res://scripts/resources/dungeon_data.gd" id="16_vhu84"]
+[ext_resource type="Resource" path="res://data/dungeons/lost_forest.tres" id="17_w4ud7"]
+[ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="18_mr43a"]
+[ext_resource type="Resource" path="res://data/enemies/bat.tres" id="19_0l0gt"]
+[ext_resource type="Resource" path="res://data/enemies/boss_witch.tres" id="20_1y5w0"]
+[ext_resource type="Resource" path="res://data/enemies/goblin.tres" id="21_5lb3t"]
+[ext_resource type="Resource" path="res://data/enemies/slime.tres" id="22_7cw7y"]
+[ext_resource type="Script" path="res://scripts/resources/equipment_data.gd" id="23_ohx1x"]
+[ext_resource type="Script" path="res://scripts/resources/event_data.gd" id="24_jq3eg"]
+[ext_resource type="Resource" path="res://data/events/altar.tres" id="25_kcwej"]
+[ext_resource type="Resource" path="res://data/events/lost_spirit.tres" id="26_ohpvw"]
+[ext_resource type="Resource" path="res://data/events/traveling_mage.tres" id="27_k0thq"]
+[ext_resource type="Script" path="res://scripts/resources/hero_data.gd" id="28_s2qe1"]
+[ext_resource type="Resource" path="res://data/heroes/flame_mage.tres" id="29_q6718"]
+[ext_resource type="Script" path="res://scripts/data/data_index.gd" id="30_agyg7"]
 
 [resource]
-script = ExtResource("26_7cw7y")
-cards = Array[ExtResource("4_eseqg")]([ExtResource("5_tvgyh"), ExtResource("6_4ta4n"), ExtResource("7_n033e"), ExtResource("8_7npnf"), ExtResource("9_egprj"), ExtResource("10_dqufw"), ExtResource("11_jg1rw"), ExtResource("12_cl7vb"), ExtResource("13_q1h5l"), ExtResource("14_nf0hf")])
-heroes = Array[ExtResource("24_1y5w0")]([ExtResource("25_5lb3t")])
-allies = Array[ExtResource("1_2fg1l")]([ExtResource("2_cj4eb"), ExtResource("3_dokyu")])
-enemies = Array[ExtResource("17_t8sec")]([ExtResource("18_bwg4o"), ExtResource("19_06hu2"), ExtResource("20_vhu84"), ExtResource("21_w4ud7")])
-dungeons = Array[ExtResource("15_lfruj")]([ExtResource("16_xxd6f")])
+script = ExtResource("30_agyg7")
+cards = Array[ExtResource("4_7npnf")]([ExtResource("5_egprj"), ExtResource("6_dqufw"), ExtResource("7_jg1rw"), ExtResource("8_cl7vb"), ExtResource("9_q1h5l"), ExtResource("10_nf0hf"), ExtResource("11_lfruj"), ExtResource("12_xxd6f"), ExtResource("13_t8sec"), ExtResource("14_bwg4o")])
+heroes = Array[ExtResource("28_s2qe1")]([ExtResource("29_q6718")])
+allies = Array[ExtResource("1_tvgyh")]([ExtResource("2_4ta4n"), ExtResource("3_n033e")])
+enemies = Array[ExtResource("18_mr43a")]([ExtResource("19_0l0gt"), ExtResource("20_1y5w0"), ExtResource("21_5lb3t"), ExtResource("22_7cw7y")])
+events = Array[ExtResource("24_jq3eg")]([ExtResource("25_kcwej"), ExtResource("26_ohpvw"), ExtResource("27_k0thq")])
+dungeons = Array[ExtResource("16_vhu84")]([ExtResource("17_w4ud7")])
+config = ExtResource("15_06hu2")

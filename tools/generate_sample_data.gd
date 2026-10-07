@@ -77,14 +77,40 @@ func _init() -> void:
 	boss.defense = 1
 	boss = _save_new(boss, "res://data/enemies/boss_witch.tres")
 
-	# --- ダンジョン（戦闘数Nは仮の値） ---
+	# --- イベント（Game_Rule.md「イベントの例」。数値は仮） ---
+	var rare_card := GainCardOutcome.new()
+	rare_card.min_rarity = GameEnums.Rarity.RARE
+	var altar := _event(&"altar", "ALTAR", [
+		_choice("EVENT_ALTAR_ACCEPT", -6, [rare_card]),
+		_choice("EVENT_LEAVE", 0, []),
+	])
+	var summon_card := GainCardOutcome.new()
+	summon_card.filter_by_type = true
+	summon_card.card_type = GameEnums.CardType.SUMMON
+	var lost_spirit := _event(&"lost_spirit", "LOST_SPIRIT", [
+		_choice("EVENT_LOST_SPIRIT_ACCEPT", 0, [summon_card]),
+		_choice("EVENT_LEAVE", 0, []),
+	])
+	var traveling_mage := _event(&"traveling_mage", "TRAVELING_MAGE", [
+		_choice("EVENT_TRAVELING_MAGE_ACCEPT", 0, [TradeCardOutcome.new()]),
+		_choice("EVENT_DECLINE", 0, []),
+	])
+	var events: Array[EventData] = []
+	for event: EventData in [altar, lost_spirit, traveling_mage]:
+		events.append(_save_new(event, "res://data/events/%s.tres" % event.id))
+
+	# --- ゲーム全体の設定（数値は仮） ---
+	_save_new(GameConfig.new(), "res://data/config/game_config.tres")
+
+	# --- ダンジョン（階数は仮の値） ---
 	var dungeon := DungeonData.new()
 	dungeon.id = &"lost_forest"
 	dungeon.name_key = &"DUNGEON_LOST_FOREST_NAME"
-	dungeon.battle_count = 8
+	dungeon.floor_count = 10
 	var normal: Array[EnemyData] = [slime, goblin, bat]
 	dungeon.normal_enemies = normal
 	dungeon.boss = boss
+	dungeon.events = events
 	_save_new(dungeon, "res://data/dungeons/lost_forest.tres")
 
 	print("サンプルデータの生成が終わりました")
@@ -179,6 +205,25 @@ func _enemy(id: StringName, name_key: String, max_hp: int, atk_min: int, atk_max
 	enemy.attack_max = atk_max
 	enemy.pattern.assign(pattern)
 	return enemy
+
+
+func _event(id: StringName, key: String, choices: Array) -> EventData:
+	var event := EventData.new()
+	event.id = id
+	event.name_key = StringName("EVENT_%s_NAME" % key)
+	event.description_key = StringName("EVENT_%s_DESC" % key)
+	event.choices.assign(choices)
+	return event
+
+
+## 選択肢。文章のキーは「key」、結果の文章のキーは「key_RESULT」
+func _choice(key: String, hp_change: int, outcomes: Array) -> EventChoiceData:
+	var choice := EventChoiceData.new()
+	choice.text_key = StringName(key)
+	choice.result_key = StringName(key + "_RESULT")
+	choice.hp_change = hp_change
+	choice.outcomes.assign(outcomes)
+	return choice
 
 
 func _action(type: GameEnums.EnemyActionType, amount: int = 0) -> EnemyActionData:

@@ -58,6 +58,11 @@ func get_dungeon(id: StringName) -> DungeonData:
 	return _dungeons.get(id)
 
 
+## ゲーム全体の数値の設定（無ければ初期値の設定を返す）
+func get_config() -> GameConfig:
+	return index.config if index != null and index.config != null else GameConfig.new()
+
+
 func _fill(target: Dictionary, items: Array) -> void:
 	for item: Resource in items:
 		if item != null:

@@ -94,15 +94,18 @@ func test_deck_list_does_not_reveal_order() -> void:
 
 
 func test_uses_left_and_exhaust_pile_are_shown() -> void:
+	# サンプルデータの値（インスペクターで変わることがある）に頼らず、テスト用のカードを使う
 	var battle := screen.battle
-	var once := DataLoader.new().get_card(&"mana_surge")  # 使用回数1のサンプルカード
+	var once := H.filler(&"once")
+	once.uses_per_battle = 1
+	battle.deck.hand.append(CardInstance.new(H.filler(&"free")))
 	battle.deck.hand.append(CardInstance.new(once))
 	screen._refresh_all()
 	var hand: HandView = screen.get_node("%HandArea")
-	var view := hand.get_view(battle.deck.hand.size() - 1)
-	assert_eq(view.uses_left, 1, "使用回数のあるカードは残り回数を表示する")
-	assert_eq(hand.get_view(0).uses_left, -1, "制限なしのカードは表示しない")
-	screen.try_play_card(battle.deck.hand.size() - 1)
+	var last := battle.deck.hand.size() - 1
+	assert_eq(hand.get_view(last).uses_left, 1, "使用回数のあるカードは残り回数を表示する")
+	assert_eq(hand.get_view(last - 1).uses_left, -1, "制限なしのカードは表示しない")
+	screen.try_play_card(last)
 	assert_eq(battle.deck.exhausted_pile.size(), 1)
 	assert_eq(screen.get_node("%ExhaustButton").text, "破棄 1", "破棄されたカードの枚数を表示する")
 

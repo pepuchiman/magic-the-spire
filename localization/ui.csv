@@ -1,7 +1,60 @@
 keys,ja
 UI_GAME_TITLE,Magic The Spire
 UI_GAME_SUBTITLE,魔法使いのカードバトル
-UI_START,ゲームを始める
+UI_NEW_GAME,はじめから
+UI_CONTINUE,続きから
+UI_BACK,戻る
+UI_NEXT,次へ
+UI_PROCEED,進む
+UI_DUNGEON_SELECT_TITLE,ダンジョンを選ぶ
+UI_HERO_SELECT_TITLE,主人公を選ぶ
+UI_VIEW_STARTING_DECK,初期デッキ
+UI_STARTING_DECK_TITLE,初期デッキ（{count}枚）
+UI_HERO_STAT_HP,最大HP {value}
+UI_HERO_STAT_MANA,マナ基準値 {value}
+UI_HERO_STAT_DRAW,毎ターンのドロー {value}枚
+UI_HERO_STAT_HAND,最大手札数 {value}枚
+UI_HERO_STAT_CATALYST,{color}の魔法触媒 {value}（毎ターン+{power}）
+UI_MAP_HP,HP {hp}/{max}
+UI_MAP_FLOOR,{floor}/{total}階
+UI_MAP_SELECT_HINT,光っているノードから、進む先を選んでください
+UI_DECK_BUTTON,デッキ
+UI_DECK_LIST_TITLE,デッキ（{count}枚）
+UI_TAKE,取る
+UI_SKIP,スキップ
+UI_REWARD_HINT,カードを1枚選んでデッキに加えよう（スキップもできる）
+UI_REST_TITLE,休憩
+UI_REST_DESC,焚き火で一息つこう。できることは1つだけ。
+UI_REST_HEAL,HP回復（+{amount}）
+UI_REST_REMOVE,カード削除
+UI_REST_EXCHANGE,カードランダム交換
+UI_REST_REMOVE_TITLE,削除するカードを選んでください
+UI_REST_EXCHANGE_TITLE,交換するカードを選んでください（同じレアリティのカードに変わる）
+UI_REST_HEAL_RESULT,HPが{amount}回復した。
+UI_REST_REMOVE_RESULT,「{card}」をデッキから削除した。
+UI_REST_EXCHANGE_RESULT,「{old}」が「{new}」に変わった。
+UI_EVENT_CHOOSE_CARD,渡すカードを選んでください
+UI_EVENT_GAINED,「{card}」を手に入れた。
+UI_EVENT_LOST,「{card}」を手放した。
+UI_GAME_OVER_TITLE,ゲームオーバー
+UI_CLEAR_TITLE,ダンジョンクリア！
+UI_RESULT_FLOOR,{floor}階まで到達
+UI_RESULT_DEFEATED,倒した敵 {count}体
+UI_RESULT_HERO,主人公：{hero}
+UI_RESULT_DECK,最終デッキ {count}枚
+UI_PLAY_TIME,プレイ時間 {minutes}分{seconds}秒
+MAP_NODE_BATTLE,戦闘
+MAP_NODE_BATTLE_DESC,敵とのバトル。勝つとカードを1枚もらえる。
+MAP_NODE_ELITE,強敵
+MAP_NODE_ELITE_DESC,強い敵とのバトル。報酬が良い。
+MAP_NODE_EVENT,イベント
+MAP_NODE_EVENT_DESC,何かが起きる。選択肢によって結果が変わる。
+MAP_NODE_REST,休憩
+MAP_NODE_REST_DESC,HP回復・カード削除・カードランダム交換のどれか1つができる。
+MAP_NODE_TREASURE,宝箱
+MAP_NODE_TREASURE_DESC,装備やレアなカードが手に入る。
+MAP_NODE_BOSS,ボス
+MAP_NODE_BOSS_DESC,ダンジョンの最奥にいるボス。倒すとクリア。
 UI_TURN_END,ターン終了
 UI_DECK,デッキ {count}
 UI_DISCARD_PILE,ゴミ箱 {count}

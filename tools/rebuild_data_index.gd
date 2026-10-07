@@ -4,6 +4,7 @@ extends SceneTree
 ## data/ の各フォルダにある .tres を集めて、索引に登録する。
 
 const INDEX_PATH := "res://data/data_index.tres"
+const CONFIG_PATH := "res://data/config/game_config.tres"
 
 
 func _init() -> void:
@@ -15,13 +16,17 @@ func _init() -> void:
 	_collect("res://data/equipment", index.equipment)
 	_collect("res://data/events", index.events)
 	_collect("res://data/dungeons", index.dungeons)
+	if ResourceLoader.exists(CONFIG_PATH):
+		index.config = ResourceLoader.load(CONFIG_PATH, "", ResourceLoader.CACHE_MODE_REPLACE)
+	else:
+		push_error("ゲーム全体の設定がありません：%s" % CONFIG_PATH)
 
 	var err := ResourceSaver.save(index, INDEX_PATH)
 	if err != OK:
 		push_error("索引の保存に失敗しました（%d）" % err)
 		quit(1)
 		return
-	print("索引を再生成しました：カード%d、主人公%d、仲間%d、敵%d、装備%d、イベント%d、ダンジョン%d" % [
+	print("索引を再生成しました：カード%d、主人公%d、クリーチャー%d、敵%d、装備%d、イベント%d、ダンジョン%d" % [
 		index.cards.size(), index.heroes.size(), index.allies.size(), index.enemies.size(),
 		index.equipment.size(), index.events.size(), index.dungeons.size()])
 	quit()

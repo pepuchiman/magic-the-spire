@@ -18,7 +18,6 @@ enum Mode {
 
 const UNIT_SCENE := preload("res://ui/unit_view.tscn")
 const CARD_SCENE := preload("res://ui/card_view.tscn")
-const TITLE_SCENE := "res://scenes/title/title_screen.tscn"
 ## これ以上指が動いたらドラッグとみなす（それ未満で離したらタップ）
 const DRAG_THRESHOLD := 16.0
 const HERO_WIDTH := 170.0
@@ -27,7 +26,7 @@ const UNIT_WIDTH := 140.0
 ## 演出1つ分の基本の長さ（秒）
 const STEP_TIME := 0.45
 
-@export_group("サンプル戦の設定（フェーズ4でマップから渡す形に変える）")
+@export_group("サンプル戦の設定（この画面だけをエディタで実行した時に使う）")
 @export var hero_id: StringName = &"flame_mage"
 @export var enemy_id: StringName = &"boss_witch"
 @export var dungeon_id: StringName = &"lost_forest"
@@ -96,14 +95,30 @@ func _ready() -> void:
 	_select_banner.confirmed.connect(confirm_discard)
 	_select_banner.cancelled.connect(cancel_selection)
 	_pile_popup.card_tapped.connect(_zoom_popup.open)
-	_result_overlay.back_to_title_pressed.connect(_go_to_title)
+	_result_overlay.back_to_title_pressed.connect(_on_result_closed)
 	if auto_start:
-		start_battle()
+		if is_run_battle():
+			start_run_battle()
+		else:
+			start_battle()
 
 
 # ---------- 操作（テストからも呼べる） ----------
 
-## サンプル戦を始める
+## ラン（1回の挑戦）の中のバトルか。エディタでこの画面だけを実行した時は false（サンプル戦になる）
+func is_run_battle() -> bool:
+	return Game.run != null and Game.current_screen == Game.Screen.BATTLE
+
+
+## ランの今いるノードのバトルを始める（主人公のHP・所持カード・永続の補正を引き継ぐ）
+func start_run_battle() -> void:
+	var run := Game.run
+	_dungeon_label.set_fitted_text(UiText.t(run.dungeon.name_key))
+	floor_number = run.current_floor_number()
+	_begin(run.create_battle())
+
+
+## サンプル戦を始める（インスペクターの「サンプル戦の設定」を使う）
 func start_battle() -> void:
 	var loader := DataLoader.new()
 	var hero := loader.get_hero(hero_id)
@@ -114,7 +129,11 @@ func start_battle() -> void:
 	var dungeon := loader.get_dungeon(dungeon_id)
 	_dungeon_label.set_fitted_text(UiText.t(dungeon.name_key) if dungeon != null else "")
 	var used_seed := seed_value if seed_value != 0 else randi()
-	battle = Battle.new(hero, hero.starting_deck, enemy, used_seed)
+	_begin(Battle.new(hero, hero.starting_deck, enemy, used_seed))
+
+
+func _begin(new_battle: Battle) -> void:
+	battle = new_battle
 	_connect_battle()
 	_sync_units()
 	battle.start()
@@ -291,7 +310,7 @@ func _check_battle_state() -> void:
 		if mode != Mode.ENDED:
 			mode = Mode.ENDED
 			_select_banner.hide()
-			_result_overlay.open(battle.result)
+			_result_overlay.open(battle.result, "UI_NEXT" if is_run_battle() else "UI_BACK_TO_TITLE")
 	elif battle.phase == Battle.Phase.DISCARDING and mode != Mode.DISCARD_SELECT:
 		mode = Mode.DISCARD_SELECT
 		_discard_selection.clear()
@@ -552,5 +571,9 @@ func _open_exhaust_pile() -> void:
 	_pile_popup.open(UiText.fmt("UI_EXHAUST_TITLE", {"count": battle.deck.exhausted_pile.size()}), battle.deck.exhausted_pile)
 
 
-func _go_to_title() -> void:
-	get_tree().change_scene_to_file(TITLE_SCENE)
+## 勝敗表示のボタン：ランの中なら次の画面（報酬・ゲームオーバー・クリア）へ、サンプル戦ならタイトルへ
+func _on_result_closed() -> void:
+	if is_run_battle():
+		Game.finish_battle(battle.result)
+	else:
+		Game.go_to_title()

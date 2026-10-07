@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EventData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/event_choice_data.gd" id="1_4ok8v"]
+[ext_resource type="Script" path="res://scripts/resources/event_outcome.gd" id="2_alrmp"]
+[ext_resource type="Script" path="res://scripts/resources/gain_card_outcome.gd" id="3_egqya"]
+[ext_resource type="Script" path="res://scripts/resources/event_data.gd" id="4_o14y1"]
+
+[sub_resource type="Resource" id="Resource_bynst"]
+script = ExtResource("3_egqya")
+filter_by_type = true
+
+[sub_resource type="Resource" id="Resource_uwry6"]
+script = ExtResource("1_4ok8v")
+text_key = &"EVENT_LOST_SPIRIT_ACCEPT"
+result_key = &"EVENT_LOST_SPIRIT_ACCEPT_RESULT"
+outcomes = Array[ExtResource("2_alrmp")]([SubResource("Resource_bynst")])
+
+[sub_resource type="Resource" id="Resource_pl1dw"]
+script = ExtResource("1_4ok8v")
+text_key = &"EVENT_LEAVE"
+result_key = &"EVENT_LEAVE_RESULT"
+
+[resource]
+script = ExtResource("4_o14y1")
+id = &"lost_spirit"
+name_key = &"EVENT_LOST_SPIRIT_NAME"
+description_key = &"EVENT_LOST_SPIRIT_DESC"
+choices = Array[ExtResource("1_4ok8v")]([SubResource("Resource_uwry6"), SubResource("Resource_pl1dw")])

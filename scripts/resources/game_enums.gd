@@ -44,3 +44,6 @@ enum EnemyActionType { ATTACK, DEFEND, SUMMON }  # 攻撃・防御・味方を�
 
 ## 敵の行動の実行条件
 enum EnemyActionCondition { ALWAYS, HP_PERCENT_BELOW }  # いつでも・残りHPが〇％以下
+
+## マップのノードの種類（エリート戦・宝箱はフェーズ5で使う）
+enum MapNodeType { BATTLE, ELITE, EVENT, REST, TREASURE, BOSS }  # 通常戦・エリート戦・イベント・休憩・宝箱・ボス

@@ -6,6 +6,8 @@ extends SceneTree
 ##   整数、小数、真偽値（true/false）、文字列、StringName
 ##   選択肢（列挙型）：名前で指定できる（例：key=rarity value=RARE）
 ##   選択肢のリスト：カンマ区切りで指定する（例：key=targets value=ANY または value=ENEMY,SELF）
+##   他のデータへの参照・その一覧：res:// から始まる場所で指定する
+##     （例：key=events value=res://data/events/altar.tres,res://data/events/lost_spirit.tres）
 
 
 func _init() -> void:
@@ -68,15 +70,22 @@ func _apply(resource: Resource, property: Dictionary, text: String) -> bool:
 			resource.set(key, text)
 		TYPE_STRING_NAME:
 			resource.set(key, StringName(text))
+		TYPE_OBJECT:
+			var single := _load_resource(text)
+			if single == null:
+				return false
+			resource.set(key, single)
 		TYPE_ARRAY:
 			# 型付きのリストは、元のリストを空にしてから入れ直す（リストの型を保つため）
 			var list: Array = resource.get(key)
+			var is_resource_list: bool = str(property["hint_string"]).begins_with("%d/" % TYPE_OBJECT)
 			var values: Array = []
 			for part: String in text.split(",", false):
-				var number: Variant = _to_int(part.strip_edges(), _element_hint(property["hint_string"]))
-				if number == null:
+				var element: Variant = _load_resource(part.strip_edges()) if is_resource_list \
+					else _to_int(part.strip_edges(), _element_hint(property["hint_string"]))
+				if element == null:
 					return false
-				values.append(number)
+				values.append(element)
 			list.clear()
 			list.append_array(values)
 		_:
@@ -97,6 +106,14 @@ func _to_int(text: String, hint_string: String) -> Variant:
 			return int(pair[1])
 	printerr("選択肢の名前が見つかりません：%s（選べる値：%s）" % [text, hint_string])
 	return null
+
+
+## 他のデータ（res://～.tres）を読み込む
+func _load_resource(path: String) -> Resource:
+	if not ResourceLoader.exists(path):
+		printerr("データが見つかりません：%s" % path)
+		return null
+	return load(path)
 
 
 func _normalize(name: String) -> String:
