@@ -3,6 +3,10 @@ extends GutTest
 ## 実際には画面を切り替えず（change_scenes = false）、進むべき画面を確かめて、その画面を読み込んで操作する
 
 const Screen := preload("res://scripts/autoload/game.gd").Screen
+## テストでは本物のセーブデータを使わない
+const TEST_PROGRESS_PATH := "user://test_progress_flow.cfg"
+
+var _real_progress: ProgressStore
 
 
 func before_each() -> void:
@@ -11,9 +15,14 @@ func before_each() -> void:
 	Game.run = null
 	Game.current_screen = Screen.TITLE
 	Game.selected_dungeon = Game.data.get_dungeon(&"lost_forest")
+	_real_progress = Game.progress
+	Game.progress = ProgressStore.new(TEST_PROGRESS_PATH)
 
 
 func after_each() -> void:
+	Game.progress.reset()
+	Game.progress = _real_progress
+	Game.newly_unlocked.clear()
 	Game.run = null
 	Game.current_screen = Screen.TITLE
 	Game.change_scenes = true
@@ -69,6 +78,50 @@ func test_boss_victory_leads_to_clear() -> void:
 	Game.run.current_node = Game.run.map.get_floor(Game.run.map.floor_count() - 1)[0]
 	Game.finish_battle(BattleResult.new(true, 10, [], 5, 1))
 	assert_eq(Game.current_screen, Screen.CLEAR, "ボスに勝利 → クリア")
+	assert_true(Game.progress.is_cleared(&"lost_forest"), "クリアが記録される")
+	assert_true(Game.newly_unlocked.has(Game.data.get_hero(&"frost_mage")), "2人目の主人公が新しく解放される")
+	assert_true(Game.newly_unlocked.has(Game.data.get_dungeon(&"frozen_cave")), "2つ目のダンジョンが新しく解放される")
+	var saved := ProgressStore.new(TEST_PROGRESS_PATH)
+	saved.load_progress()
+	assert_true(saved.is_cleared(&"lost_forest"), "ファイルに保存される")
+
+
+func test_treasure_node_leads_to_treasure_screen() -> void:
+	_start()
+	var first: MapNode = Game.run.available_nodes()[0]
+	var treasure := MapNode.new(GameEnums.MapNodeType.TREASURE, 1, 0)
+	first.next.append(treasure)
+	Game.run.move_to(first)
+	Game.enter_node(treasure)
+	assert_eq(Game.current_screen, Screen.TREASURE)
+
+
+# ---------- アンロックの表示 ----------
+
+func test_locked_hero_cannot_be_chosen() -> void:
+	var hero_select: Control = _open(Game.SCENE_PATHS[Screen.HERO_SELECT])
+	var frost_index: int = hero_select.heroes.find(Game.data.get_hero(&"frost_mage"))
+	hero_select._show(frost_index)
+	assert_true(hero_select.get_node("%ConfirmButton").disabled, "未解放の主人公は選べない")
+	hero_select.confirm()
+	assert_null(Game.run, "ランは始まらない")
+	Game.progress.record_clear(&"lost_forest")
+	hero_select._show(frost_index)
+	assert_false(hero_select.get_node("%ConfirmButton").disabled, "解放されると選べる")
+
+
+func test_locked_dungeon_cannot_be_chosen() -> void:
+	var dungeon_select: Control = _open(Game.SCENE_PATHS[Screen.DUNGEON_SELECT])
+	dungeon_select.select(Game.data.get_dungeon(&"frozen_cave"))
+	assert_eq(dungeon_select.selected, Game.data.get_dungeon(&"lost_forest"), "未解放のダンジョンは選べない")
+
+
+func test_debug_reset_button() -> void:
+	Game.progress.record_clear(&"lost_forest")
+	var title: Control = _open("res://scenes/title/title_screen.tscn")
+	assert_true(title.get_node("%DebugResetButton").visible, "開発中の実行ではリセットボタンが見える")
+	title.reset_data()
+	assert_false(Game.progress.is_cleared(&"lost_forest"), "リセットで最初の状態に戻る")
 
 
 # ---------- 各画面を通した1周 ----------
@@ -94,6 +147,14 @@ func test_full_run_through_screens() -> void:
 					node.skip()
 				else:
 					node.take(node.choices[0])
+				if Game.current_screen == Screen.REWARD and node.found_equipment != null:
+					visited_screens["equipment"] = true
+					_assert_no_raw_keys(node)
+					node.equip_found()
+			Screen.TREASURE:
+				node.open()
+				_assert_no_raw_keys(node)
+				node.take()
 			Screen.REST:
 				node.heal()
 				Game.finish_node()

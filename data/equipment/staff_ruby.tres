@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/modify_param_effect.gd" id="1_4ddiq"]
+[ext_resource type="Script" path="res://scripts/resources/equipment_data.gd" id="2_c0vmu"]
+
+[sub_resource type="Resource" id="Resource_8i0es"]
+script = ExtResource("1_4ddiq")
+param = 2
+amount = 1
+
+[resource]
+script = ExtResource("2_c0vmu")
+id = &"staff_ruby"
+name_key = &"EQUIP_STAFF_RUBY_NAME"
+equipment_type = 1
+rarity = 2
+modifiers = Array[ExtResource("1_4ddiq")]([SubResource("Resource_8i0es")])

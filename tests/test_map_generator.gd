@@ -81,6 +81,24 @@ func test_same_seed_gives_same_map() -> void:
 	assert_eq(_describe(a), _describe(b), "同じシードなら同じマップ")
 
 
+func test_all_node_types_appear() -> void:
+	var seen := {}
+	for seed_value in 30:
+		for node: MapNode in _generate(seed_value).all_nodes():
+			seen[node.type] = true
+	for type: int in Type.values():
+		assert_true(seen.has(type), "%s が出現する" % Type.keys()[type])
+
+
+func test_elite_only_from_middle() -> void:
+	var start := MapGenerator.elite_start_floor(10)
+	for seed_value in 30:
+		for node: MapNode in _generate(seed_value).all_nodes():
+			if node.type == Type.ELITE:
+				assert_true(node.floor_index >= start, "エリートは中盤以降だけ")
+				assert_not_null(node.enemy, "エリートの敵がいる")
+
+
 func test_small_dungeon() -> void:
 	var map := _generate(1, 3)
 	assert_eq(map.floor_count(), 3)

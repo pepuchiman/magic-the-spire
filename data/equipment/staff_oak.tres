@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/modify_param_effect.gd" id="1_0357r"]
+[ext_resource type="Script" path="res://scripts/resources/equipment_data.gd" id="2_rxqsa"]
+
+[sub_resource type="Resource" id="Resource_ys8mc"]
+script = ExtResource("1_0357r")
+param = 6
+amount = 1
+
+[resource]
+script = ExtResource("2_rxqsa")
+id = &"staff_oak"
+name_key = &"EQUIP_STAFF_OAK_NAME"
+equipment_type = 1
+modifiers = Array[ExtResource("1_0357r")]([SubResource("Resource_ys8mc")])

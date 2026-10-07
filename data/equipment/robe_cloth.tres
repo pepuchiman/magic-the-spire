@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/modify_param_effect.gd" id="1_boqgt"]
+[ext_resource type="Script" path="res://scripts/resources/equipment_data.gd" id="2_hfrva"]
+
+[sub_resource type="Resource" id="Resource_kk8ns"]
+script = ExtResource("1_boqgt")
+param = 0
+amount = 6
+
+[resource]
+script = ExtResource("2_hfrva")
+id = &"robe_cloth"
+name_key = &"EQUIP_ROBE_CLOTH_NAME"
+equipment_type = 2
+modifiers = Array[ExtResource("1_boqgt")]([SubResource("Resource_kk8ns")])

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/modify_param_effect.gd" id="1_5fdwn"]
+[ext_resource type="Script" path="res://scripts/resources/equipment_data.gd" id="2_slikc"]
+
+[sub_resource type="Resource" id="Resource_tbt6i"]
+script = ExtResource("1_5fdwn")
+param = 5
+amount = 1
+
+[sub_resource type="Resource" id="Resource_5at5e"]
+script = ExtResource("1_5fdwn")
+param = 0
+amount = 5
+
+[resource]
+script = ExtResource("2_slikc")
+id = &"ring_sage"
+name_key = &"EQUIP_RING_SAGE_NAME"
+rarity = 3
+modifiers = Array[ExtResource("1_5fdwn")]([SubResource("Resource_tbt6i"), SubResource("Resource_5at5e")])

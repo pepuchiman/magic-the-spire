@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="DungeonData" format=3]
+
+[ext_resource type="Resource" path="res://data/enemies/frost_giant.tres" id="1_ojgkj"]
+[ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="2_7rmt3"]
+[ext_resource type="Resource" path="res://data/enemies/ogre.tres" id="3_dqoxe"]
+[ext_resource type="Resource" path="res://data/enemies/wraith.tres" id="4_fbfbi"]
+[ext_resource type="Script" path="res://scripts/resources/event_data.gd" id="5_yi477"]
+[ext_resource type="Resource" path="res://data/events/altar.tres" id="6_poqgu"]
+[ext_resource type="Resource" path="res://data/events/lost_spirit.tres" id="7_e21ec"]
+[ext_resource type="Resource" path="res://data/events/traveling_mage.tres" id="8_0qath"]
+[ext_resource type="Resource" path="res://data/enemies/bat.tres" id="9_y52is"]
+[ext_resource type="Resource" path="res://data/enemies/goblin.tres" id="10_308pp"]
+[ext_resource type="Resource" path="res://data/enemies/slime.tres" id="11_y5ghk"]
+[ext_resource type="Script" path="res://scripts/resources/dungeon_data.gd" id="12_wdkek"]
+
+[resource]
+script = ExtResource("12_wdkek")
+id = &"frozen_cave"
+name_key = &"DUNGEON_FROZEN_CAVE_NAME"
+unlocked_by_clearing = &"lost_forest"
+floor_count = 11
+normal_enemies = Array[ExtResource("2_7rmt3")]([ExtResource("9_y52is"), ExtResource("10_308pp"), ExtResource("11_y5ghk")])
+elite_enemies = Array[ExtResource("2_7rmt3")]([ExtResource("3_dqoxe"), ExtResource("4_fbfbi")])
+boss = ExtResource("1_ojgkj")
+events = Array[ExtResource("5_yi477")]([ExtResource("6_poqgu"), ExtResource("7_e21ec"), ExtResource("8_0qath")])

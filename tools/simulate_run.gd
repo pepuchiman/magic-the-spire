@@ -1,7 +1,7 @@
 extends SceneTree
 ## ラン1周を自動で最後まで進め、経過を表示するツール（画面なし）。
 ## 実行：godot --headless -s tools/simulate_run.gd -- seed=1 hero=flame_mage dungeon=lost_forest
-## （-- の後ろは省略可）
+## （-- の後ろは省略可）。アンロックの状況は使わず、すべてのカードを解放した状態で進める
 
 
 func _init() -> void:
@@ -17,7 +17,7 @@ func _init() -> void:
 		printerr("主人公またはダンジョンが見つかりません")
 		quit(1)
 		return
-	var run := RunState.new(hero, dungeon, loader.index.cards, loader.get_config(), int(options["seed"]))
+	var run := RunState.new(hero, dungeon, loader.index.cards, loader.get_config(), int(options["seed"]), loader.index.equipment)
 	for line: String in AutoRun.play(run):
 		print(line)
 	quit()

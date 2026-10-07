@@ -9,6 +9,8 @@ extends Resource
 @export var rarity: GameEnums.Rarity = GameEnums.Rarity.COMMON
 ## 利用できる主人公のID
 @export var usable_heroes: Array[StringName] = []
+## このダンジョン（ID）をクリアすると報酬に出るようになる。空なら最初から出る
+@export var unlocked_by_clearing: StringName
 @export var targets: Array[GameEnums.Target] = []
 ## ターゲットが「味方」の時に、対象にできる種族（空なら種族を限定しない）
 @export var target_races: Array[GameEnums.Race] = []

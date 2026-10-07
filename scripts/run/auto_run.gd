@@ -2,7 +2,7 @@ class_name AutoRun
 extends RefCounted
 ## ラン1周の自動プレイ（動作確認・テスト用。ゲームのAIではない）
 ## ・進めるノードのうち左端を選ぶ
-## ・バトルは AutoPlayer で進め、報酬は1枚目を取る
+## ・バトルは AutoPlayer で進め、報酬は1枚目を取る。装備・宝箱の中身は必ず取る
 ## ・イベントは最初の選択肢（カードを選ぶ必要があれば、所持カードの1枚目）
 ## ・休憩はHP回復
 
@@ -30,9 +30,21 @@ static func play(run: RunState) -> PackedStringArray:
 				run.apply_battle_result(result)
 				log.append("%s %s：%s（%dターン、HP %d）" % [label, node.enemy.id, "勝利" if result.won else "敗北", result.turns, run.hp])
 				if result.won and not run.finished:
-					var choices := RewardGenerator.card_choices(run)
+					var choices := RewardGenerator.card_choices(run, node.type)
 					if not choices.is_empty():
 						RewardGenerator.take(run, choices[0])
+					var item := RewardGenerator.equipment_reward(run, node.type)
+					if item != null:
+						RewardGenerator.equip(run, item)
+						log.append("　装備：%s" % item.id)
+			GameEnums.MapNodeType.TREASURE:
+				var content := RewardGenerator.treasure(run)
+				if content.has("equipment"):
+					RewardGenerator.equip(run, content["equipment"])
+					log.append("%s：装備 %s" % [label, content["equipment"].id])
+				else:
+					RewardGenerator.take(run, content["card"])
+					log.append("%s：カード %s" % [label, content["card"].id])
 			GameEnums.MapNodeType.EVENT:
 				var choice: EventChoiceData = node.event.choices[0]
 				var outcome := EventResolver.apply(run, choice, 0 if EventResolver.needs_card_choice(choice) else -1)

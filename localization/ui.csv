@@ -43,6 +43,33 @@ UI_RESULT_DEFEATED,倒した敵 {count}体
 UI_RESULT_HERO,主人公：{hero}
 UI_RESULT_DECK,最終デッキ {count}枚
 UI_PLAY_TIME,プレイ時間 {minutes}分{seconds}秒
+UI_EQUIPMENT_BUTTON,装備
+UI_EQUIPMENT_TITLE,装備中の装備
+UI_EQUIP_EMPTY,（なし）
+UI_EQUIP_EFFECT,{param} {amount}
+UI_EQUIP_TYPE_RARITY,{type} / {rarity}
+UI_EQUIP_DIFF,{param}：{before} → {after}（{change}）
+UI_EQUIP_SAME,今の装備と効果は変わらない
+UI_EQUIP_COMPARE,今の装備（{name}）との比較
+UI_EQUIP_COMPARE_NONE,今は何も装備していない
+UI_EQUIP_FOUND,装備を見つけた！
+UI_EQUIP_TAKE,装備する
+UI_EQUIP_DISCARD,捨てる
+UI_TREASURE_TITLE,宝箱
+UI_TREASURE_HINT,宝箱を見つけた。
+UI_TREASURE_OPEN,開ける
+UI_TREASURE_LEAVE,取らない
+UI_UNLOCK_CONDITION,「{dungeon}」をクリアすると解放
+UI_LOCKED,（未解放）
+UI_CLEARED_MARK,（クリア済み）
+UI_NEW_UNLOCK_HERO,新しい主人公：{name}
+UI_NEW_UNLOCK_DUNGEON,新しいダンジョン：{name}
+UI_NEW_UNLOCK_CARD,新しいカード：{name}
+UI_DEBUG_RESET,（開発用）データをリセット
+UI_DEBUG_RESET_DONE,データをリセットしました
+EQUIPMENT_TYPE_RING,指輪
+EQUIPMENT_TYPE_WEAPON,武器
+EQUIPMENT_TYPE_ARMOR,鎧
 MAP_NODE_BATTLE,戦闘
 MAP_NODE_BATTLE_DESC,敵とのバトル。勝つとカードを1枚もらえる。
 MAP_NODE_ELITE,強敵

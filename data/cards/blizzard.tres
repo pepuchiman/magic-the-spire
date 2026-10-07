@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_8rd8g"]
+[ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_u0ovo"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_yyttb"]
+
+[sub_resource type="Resource" id="Resource_x4i1v"]
+script = ExtResource("2_u0ovo")
+amount = 20
+
+[resource]
+script = ExtResource("3_yyttb")
+id = &"blizzard"
+name_key = &"CARD_BLIZZARD_NAME"
+rarity = 2
+usable_heroes = Array[StringName]([&"frost_mage"])
+targets = Array[int]([6])
+cost_mana = 3
+required_blue = 3
+effects = Array[ExtResource("1_8rd8g")]([SubResource("Resource_x4i1v")])
+description_key = &"CARD_BLIZZARD_DESC"

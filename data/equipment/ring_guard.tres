@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/modify_param_effect.gd" id="1_dclwf"]
+[ext_resource type="Script" path="res://scripts/resources/equipment_data.gd" id="2_iq4id"]
+
+[sub_resource type="Resource" id="Resource_hy8wt"]
+script = ExtResource("1_dclwf")
+param = 7
+amount = 1
+
+[resource]
+script = ExtResource("2_iq4id")
+id = &"ring_guard"
+name_key = &"EQUIP_RING_GUARD_NAME"
+rarity = 1
+modifiers = Array[ExtResource("1_dclwf")]([SubResource("Resource_hy8wt")])

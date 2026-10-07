@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/enemy_action_data.gd" id="1_l0kss"]
+[ext_resource type="Resource" path="res://data/enemies/bat.tres" id="2_fvq15"]
+[ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="3_stkcg"]
+
+[sub_resource type="Resource" id="Resource_tf0j3"]
+script = ExtResource("1_l0kss")
+
+[sub_resource type="Resource" id="Resource_c8chv"]
+script = ExtResource("1_l0kss")
+action_type = 2
+summon_enemy = ExtResource("2_fvq15")
+
+[sub_resource type="Resource" id="Resource_y6reu"]
+script = ExtResource("1_l0kss")
+
+[resource]
+script = ExtResource("3_stkcg")
+id = &"wraith"
+name_key = &"ENEMY_WRAITH_NAME"
+max_hp = 36
+defense = 1
+attack_min = 5
+attack_max = 8
+pattern = Array[ExtResource("1_l0kss")]([SubResource("Resource_tf0j3"), SubResource("Resource_c8chv"), SubResource("Resource_y6reu")])

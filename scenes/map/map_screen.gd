@@ -1,9 +1,10 @@
 extends Control
 ## マップ画面。ノードをタップすると説明が出て、「進む」で確定する（誤タップ防止）。
-## マップ表示中はデッキの確認だけができる
+## マップ表示中はデッキと装備の確認だけができる
 
 var selected_node: MapNode
 var _deck_popup: CardListPopup
+var _equipment_popup: EquipmentListPopup
 
 @onready var _map_view: MapView = %MapView
 
@@ -14,6 +15,7 @@ func _ready() -> void:
 	%InfoPanel.add_theme_stylebox_override("panel", UiPalette.make_box(UiPalette.PANEL, UiPalette.PANEL_BORDER, 2, 10))
 	UiPalette.style_button(%ProceedButton, UiPalette.BUTTON_ACCENT)
 	UiPalette.style_button(%DeckButton, UiPalette.BUTTON)
+	UiPalette.style_button(%EquipmentButton, UiPalette.BUTTON)
 	%HpLabel.add_theme_color_override("font_color", UiPalette.HP.lightened(0.55))
 	%HpLabel.set_fitted_text(UiText.fmt("UI_MAP_HP", {"hp": run.hp, "max": run.get_max_hp()}))
 	%FloorLabel.set_fitted_text(UiText.fmt("UI_MAP_FLOOR", {"floor": run.current_floor_number(), "total": run.map.floor_count()}))
@@ -23,6 +25,9 @@ func _ready() -> void:
 	%DeckButton.pressed.connect(_open_deck)
 	_deck_popup = CardListPopup.new()
 	add_child(_deck_popup)
+	_equipment_popup = EquipmentListPopup.new()
+	add_child(_equipment_popup)
+	%EquipmentButton.pressed.connect(func() -> void: _equipment_popup.open(Game.run))
 	select_node(null)
 	_scroll_to_current.call_deferred()
 

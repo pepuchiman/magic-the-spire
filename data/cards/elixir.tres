@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_jxa2u"]
+[ext_resource type="Script" path="res://scripts/resources/heal_effect.gd" id="2_cct7l"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_hqmuo"]
+
+[sub_resource type="Resource" id="Resource_53g3h"]
+script = ExtResource("2_cct7l")
+amount = 15
+
+[resource]
+script = ExtResource("3_hqmuo")
+id = &"elixir"
+name_key = &"CARD_ELIXIR_NAME"
+card_type = 2
+rarity = 3
+usable_heroes = Array[StringName]([&"flame_mage", &"frost_mage"])
+targets = Array[int]([6])
+cost_mana = 1
+uses_per_battle = 1
+effects = Array[ExtResource("1_jxa2u")]([SubResource("Resource_53g3h")])
+description_key = &"CARD_ELIXIR_DESC"

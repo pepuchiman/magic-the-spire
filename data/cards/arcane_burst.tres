@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_l2fna"]
+[ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_owcf1"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_g0f11"]
+
+[sub_resource type="Resource" id="Resource_6g5l5"]
+script = ExtResource("2_owcf1")
+amount = 9
+
+[resource]
+script = ExtResource("3_g0f11")
+id = &"arcane_burst"
+name_key = &"CARD_ARCANE_BURST_NAME"
+rarity = 1
+usable_heroes = Array[StringName]([&"flame_mage", &"frost_mage"])
+targets = Array[int]([6])
+cost_mana = 1
+effects = Array[ExtResource("1_l2fna")]([SubResource("Resource_6g5l5")])
+description_key = &"CARD_ARCANE_BURST_DESC"

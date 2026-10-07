@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="HeroData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/hero_data.gd" id="1_066m3"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="2_aolay"]
+[ext_resource type="Resource" path="res://data/cards/spark.tres" id="3_lruw7"]
+[ext_resource type="Resource" path="res://data/cards/guard.tres" id="4_u6xal"]
+[ext_resource type="Resource" path="res://data/cards/ice_wall.tres" id="5_6synv"]
+[ext_resource type="Resource" path="res://data/cards/frost_lance.tres" id="6_gf1h1"]
+
+[resource]
+script = ExtResource("1_066m3")
+id = &"frost_mage"
+name_key = &"HERO_FROST_MAGE_NAME"
+unlocked_by_clearing = &"lost_forest"
+hp = 22
+max_hp = 22
+catalyst_blue = 1
+catalyst_power_blue = 1
+starting_deck = Array[ExtResource("2_aolay")]([ExtResource("3_lruw7"), ExtResource("3_lruw7"), ExtResource("3_lruw7"), ExtResource("3_lruw7"), ExtResource("4_u6xal"), ExtResource("4_u6xal"), ExtResource("5_6synv"), ExtResource("5_6synv"), ExtResource("6_gf1h1"), ExtResource("6_gf1h1")])

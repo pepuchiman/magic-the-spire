@@ -4,6 +4,8 @@ extends Resource
 
 @export var id: StringName
 @export var name_key: StringName
+## このダンジョン（ID）をクリアすると使えるようになる。空なら最初から使える
+@export var unlocked_by_clearing: StringName
 
 @export_group("基本パラメーター")
 ## 初期HP（挑戦開始時のHP）

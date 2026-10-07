@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_3051y"]
+[ext_resource type="Script" path="res://scripts/resources/armor_effect.gd" id="2_m8sem"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_cs4th"]
+
+[sub_resource type="Resource" id="Resource_4kus2"]
+script = ExtResource("2_m8sem")
+amount = 10
+
+[resource]
+script = ExtResource("3_cs4th")
+id = &"ice_wall"
+name_key = &"CARD_ICE_WALL_NAME"
+card_type = 2
+rarity = 1
+usable_heroes = Array[StringName]([&"frost_mage"])
+targets = Array[int]([6])
+cost_mana = 1
+required_blue = 1
+effects = Array[ExtResource("1_3051y")]([SubResource("Resource_4kus2")])
+description_key = &"CARD_ICE_WALL_DESC"

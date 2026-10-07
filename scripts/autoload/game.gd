@@ -1,12 +1,13 @@
 extends Node
 ## 全体の管理（自動で読み込まれ、どこからでも Game.～ で使える）
-## ・現在のラン（RunState）を持つ
+## ・現在のラン（RunState）と、ゲームの進み具合（アンロックの状況）を持つ
 ## ・画面の切り替えをまとめて行う（「次にどの画面へ進むか」は、ここだけで決める）
 
 ## 画面の切り替えを頼まれた時（テストで、どの画面に進んだかを確かめるのに使う）
 signal screen_requested(screen: Screen)
 
-enum Screen { TITLE, DUNGEON_SELECT, HERO_SELECT, MAP, BATTLE, REWARD, REST, EVENT, GAME_OVER, CLEAR }
+## 値を追加する時は末尾に追加する
+enum Screen { TITLE, DUNGEON_SELECT, HERO_SELECT, MAP, BATTLE, REWARD, REST, EVENT, GAME_OVER, CLEAR, TREASURE }
 
 const SCENE_PATHS := {
 	Screen.TITLE: "res://scenes/title/title_screen.tscn",
@@ -19,10 +20,15 @@ const SCENE_PATHS := {
 	Screen.EVENT: "res://scenes/event/event_screen.tscn",
 	Screen.GAME_OVER: "res://scenes/run_end/run_end_screen.tscn",
 	Screen.CLEAR: "res://scenes/run_end/run_end_screen.tscn",
+	Screen.TREASURE: "res://scenes/treasure/treasure_screen.tscn",
 }
 
 ## すべてのデータ
 var data: DataLoader
+## ゲームの進み具合（クリアしたダンジョン＝アンロックの状況）
+var progress: ProgressStore
+## 最後のクリアで新しく解放された主人公・ダンジョン・カード（クリア画面で表示する）
+var newly_unlocked: Array[Resource] = []
 ## 現在のラン（タイトル画面などでは null）
 var run: RunState
 ## ダンジョン選択画面で選んだダンジョン
@@ -35,6 +41,19 @@ var change_scenes: bool = true
 
 func _ready() -> void:
 	data = DataLoader.new()
+	progress = ProgressStore.new()
+	progress.load_progress()
+
+
+## 主人公・ダンジョン・カードが解放されているか
+func is_unlocked(item: Resource) -> bool:
+	return progress.is_unlocked(item.get("unlocked_by_clearing"))
+
+
+## 開発用：進み具合を消して、最初の状態に戻す
+func reset_progress() -> void:
+	progress.reset()
+	newly_unlocked.clear()
 
 
 func _process(delta: float) -> void:
@@ -62,7 +81,9 @@ func select_dungeon(dungeon: DungeonData) -> void:
 ## 新しいランを始める（seed_value が 0 なら毎回ちがうシードにする）
 func start_run(hero: HeroData, seed_value: int = 0) -> void:
 	var used_seed := seed_value if seed_value != 0 else randi()
-	run = RunState.new(hero, selected_dungeon, data.index.cards, data.get_config(), used_seed)
+	var cards: Array[CardData] = []
+	cards.assign(ProgressStore.filter_unlocked(data.index.cards, progress))  # 解放済みのカードだけを報酬に出す
+	run = RunState.new(hero, selected_dungeon, cards, data.get_config(), used_seed, data.index.equipment)
 	go_to(Screen.MAP)
 
 
@@ -75,20 +96,39 @@ func enter_node(node: MapNode) -> bool:
 			go_to(Screen.EVENT)
 		GameEnums.MapNodeType.REST:
 			go_to(Screen.REST)
+		GameEnums.MapNodeType.TREASURE:
+			go_to(Screen.TREASURE)
 		_:
-			go_to(Screen.BATTLE)
+			go_to(Screen.BATTLE)  # 通常戦・エリート戦・ボス
 	return true
 
 
 ## バトルが終わった時。敗北 → ゲームオーバー、ボスに勝利 → クリア、それ以外 → 報酬
+## （ボス報酬のルールは RewardGenerator.boss_rewards にあるが、今はボスに勝つとランが終わるため出さない）
 func finish_battle(result: BattleResult) -> void:
 	run.apply_battle_result(result)
 	if not run.finished:
 		go_to(Screen.REWARD)
 	elif run.cleared:
+		_record_clear()
 		go_to(Screen.CLEAR)
 	else:
 		go_to(Screen.GAME_OVER)
+
+
+## クリアを記録して保存し、新しく解放されたものを newly_unlocked に入れる
+func _record_clear() -> void:
+	var all_items: Array = []
+	all_items.append_array(data.index.heroes)
+	all_items.append_array(data.index.dungeons)
+	all_items.append_array(data.index.cards)
+	var before := ProgressStore.filter_unlocked(all_items, progress)
+	progress.record_clear(run.dungeon.id)
+	progress.save_progress()
+	newly_unlocked.clear()
+	for item: Resource in ProgressStore.filter_unlocked(all_items, progress):
+		if not before.has(item):
+			newly_unlocked.append(item)
 
 
 ## 報酬・休憩・イベントが終わった時（マップへ戻る）

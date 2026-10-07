@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_xrwl1"]
+[ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_7hxie"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_8jsis"]
+
+[sub_resource type="Resource" id="Resource_rox6t"]
+script = ExtResource("2_7hxie")
+amount = 40
+
+[resource]
+script = ExtResource("3_8jsis")
+id = &"meteor"
+name_key = &"CARD_METEOR_NAME"
+rarity = 3
+usable_heroes = Array[StringName]([&"flame_mage", &"frost_mage"])
+unlocked_by_clearing = &"lost_forest"
+targets = Array[int]([6])
+cost_mana = 4
+uses_per_battle = 1
+required_red = 2
+required_blue = 2
+effects = Array[ExtResource("1_xrwl1")]([SubResource("Resource_rox6t")])
+description_key = &"CARD_METEOR_DESC"

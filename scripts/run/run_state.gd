@@ -9,8 +9,12 @@ var config: GameConfig
 ## このランのシード（同じシードなら同じマップ・同じ展開になる）
 var run_seed: int
 var rng: RandomNumberGenerator
-## 報酬・イベントで出てくる可能性のあるカード（主人公が使えるカード）
+## 報酬・イベントで出てくる可能性のあるカード（主人公が使え、解放済みのカード）
 var card_pool: Array[CardData] = []
+## 報酬・宝箱で出てくる可能性のある装備
+var equipment_pool: Array[EquipmentData] = []
+## 装備中の装備（種類 → 装備。種類ごとに1つまで）
+var equipment: Dictionary = {}
 
 var hp: int
 var deck: Array[CardData] = []
@@ -27,8 +31,10 @@ var finished: bool = false
 var cleared: bool = false
 
 
-## all_cards：ゲームにあるすべてのカード（主人公が使えるものだけを報酬に使う）
-func _init(hero_data: HeroData, dungeon_data: DungeonData, all_cards: Array[CardData], game_config: GameConfig, seed_value: int) -> void:
+## all_cards：報酬に出してよいカード（解放済みのもの。この中から主人公が使えるものだけを使う）
+## all_equipment：報酬・宝箱に出してよい装備
+func _init(hero_data: HeroData, dungeon_data: DungeonData, all_cards: Array[CardData], game_config: GameConfig,
+		seed_value: int, all_equipment: Array[EquipmentData] = []) -> void:
 	hero = hero_data
 	dungeon = dungeon_data
 	config = game_config
@@ -38,6 +44,7 @@ func _init(hero_data: HeroData, dungeon_data: DungeonData, all_cards: Array[Card
 	for card: CardData in all_cards:
 		if card.usable_heroes.has(hero.id):
 			card_pool.append(card)
+	equipment_pool = all_equipment.duplicate()
 	hp = hero.hp
 	deck = hero.starting_deck.duplicate()
 	map = MapGenerator.generate(dungeon, rng)
@@ -48,7 +55,32 @@ func get_max_hp() -> int:
 	for modifier: StatModifier in permanent_modifiers:
 		if modifier.param == GameEnums.Param.MAX_HP:
 			bonus += modifier.amount
+	for item: EquipmentData in equipment.values():
+		bonus += item.get_amount(GameEnums.Param.MAX_HP)
 	return maxi(1, hero.max_hp + bonus)
+
+
+## その種類で装備している装備（無ければ null）
+func get_equipped(type: GameEnums.EquipmentType) -> EquipmentData:
+	return equipment.get(type)
+
+
+## 装備する。同じ種類の装備をしていたら入れ替え、外した装備を返す（無ければ null）
+func equip(item: EquipmentData) -> EquipmentData:
+	var replaced: EquipmentData = equipment.get(item.equipment_type)
+	equipment[item.equipment_type] = item
+	hp = mini(hp, get_max_hp())  # 最大HPが下がった時は、HPを最大HPまでに収める
+	return replaced
+
+
+## 装備による補正。「バトル中」の補正としてバトルに渡すので、バトル後に引き継がれない（装備している間だけ有効）
+func get_equipment_modifiers() -> Array[StatModifier]:
+	var result: Array[StatModifier] = []
+	for item: EquipmentData in equipment.values():
+		for modifier: ModifyParamEffect in item.modifiers:
+			if modifier != null:
+				result.append(StatModifier.new(modifier.param, modifier.amount, GameEnums.Duration.BATTLE))
+	return result
 
 
 ## 今いる階（1階から数える。出発前は 0）
@@ -75,9 +107,11 @@ func move_to(node: MapNode) -> bool:
 	return true
 
 
-## 今いるノードのバトルを作る（主人公のHPと永続の補正を引き継ぐ）
+## 今いるノードのバトルを作る（主人公のHP・永続の補正・装備の補正を渡す）
 func create_battle() -> Battle:
-	return Battle.new(hero, deck, current_node.enemy, rng.randi(), hp, permanent_modifiers)
+	var modifiers := permanent_modifiers.duplicate()
+	modifiers.append_array(get_equipment_modifiers())
+	return Battle.new(hero, deck, current_node.enemy, rng.randi(), hp, modifiers)
 
 
 ## バトルの結果を反映する。引き継ぐのは主人公のHPと「永続」の補正だけ

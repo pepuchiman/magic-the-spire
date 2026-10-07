@@ -9,7 +9,7 @@ const LOCALIZATION_DIR := "res://localization"
 ## 画面の文章のキーを探すフォルダ
 const UI_SOURCE_DIRS := ["res://scenes", "res://ui", "res://scripts"]
 ## 画面の文章のキーの接頭辞（キーを探す時に使う）
-const UI_KEY_PREFIXES := ["UI", "CARD_TYPE", "RARITY", "PARAM", "MAP_NODE"]
+const UI_KEY_PREFIXES := ["UI", "CARD_TYPE", "RARITY", "PARAM", "MAP_NODE", "EQUIPMENT_TYPE"]
 
 
 ## 実際のプロジェクトのデータをすべて検証する（索引・登録漏れ・翻訳キー）
@@ -85,8 +85,54 @@ static func validate_index(index: DataIndex) -> PackedStringArray:
 	for event: EventData in index.events:
 		if event != null:
 			errors.append_array(_check_event(event))
+	for equipment: EquipmentData in index.equipment:
+		if equipment != null:
+			errors.append_array(_check_equipment(equipment))
+	errors.append_array(_check_unlocks(index))
 	if index.config == null:
 		errors.append("ゲーム全体の設定（data/config/game_config.tres）が索引にありません")
+	return errors
+
+
+static func _check_equipment(equipment: EquipmentData) -> PackedStringArray:
+	var errors := PackedStringArray()
+	var label := "装備 %s" % equipment.id
+	if equipment.modifiers.is_empty():
+		errors.append("%s：効果（パラメーターの増減）がありません" % label)
+	for modifier: ModifyParamEffect in equipment.modifiers:
+		if modifier == null:
+			errors.append("%s：空（未設定）の効果があります" % label)
+		elif EquipmentData.STRONG_PARAMS.has(modifier.param) and modifier.amount > 0 \
+				and equipment.rarity < GameEnums.Rarity.RARE:
+			errors.append("%s：%s を上げる効果は、レア以上の装備にしか付けられません" % [label, GameEnums.Param.keys()[modifier.param]])
+	return errors
+
+
+## アンロックの条件（このダンジョンをクリアすると解放）に、存在するダンジョンが指定されているか
+static func _check_unlocks(index: DataIndex) -> PackedStringArray:
+	var errors := PackedStringArray()
+	var dungeon_ids: Dictionary = {}
+	for dungeon: DungeonData in index.dungeons:
+		if dungeon != null:
+			dungeon_ids[dungeon.id] = true
+	var items: Array = []
+	items.append_array(index.heroes)
+	items.append_array(index.dungeons)
+	items.append_array(index.cards)
+	for item: Resource in items:
+		if item == null:
+			continue
+		var requirement: StringName = item.get("unlocked_by_clearing")
+		if requirement != &"" and not dungeon_ids.has(requirement):
+			errors.append("%s：解放条件に存在しないダンジョンID（%s）が指定されています" % [item.get("id"), requirement])
+		if item is DungeonData and requirement == item.get("id"):
+			errors.append("ダンジョン %s：自分自身のクリアが解放条件になっています" % requirement)
+	var has_free_hero := index.heroes.any(func(h: HeroData) -> bool: return h != null and h.unlocked_by_clearing == &"")
+	var has_free_dungeon := index.dungeons.any(func(d: DungeonData) -> bool: return d != null and d.unlocked_by_clearing == &"")
+	if not index.heroes.is_empty() and not has_free_hero:
+		errors.append("最初から使える主人公が1人もいません")
+	if not index.dungeons.is_empty() and not has_free_dungeon:
+		errors.append("最初から選べるダンジョンが1つもありません")
 	return errors
 
 
@@ -273,9 +319,14 @@ static func _check_dungeon(dungeon: DungeonData) -> PackedStringArray:
 		errors.append("%s：ノードの出やすさ（重み）がすべて0です" % label)
 	if dungeon.event_weight > 0 and dungeon.events.is_empty():
 		errors.append("%s：イベントの出やすさが0より大きいのに、イベントが登録されていません" % label)
+	if dungeon.elite_weight > 0 and dungeon.elite_enemies.is_empty():
+		errors.append("%s：エリートの出やすさが0より大きいのに、エリートの敵が登録されていません" % label)
 	for event: EventData in dungeon.events:
 		if event == null:
 			errors.append("%s：イベントに空（未設定）の項目があります" % label)
+	for enemy: EnemyData in dungeon.elite_enemies:
+		if enemy == null:
+			errors.append("%s：エリートの敵に空（未設定）の項目があります" % label)
 	return errors
 
 
@@ -313,7 +364,8 @@ static func _collect_translation_keys(index: DataIndex) -> Array[Array]:
 	for equipment: EquipmentData in index.equipment:
 		if equipment != null:
 			result.append(["装備 %s の名前" % equipment.id, equipment.name_key])
-			result.append(["装備 %s の説明" % equipment.id, equipment.description_key])
+			if equipment.description_key != &"":  # 装備の説明文は任意
+				result.append(["装備 %s の説明" % equipment.id, equipment.description_key])
 	for event: EventData in index.events:
 		if event != null:
 			result.append(["イベント %s の名前" % event.id, event.name_key])

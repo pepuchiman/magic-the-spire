@@ -1,6 +1,7 @@
 extends Control
 ## 主人公選択画面。初期パラメーターと初期デッキを確認して「決定」でランを始める。
-## 主人公が複数いる時は「<」「>」で切り替える（スワイプ操作はフェーズ8の調整で検討）
+## 主人公が複数いる時は「<」「>」で切り替える（スワイプ操作はフェーズ8の調整で検討）。
+## 未解放の主人公はロック表示（選べない）にして、解放条件を表示する
 
 var heroes: Array[HeroData] = []
 var index: int = 0
@@ -30,7 +31,7 @@ func current_hero() -> HeroData:
 
 
 func confirm() -> void:
-	if current_hero() != null:
+	if current_hero() != null and Game.is_unlocked(current_hero()):
 		Game.start_run(current_hero())
 
 
@@ -40,6 +41,14 @@ func _show(new_index: int) -> void:
 	index = wrapi(new_index, 0, heroes.size())
 	var hero := heroes[index]
 	%HeroNameLabel.set_fitted_text(UiText.t(hero.name_key))
+	# 未解放の主人公はロック表示（選べない）にして、解放条件を出す
+	var unlocked := Game.is_unlocked(hero)
+	%ConfirmButton.disabled = not unlocked
+	%DeckButton.disabled = not unlocked
+	%HeroArt.modulate = Color.WHITE if unlocked else Color(0.25, 0.25, 0.3)
+	if not unlocked:
+		%StatsLabel.text = "%s\n%s" % [UiText.t("UI_LOCKED"), UiText.unlock_condition(Game.data.get_dungeon(hero.unlocked_by_clearing))]
+		return
 	var lines := PackedStringArray([
 		UiText.fmt("UI_HERO_STAT_HP", {"value": hero.max_hp}),
 		UiText.fmt("UI_HERO_STAT_MANA", {"value": hero.mana_base}),

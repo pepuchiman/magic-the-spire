@@ -2,7 +2,7 @@ class_name MapGenerator
 extends RefCounted
 ## マップのランダム生成（Game_Rule.md「進路選択」）
 ## ・各階に2〜3ノード。最上階はボス1つ
-## ・1階は通常戦のみ／ボスの直前の階は休憩のみ／中盤に休憩を最低1つ
+## ・1階は通常戦のみ／ボスの直前の階は休憩のみ／中盤に休憩を最低1つ／エリートは中盤以降のみ
 ## ・隣の階との線は交差させない
 ## ・どのノードも、前の階・次の階のどれかとつながる（行き止まりなし）
 
@@ -44,9 +44,17 @@ static func _node_type(dungeon: DungeonData, floor_index: int, floor_count: int,
 	if floor_index == 0:
 		return GameEnums.MapNodeType.BATTLE  # 1階は通常戦のみ
 	var event_weight := dungeon.event_weight if not dungeon.events.is_empty() else 0
-	var types: Array = [GameEnums.MapNodeType.BATTLE, GameEnums.MapNodeType.EVENT, GameEnums.MapNodeType.REST]
-	var weights: Array[int] = [dungeon.battle_weight, event_weight, dungeon.rest_weight]
+	# エリートは中盤以降だけ（エリートの敵が登録されている時だけ）
+	var elite_weight := dungeon.elite_weight if floor_index >= elite_start_floor(floor_count) and not dungeon.elite_enemies.is_empty() else 0
+	var types: Array = [GameEnums.MapNodeType.BATTLE, GameEnums.MapNodeType.EVENT, GameEnums.MapNodeType.REST,
+		GameEnums.MapNodeType.ELITE, GameEnums.MapNodeType.TREASURE]
+	var weights: Array[int] = [dungeon.battle_weight, event_weight, dungeon.rest_weight, elite_weight, dungeon.treasure_weight]
 	return RunRandom.pick_weighted(types, weights, rng)
+
+
+## エリートが出始める階（中盤の最初の階）
+static func elite_start_floor(floor_count: int) -> int:
+	return maxi(1, int(floor_count * 0.3))
 
 
 ## 中盤に休憩が1つもなければ、中盤のノードを1つ休憩にする
@@ -97,6 +105,8 @@ static func _assign_contents(map: MapData, dungeon: DungeonData, rng: RandomNumb
 		match node.type:
 			GameEnums.MapNodeType.BATTLE:
 				node.enemy = RunRandom.pick(dungeon.normal_enemies, rng)
+			GameEnums.MapNodeType.ELITE:
+				node.enemy = RunRandom.pick(dungeon.elite_enemies, rng)
 			GameEnums.MapNodeType.BOSS:
 				node.enemy = dungeon.boss
 			GameEnums.MapNodeType.EVENT:

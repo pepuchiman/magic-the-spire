@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/modify_param_effect.gd" id="1_0pu6e"]
+[ext_resource type="Script" path="res://scripts/resources/equipment_data.gd" id="2_djyu5"]
+
+[sub_resource type="Resource" id="Resource_a7w4l"]
+script = ExtResource("1_0pu6e")
+param = 0
+amount = 3
+
+[sub_resource type="Resource" id="Resource_antv6"]
+script = ExtResource("1_0pu6e")
+param = 6
+amount = 1
+
+[resource]
+script = ExtResource("2_djyu5")
+id = &"staff_silver"
+name_key = &"EQUIP_STAFF_SILVER_NAME"
+equipment_type = 1
+rarity = 1
+modifiers = Array[ExtResource("1_0pu6e")]([SubResource("Resource_a7w4l"), SubResource("Resource_antv6")])

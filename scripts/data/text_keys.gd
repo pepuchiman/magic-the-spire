@@ -27,9 +27,16 @@ static func map_node_desc(value: GameEnums.MapNodeType) -> String:
 	return map_node(value) + "_DESC"
 
 
+## 装備の種類の名前（例：EQUIPMENT_TYPE_RING）
+static func equipment_type(value: GameEnums.EquipmentType) -> String:
+	return "EQUIPMENT_TYPE_" + GameEnums.EquipmentType.keys()[value]
+
+
 ## 上の関数で作られる、すべてのキー（翻訳ファイルの登録漏れの確認に使う）
 static func all_enum_keys() -> PackedStringArray:
 	var keys := PackedStringArray()
+	for value: int in GameEnums.EquipmentType.values():
+		keys.append(equipment_type(value))
 	for value: int in GameEnums.MapNodeType.values():
 		keys.append(map_node(value))
 		keys.append(map_node_desc(value))

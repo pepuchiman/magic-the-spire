@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/modify_param_effect.gd" id="1_xnao6"]
+[ext_resource type="Script" path="res://scripts/resources/equipment_data.gd" id="2_vesbp"]
+
+[sub_resource type="Resource" id="Resource_pegpv"]
+script = ExtResource("1_xnao6")
+param = 7
+amount = 1
+
+[sub_resource type="Resource" id="Resource_aa1m4"]
+script = ExtResource("1_xnao6")
+param = 0
+amount = 2
+
+[resource]
+script = ExtResource("2_vesbp")
+id = &"armor_leather"
+name_key = &"EQUIP_ARMOR_LEATHER_NAME"
+equipment_type = 2
+rarity = 1
+modifiers = Array[ExtResource("1_xnao6")]([SubResource("Resource_pegpv"), SubResource("Resource_aa1m4")])
