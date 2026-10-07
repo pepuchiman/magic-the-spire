@@ -15,7 +15,6 @@ name_key = &"CARD_FIREBALL_NAME"
 usable_heroes = Array[StringName]([&"flame_mage"])
 targets = Array[int]([6])
 cost_mana = 2
-uses_per_battle = 1
 required_red = 1
 effects = Array[ExtResource("1_7gd24")]([SubResource("Resource_t81un")])
 description_key = &"CARD_FIREBALL_DESC"
