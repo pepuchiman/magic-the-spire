@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_vuj1l"]
+[ext_resource type="Script" path="res://scripts/resources/status_effect.gd" id="2_huf5a"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_lcqfl"]
+
+[sub_resource type="Resource" id="Resource_mlukc"]
+script = ExtResource("2_huf5a")
+status = 3
+
+[resource]
+script = ExtResource("3_lcqfl")
+id = &"shatter_mark"
+name_key = &"CARD_SHATTER_MARK_NAME"
+card_type = 2
+rarity = 1
+usable_heroes = Array[StringName]([&"flame_mage"])
+targets = Array[int]([6])
+cost_mana = 1
+required_red = 1
+duration = 1
+duration_turns = 2
+effects = Array[ExtResource("1_vuj1l")]([SubResource("Resource_mlukc")])
+description_key = &"CARD_SHATTER_MARK_DESC"

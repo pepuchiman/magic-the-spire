@@ -31,3 +31,15 @@ CARD_ELIXIR_NAME,霊薬
 CARD_ELIXIR_DESC,対象のHPを{heal}回復する
 CARD_METEOR_NAME,流星
 CARD_METEOR_DESC,{damage}のダメージを与える
+CARD_POISON_MIST_NAME,毒の霧
+CARD_POISON_MIST_DESC,対象に毒{poison}を与える
+CARD_THUNDERBOLT_NAME,雷撃
+CARD_THUNDERBOLT_DESC,{damage}のダメージと、麻痺{paralysis}を与える
+CARD_CURSE_NAME,呪い
+CARD_CURSE_DESC,対象を{turns}ターンの間、弱体にする
+CARD_SHATTER_MARK_NAME,破砕の印
+CARD_SHATTER_MARK_DESC,対象を{turns}ターンの間、脆弱にする
+CARD_POWER_CHANT_NAME,力の詠唱
+CARD_POWER_CHANT_DESC,バトル中、対象の筋力が{strength}増える
+CARD_THORN_ARMOR_NAME,茨の鎧
+CARD_THORN_ARMOR_DESC,バトル中、対象に棘{thorns}を与える

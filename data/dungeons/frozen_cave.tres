@@ -11,7 +11,9 @@
 [ext_resource type="Resource" path="res://data/enemies/bat.tres" id="9_y52is"]
 [ext_resource type="Resource" path="res://data/enemies/goblin.tres" id="10_308pp"]
 [ext_resource type="Resource" path="res://data/enemies/slime.tres" id="11_y5ghk"]
+[ext_resource type="Resource" path="res://data/enemies/venom_spider.tres" id="12_dqoxe"]
 [ext_resource type="Script" path="res://scripts/resources/dungeon_data.gd" id="12_wdkek"]
+[ext_resource type="Resource" path="res://data/enemies/thunder_wisp.tres" id="13_fbfbi"]
 
 [resource]
 script = ExtResource("12_wdkek")
@@ -19,7 +21,7 @@ id = &"frozen_cave"
 name_key = &"DUNGEON_FROZEN_CAVE_NAME"
 unlocked_by_clearing = &"lost_forest"
 floor_count = 11
-normal_enemies = Array[ExtResource("2_7rmt3")]([ExtResource("9_y52is"), ExtResource("10_308pp"), ExtResource("11_y5ghk")])
+normal_enemies = Array[ExtResource("2_7rmt3")]([ExtResource("9_y52is"), ExtResource("10_308pp"), ExtResource("11_y5ghk"), ExtResource("12_dqoxe"), ExtResource("13_fbfbi")])
 elite_enemies = Array[ExtResource("2_7rmt3")]([ExtResource("3_dqoxe"), ExtResource("4_fbfbi")])
 boss = ExtResource("1_ojgkj")
 events = Array[ExtResource("5_yi477")]([ExtResource("6_poqgu"), ExtResource("7_e21ec"), ExtResource("8_0qath")])

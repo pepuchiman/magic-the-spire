@@ -9,7 +9,7 @@ const LOCALIZATION_DIR := "res://localization"
 ## 画面の文章のキーを探すフォルダ
 const UI_SOURCE_DIRS := ["res://scenes", "res://ui", "res://scripts"]
 ## 画面の文章のキーの接頭辞（キーを探す時に使う）
-const UI_KEY_PREFIXES := ["UI", "CARD_TYPE", "RARITY", "PARAM", "MAP_NODE", "EQUIPMENT_TYPE"]
+const UI_KEY_PREFIXES := ["UI", "CARD_TYPE", "RARITY", "PARAM", "MAP_NODE", "EQUIPMENT_TYPE", "STATUS"]
 
 
 ## 実際のプロジェクトのデータをすべて検証する（索引・登録漏れ・翻訳キー）
@@ -275,8 +275,23 @@ static func _check_card(card: CardData, hero_ids: Dictionary) -> PackedStringArr
 				errors.append("%s：召喚効果に仲間が設定されていません" % label)
 		elif effect is ModifyParamEffect and card.duration == GameEnums.Duration.INSTANT:
 			errors.append("%s：パラメーター変更の効果は、効果ターン数が「瞬間」のカードには使えません" % label)
+		elif effect is StatusEffect:
+			errors.append_array(_check_status_effect(label, effect as StatusEffect, card.duration))
 	if summon_count > 1:
 		errors.append("%s：召喚効果は1枚のカードに1つまでです" % label)
+	return errors
+
+
+## 状態効果を与える効果の検証（動きは docs/Game_Elements.md）
+static func _check_status_effect(label: String, effect: StatusEffect, duration: GameEnums.Duration) -> PackedStringArray:
+	var errors := PackedStringArray()
+	var status_name: String = GameEnums.StatusType.keys()[effect.status]
+	if StatusRules.uses_value(effect.status) and effect.amount <= 0:
+		errors.append("%s：状態効果 %s の値が0です" % [label, status_name])
+	# ターン数で続くタイプ（弱体・脆弱・筋力・棘）は、効果ターン数が「〇〇ターン」か「バトル中」のカードにだけ付けられる
+	if not StatusRules.is_value_type(effect.status) \
+			and duration != GameEnums.Duration.TURNS and duration != GameEnums.Duration.BATTLE:
+		errors.append("%s：状態効果 %s は、効果ターン数が「〇〇ターン」か「バトル中」のカードにだけ付けられます" % [label, status_name])
 	return errors
 
 
@@ -305,6 +320,9 @@ static func _check_enemy(enemy: EnemyData) -> PackedStringArray:
 			errors.append("%s：行動パターンに空（未設定）の項目があります" % label)
 		elif action.action_type == GameEnums.EnemyActionType.SUMMON and action.summon_enemy == null:
 			errors.append("%s：「クリーチャーを呼ぶ」行動に呼ぶ敵が設定されていません" % label)
+		elif action.action_type == GameEnums.EnemyActionType.APPLY_STATUS \
+				and StatusRules.uses_value(action.status) and action.amount <= 0:
+			errors.append("%s：「状態効果を与える」行動の値が0です" % label)
 	return errors
 
 

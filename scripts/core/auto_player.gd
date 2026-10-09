@@ -49,13 +49,16 @@ static func _play_one(battle: Battle) -> bool:
 
 
 ## カードの相手を選ぶ（選ぶ必要がないカードは null）。
-## 「いずれか1体」のカードは、ダメージを与えるなら敵本体、それ以外（回復・アーマーなど）なら主人公を選ぶ
+## 「いずれか1体」のカードは、ダメージやデバフ（毒・麻痺など）を与えるなら敵本体、
+## それ以外（回復・アーマー・筋力などのバフ）なら主人公を選ぶ
 static func choose_target(battle: Battle, card: CardData) -> Combatant:
 	if battle.needs_enemy_target(card):
 		return battle.main_enemy
 	if battle.needs_any_target(card):
 		for effect: EffectData in card.effects:
 			if effect is DamageEffect:
+				return battle.main_enemy
+			if effect is StatusEffect and StatusRules.is_debuff((effect as StatusEffect).status):
 				return battle.main_enemy
 		return battle.hero
 	if battle.needs_ally_target(card):

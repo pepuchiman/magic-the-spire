@@ -129,7 +129,9 @@ func start_battle() -> void:
 	var dungeon := loader.get_dungeon(dungeon_id)
 	_dungeon_label.set_fitted_text(UiText.t(dungeon.name_key) if dungeon != null else "")
 	var used_seed := seed_value if seed_value != 0 else randi()
-	_begin(Battle.new(hero, hero.starting_deck, enemy, used_seed))
+	var sample := Battle.new(hero, hero.starting_deck, enemy, used_seed)
+	sample.config = loader.get_config()
+	_begin(sample)
 
 
 func _begin(new_battle: Battle) -> void:
@@ -217,7 +219,11 @@ func _connect_battle() -> void:
 			_push({"type": "banner", "text": UiText.t("UI_ENEMY_TURN")}))
 	battle.damage_dealt.connect(func(source: Combatant, target: Combatant, detail: Dictionary) -> void:
 		_push({"type": "damage", "source": source, "target": target, "hp": target.hp, "armor": target.armor,
-			"amount": detail["after_defense"]}))
+			"amount": detail["after_defense"], "poison": detail.get("poison", false)}))
+	battle.status_changed.connect(func(target: Combatant) -> void:
+		_push({"type": "status", "target": target}))
+	battle.attack_prevented.connect(func(combatant: Combatant) -> void:
+		_push({"type": "prevented", "target": combatant}))
 	battle.healed.connect(func(target: Combatant, amount: int) -> void:
 		_push({"type": "heal", "target": target, "hp": target.hp, "armor": target.armor, "amount": amount}))
 	battle.armor_gained.connect(func(target: Combatant, amount: int) -> void:
@@ -270,6 +276,8 @@ func _play_event(event: Dictionary) -> float:
 				var source_view: UnitView = _views.get(event["source"])
 				if source_view != null:
 					source_view.play_attack_motion(step * 0.6)
+				if event["poison"]:
+					color = UiPalette.POISON  # 毒のダメージは色を変える
 			elif event["type"] == "heal":
 				color = UiPalette.HEAL
 				text = "+%d" % event["amount"]
@@ -287,6 +295,16 @@ func _play_event(event: Dictionary) -> float:
 			_ensure_view(event["unit"])
 			if event["replaced"] != null:
 				_remove_view(event["replaced"])
+			return step
+		"status":
+			var status_view: UnitView = _views.get(event["target"])
+			if status_view != null:
+				status_view.refresh_statuses()  # 状態効果の一覧を表示し直す
+			return step * 0.4
+		"prevented":
+			var prevented_view: UnitView = _views.get(event["target"])
+			if prevented_view != null:
+				FloatingNumber.spawn(_effect_layer, _center_of(prevented_view), UiText.t("UI_PARALYZED_POPUP"), UiPalette.STATUS, step * 2.0)
 			return step
 	return 0.0
 

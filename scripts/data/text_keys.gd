@@ -32,9 +32,16 @@ static func equipment_type(value: GameEnums.EquipmentType) -> String:
 	return "EQUIPMENT_TYPE_" + GameEnums.EquipmentType.keys()[value]
 
 
+## 状態効果の名前（例：STATUS_POISON）
+static func status(value: GameEnums.StatusType) -> String:
+	return "STATUS_" + GameEnums.StatusType.keys()[value]
+
+
 ## 上の関数で作られる、すべてのキー（翻訳ファイルの登録漏れの確認に使う）
 static func all_enum_keys() -> PackedStringArray:
 	var keys := PackedStringArray()
+	for value: int in GameEnums.StatusType.values():
+		keys.append(status(value))
 	for value: int in GameEnums.EquipmentType.values():
 		keys.append(equipment_type(value))
 	for value: int in GameEnums.MapNodeType.values():

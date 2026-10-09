@@ -22,7 +22,11 @@ enum PlayResult {
 	CATALYST_NOT_MET,  ## 必要触媒を満たしていない
 	INVALID_TARGET,  ## 対象が正しくない
 	NEEDS_REPLACE,  ## 仲間が上限のため、入れ替える仲間の指定が必要
+	PARALYZED,  ## 麻痺しているため、攻撃魔法を使えない
 }
+
+## 自分のターンを迎えている側（状態効果の「付いた直後は減らない」の判定に使う）
+enum TurnSide { NONE, FRIENDS, ENEMIES }
 
 ## 効果の発動時期（今は通知だけ。発動時期を持つ効果ができたら、ここで処理する）
 enum Timing {
@@ -56,6 +60,10 @@ signal enemy_summoned(summoner: EnemyCombatant, summoned: EnemyCombatant)
 signal enemy_action_skipped(enemy: EnemyCombatant)
 signal enemy_intent_changed(enemy: EnemyCombatant)
 signal combatant_died(combatant: Combatant)
+## 状態効果が付いた・変わった・消えた時
+signal status_changed(target: Combatant)
+## 麻痺のため攻撃できなかった時
+signal attack_prevented(combatant: Combatant)
 signal discard_required(count: int)
 signal cards_discarded(cards: Array[CardInstance])
 signal battle_ended(result: BattleResult)
@@ -75,8 +83,12 @@ var pending_discard_count: int = 0
 var enemies_defeated: int = 0
 ## 起きたことの記録（同じシードで同じ結果になるかの確認や、不具合調査に使う）
 var history: PackedStringArray = []
+## ゲーム全体の数値の設定（弱体・脆弱の割合など）
+var config: GameConfig = GameConfig.new()
 
 var _cards: Array[CardData] = []
+## 今、自分のターンを迎えている側
+var _acting_side: TurnSide = TurnSide.NONE
 
 
 ## cards：このバトルで使う所持カード
@@ -116,13 +128,27 @@ func can_play(hand_index: int) -> PlayResult:
 	return get_cost_problem(deck.hand[hand_index].data)
 
 
-## マナと必要触媒だけを見て、そのカードが使えるかを返す（手番かどうかは見ない。画面でカードを暗くする判定に使う）
+## マナ・必要触媒・麻痺だけを見て、そのカードが使えるかを返す（手番かどうかは見ない。画面でカードを暗くする判定に使う）
 func get_cost_problem(card: CardData) -> PlayResult:
 	if hero.mana < card.cost_mana:
 		return PlayResult.NOT_ENOUGH_MANA
 	if not hero.meets_catalyst(card):
 		return PlayResult.CATALYST_NOT_MET
+	if card.card_type == GameEnums.CardType.ATTACK and hero.has_status(GameEnums.StatusType.PARALYSIS):
+		return PlayResult.PARALYZED  # 麻痺している間は攻撃魔法を使えない
 	return PlayResult.OK
+
+
+## 筋力・弱体・脆弱を反映したダメージ（Game_Rule.md「ダメージ処理の順序」の2〜4）。端数は切り捨て
+func modified_damage(source: Combatant, target: Combatant, base: int) -> int:
+	var amount := base
+	if source != null:
+		amount += source.get_status_value(GameEnums.StatusType.STRENGTH)
+		if source.has_status(GameEnums.StatusType.WEAK):
+			amount = floori(amount * (100 - config.weak_percent) / 100.0)
+	if target.has_status(GameEnums.StatusType.VULNERABLE):
+		amount = floori(amount * (100 + config.vulnerable_percent) / 100.0)
+	return maxi(0, amount)
 
 
 ## 6. カードを使う。
@@ -261,7 +287,13 @@ func _start_player_turn() -> void:
 	turn += 1
 	_log("ターン%d開始" % turn)
 	turn_started.emit(turn)
+	_begin_side_turn(TurnSide.FRIENDS, get_living_friends())
 	_reach(Timing.ALLY_TURN_START)  # 3
+	# 3. 自分側の毒のダメージ
+	for friend: Combatant in get_living_friends():
+		_apply_poison(friend)
+		if phase == Phase.ENDED:
+			return  # 主人公が毒で倒れた
 	# 4. マナを基準値に戻す。触媒を増やす（1ターン目は増やさない）
 	hero.mana = hero.get_mana_base()
 	if turn > 1:
@@ -278,14 +310,23 @@ func _finish_turn() -> void:
 	for ally: AllyCombatant in allies.duplicate():
 		if not ally.is_alive():
 			continue
+		if ally.has_status(GameEnums.StatusType.PARALYSIS):
+			_log("%s 麻痺で攻撃できない" % ally.id)
+			attack_prevented.emit(ally)
+			continue
 		var target := Targeting.pick_attack_target(main_enemy, enemy_allies)
 		if target == null:
 			break
 		_deal_damage(ally, target, ally.roll_attack(rng))
 		if phase == Phase.ENDED:
 			return
-	# 9. 敵のターン開始時効果
+	# 9. 敵のターン開始時効果（敵側の毒のダメージ）
+	_begin_side_turn(TurnSide.ENEMIES, get_living_enemies())
 	_reach(Timing.ENEMY_TURN_START)
+	for enemy: Combatant in get_living_enemies():
+		_apply_poison(enemy)
+		if phase == Phase.ENDED:
+			return  # 敵本体が毒で倒れた
 	# 10. 敵の攻撃（敵本体 → 敵の仲間の順。このターンに呼ばれた敵は行動しない）
 	var acting: Array[EnemyCombatant] = [main_enemy]
 	acting.append_array(enemy_allies)
@@ -294,6 +335,7 @@ func _finish_turn() -> void:
 			_do_enemy_action(enemy)
 			if phase == Phase.ENDED:
 				return
+	_acting_side = TurnSide.NONE
 	# 11. 味方のターン終了時（効果を受けた側のターン終了時に、残りターンを減らす）
 	_reach(Timing.ALLY_TURN_END)
 	for friend: Combatant in get_living_friends():
@@ -318,14 +360,26 @@ func _do_enemy_action(enemy: EnemyCombatant) -> void:
 	else:
 		match action.action_type:
 			GameEnums.EnemyActionType.ATTACK:
-				# 攻撃対象は攻撃の瞬間に決める（仲間がいれば後から召喚された仲間、いなければ主人公）
-				var target := Targeting.pick_attack_target(hero, allies)
-				if target != null:
-					_deal_damage(enemy, target, enemy.roll_attack(rng))
+				if enemy.has_status(GameEnums.StatusType.PARALYSIS):
+					_log("%s 麻痺で攻撃できない" % enemy.id)
+					attack_prevented.emit(enemy)
+				else:
+					# 攻撃対象は攻撃の瞬間に決める（仲間がいれば後から召喚された仲間、いなければ主人公）
+					var target := Targeting.pick_attack_target(hero, allies)
+					if target != null:
+						_deal_damage(enemy, target, enemy.roll_attack(rng))
 			GameEnums.EnemyActionType.DEFEND:
 				_gain_armor(enemy, action.amount)
 			GameEnums.EnemyActionType.SUMMON:
 				_enemy_summon(enemy, action)
+			GameEnums.EnemyActionType.APPLY_STATUS:
+				# デバフは攻撃と同じ決まりで相手を選び、バフは自分に付ける
+				var status_target: Combatant = enemy
+				if StatusRules.is_debuff(action.status):
+					status_target = Targeting.pick_attack_target(hero, allies)
+				if status_target != null:
+					var turns := action.status_turns if action.status_turns > 0 else StatusInstance.BATTLE_LONG
+					_add_status(status_target, action.status, action.amount, turns)
 	if phase == Phase.ENDED:
 		return
 	_decide_intent(enemy)
@@ -420,6 +474,13 @@ func _apply_effect(card: CardData, effect: EffectData, targets: Array[Combatant]
 				modifier_added.emit(target, modifier)
 	elif effect is SummonEffect:
 		_summon_ally((effect as SummonEffect).ally, replace_ally)
+	elif effect is StatusEffect:
+		var status_effect := effect as StatusEffect
+		# ターン数で続くタイプは、カードの効果ターン数（〇〇ターン／バトル中）の間続く
+		var turns := card.duration_turns if card.duration == GameEnums.Duration.TURNS else StatusInstance.BATTLE_LONG
+		for target: Combatant in targets:
+			if target.is_alive():
+				_add_status(target, status_effect.status, status_effect.amount, turns)
 
 
 func _summon_ally(ally_data: AllyData, replace_ally: AllyCombatant) -> void:
@@ -437,13 +498,58 @@ func _summon_ally(ally_data: AllyData, replace_ally: AllyCombatant) -> void:
 
 # ---------- 共通の処理 ----------
 
-func _deal_damage(source: Combatant, target: Combatant, raw_damage: int) -> void:
-	var detail := DamageCalc.apply(target, raw_damage)
+## ダメージを与える（Game_Rule.md「ダメージ処理の順序」）。
+## is_attack：攻撃（攻撃魔法・クリーチャーと敵の攻撃）なら true。筋力・弱体・脆弱を反映し、受けた側の棘が反撃する。
+## 棘の反撃のダメージは false（筋力などは反映せず、防御力・アーマーだけで減る。棘には反応しない）
+func _deal_damage(source: Combatant, target: Combatant, base_damage: int, is_attack: bool = true) -> void:
+	var amount := modified_damage(source, target, base_damage) if is_attack else base_damage
+	var detail := DamageCalc.apply(target, amount)
 	_log("%s → %s ダメージ%d（アーマー-%d HP-%d 残りHP%d）" % [
-		source.id, target.id, raw_damage, detail["armor_absorbed"], detail["hp_damage"], target.hp])
+		source.id if source != null else "-", target.id, amount, detail["armor_absorbed"], detail["hp_damage"], target.hp])
 	damage_dealt.emit(source, target, detail)
 	if not target.is_alive():
 		_on_died(target)
+	if phase == Phase.ENDED:
+		return
+	# 8. 棘：攻撃を受けたら、攻撃してきた相手にダメージを返す
+	var thorns := target.get_status_value(GameEnums.StatusType.THORNS)
+	if is_attack and thorns > 0 and source != null and source != target and source.is_alive():
+		_log("%s の棘" % target.id)
+		_deal_damage(target, source, thorns, false)
+
+
+## 毒：値の分だけHPを減らし（防御力・アーマーは無視）、値を1減らす
+func _apply_poison(combatant: Combatant) -> void:
+	var poison := combatant.get_status_value(GameEnums.StatusType.POISON)
+	if poison <= 0:
+		return
+	combatant.hp = maxi(0, combatant.hp - poison)
+	_log("%s 毒のダメージ%d（残りHP%d）" % [combatant.id, poison, combatant.hp])
+	damage_dealt.emit(null, combatant, {"raw": poison, "after_defense": poison, "armor_absorbed": 0, "hp_damage": poison, "poison": true})
+	combatant.reduce_status(GameEnums.StatusType.POISON, 1)
+	status_changed.emit(combatant)
+	if not combatant.is_alive():
+		_on_died(combatant)
+
+
+## 状態効果を付ける。受けた側がまだ自分のターンを迎えていなければ「付いた直後」とする
+func _add_status(target: Combatant, type: GameEnums.StatusType, value: int, turns: int) -> void:
+	var fresh := _side_of(target) != _acting_side
+	target.add_status(type, value, turns, fresh)
+	_log("%s 状態効果 %s %d（%s）" % [target.id, GameEnums.StatusType.keys()[type], value,
+		"バトル中" if turns == StatusInstance.BATTLE_LONG else "%dターン" % turns])
+	status_changed.emit(target)
+
+
+## 自分のターンの始まり：その側の状態効果の「付いた直後」の印を外す
+func _begin_side_turn(side: TurnSide, members: Array[Combatant]) -> void:
+	_acting_side = side
+	for member: Combatant in members:
+		member.mark_statuses_active()
+
+
+func _side_of(combatant: Combatant) -> TurnSide:
+	return TurnSide.ENEMIES if combatant is EnemyCombatant else TurnSide.FRIENDS
 
 
 func _gain_armor(target: Combatant, amount: int) -> void:
@@ -471,6 +577,8 @@ func _tick(combatant: Combatant) -> void:
 	for modifier: StatModifier in combatant.tick_modifiers():
 		_log("%s 補正終了 %s" % [combatant.id, GameEnums.Param.keys()[modifier.param]])
 		modifier_expired.emit(combatant, modifier)
+	if combatant.tick_statuses_turn_end():
+		status_changed.emit(combatant)
 
 
 func _draw(count: int) -> void:

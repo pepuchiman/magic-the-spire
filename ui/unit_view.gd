@@ -59,6 +59,12 @@ func refresh() -> void:
 	show_values(combatant.hp, combatant.armor)
 
 
+## 状態効果の一覧だけを表示し直す（演出の途中で使う。HPの表示は変えない）
+func refresh_statuses() -> void:
+	if combatant != null:
+		_status_label.set_fitted_text(UiText.status_text(combatant))
+
+
 ## HPとアーマーの表示だけを変える（演出の途中で、その時点の値を見せるために使う）
 func show_values(hp: int, armor: int) -> void:
 	var max_hp := combatant.get_max_hp()

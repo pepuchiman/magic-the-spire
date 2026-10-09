@@ -40,10 +40,13 @@ enum EquipmentType { RING, WEAPON, ARMOR }  # 指輪・武器・鎧
 enum Param { MAX_HP, MANA_BASE, CATALYST_POWER_RED, CATALYST_POWER_BLUE, CATALYST_POWER_GREEN, DRAW_COUNT, MAX_HAND, DEFENSE }
 
 ## 敵の行動の種類
-enum EnemyActionType { ATTACK, DEFEND, SUMMON }  # 攻撃・防御・味方を呼ぶ
+enum EnemyActionType { ATTACK, DEFEND, SUMMON, APPLY_STATUS }  # 攻撃・防御・クリーチャーを呼ぶ・状態効果を与える
 
 ## 敵の行動の実行条件
 enum EnemyActionCondition { ALWAYS, HP_PERCENT_BELOW }  # いつでも・残りHPが〇％以下
+
+## 状態効果の種類（動きは docs/Game_Elements.md を参照。今後も追加していく）
+enum StatusType { POISON, PARALYSIS, WEAK, VULNERABLE, STRENGTH, THORNS }  # 毒・麻痺・弱体・脆弱・筋力・棘
 
 ## マップのノードの種類（エリート戦・宝箱はフェーズ5で使う）
 enum MapNodeType { BATTLE, ELITE, EVENT, REST, TREASURE, BOSS }  # 通常戦・エリート戦・イベント・休憩・宝箱・ボス

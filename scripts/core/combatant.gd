@@ -10,6 +10,8 @@ var armor: int = 0
 var base_max_hp: int = 1
 var base_defense: int = 0
 var modifiers: Array[StatModifier] = []
+## 付いている状態効果（種類 → StatusInstance）。動きは docs/Game_Elements.md を参照
+var statuses: Dictionary = {}
 
 
 func is_alive() -> bool:
@@ -47,6 +49,71 @@ func tick_modifiers() -> Array[StatModifier]:
 			expired.append(modifier)
 	_clamp_hp()
 	return expired
+
+
+## 状態効果の値（付いていなければ 0）
+func get_status_value(type: GameEnums.StatusType) -> int:
+	var status: StatusInstance = statuses.get(type)
+	return status.value if status != null else 0
+
+
+func has_status(type: GameEnums.StatusType) -> bool:
+	return statuses.has(type)
+
+
+## 状態効果を付ける。すでに付いていれば重ねがけ（値とターン数を足す。「バトル中」なら値だけ足す）
+## turns：ターン数で続くタイプの残りターン数（StatusInstance.BATTLE_LONG ならバトル中）
+## fresh：受けた側がまだ自分のターンを迎えていないか（true なら、直後のターン終了時には減らない）
+func add_status(type: GameEnums.StatusType, value: int, turns: int, fresh: bool) -> void:
+	if not StatusRules.uses_value(type):
+		value = 1  # 弱体・脆弱は値を使わない
+	var status: StatusInstance = statuses.get(type)
+	if status == null:
+		statuses[type] = StatusInstance.new(type, value, turns, fresh)
+		return
+	if StatusRules.uses_value(type):
+		status.value += value
+	if not StatusRules.is_value_type(type):
+		if status.turns == StatusInstance.BATTLE_LONG or turns == StatusInstance.BATTLE_LONG:
+			status.turns = StatusInstance.BATTLE_LONG
+		else:
+			status.turns += turns
+	# 前からあった分は今までどおり数える（足した分だけ長く残る）
+	status.fresh = status.fresh and fresh
+
+
+## 状態効果の値を減らす。0以下になったら消す
+func reduce_status(type: GameEnums.StatusType, amount: int) -> void:
+	var status: StatusInstance = statuses.get(type)
+	if status == null:
+		return
+	status.value -= amount
+	if status.value <= 0:
+		statuses.erase(type)
+
+
+## 自分のターンが始まった時に呼ぶ（付いた直後の印を外す）
+func mark_statuses_active() -> void:
+	for status: StatusInstance in statuses.values():
+		status.fresh = false
+
+
+## 自分のターンが終わった時に呼ぶ。値が減るタイプ（毒を除く）は値を1、ターン数で続くタイプは残りターンを1減らす。
+## 付いた直後のもの（fresh）と、毒（ターン開始時に減る）は減らさない。変化があれば true
+func tick_statuses_turn_end() -> bool:
+	var changed := false
+	for status: StatusInstance in statuses.values().duplicate():
+		if status.fresh or status.type == GameEnums.StatusType.POISON:
+			continue
+		if StatusRules.is_value_type(status.type):
+			reduce_status(status.type, 1)
+			changed = true
+		elif status.turns != StatusInstance.BATTLE_LONG:
+			status.turns -= 1
+			changed = true
+			if status.turns <= 0:
+				statuses.erase(status.type)
+	return changed
 
 
 ## 回復（最大HPまで）。実際に回復した量を返す

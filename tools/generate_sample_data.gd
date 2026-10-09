@@ -53,8 +53,24 @@ func _init() -> void:
 	elixir.uses_per_battle = 1
 	meteor.uses_per_battle = 1
 
+	# 状態効果のカード（docs/Game_Elements.md）
+	var S := GameEnums.StatusType
+	var poison_mist := _card(&"poison_mist", "POISON_MIST", GameEnums.CardType.BUFF, GameEnums.Rarity.COMMON, [GameEnums.Target.ANY], 1, 0, 0, 1, [_status(S.POISON, 4)], BOTH)
+	var thunderbolt := _card(&"thunderbolt", "THUNDERBOLT", GameEnums.CardType.ATTACK, GameEnums.Rarity.UNCOMMON, [GameEnums.Target.ANY], 2, 0, 1, 0, [_damage(5), _status(S.PARALYSIS, 1)], BOTH)
+	var curse := _card(&"curse", "CURSE", GameEnums.CardType.BUFF, GameEnums.Rarity.COMMON, [GameEnums.Target.ANY], 1, 0, 0, 0, [_status(S.WEAK, 1)], BOTH)
+	curse.duration = GameEnums.Duration.TURNS
+	curse.duration_turns = 2
+	var shatter_mark := _card(&"shatter_mark", "SHATTER_MARK", GameEnums.CardType.BUFF, GameEnums.Rarity.UNCOMMON, [GameEnums.Target.ANY], 1, 1, 0, 0, [_status(S.VULNERABLE, 1)])
+	shatter_mark.duration = GameEnums.Duration.TURNS
+	shatter_mark.duration_turns = 2
+	var power_chant := _card(&"power_chant", "POWER_CHANT", GameEnums.CardType.BUFF, GameEnums.Rarity.UNCOMMON, [GameEnums.Target.ANY], 1, 0, 0, 0, [_status(S.STRENGTH, 2)], BOTH)
+	power_chant.duration = GameEnums.Duration.BATTLE
+	var thorn_armor := _card(&"thorn_armor", "THORN_ARMOR", GameEnums.CardType.BUFF, GameEnums.Rarity.UNCOMMON, [GameEnums.Target.ANY], 1, 0, 0, 1, [_status(S.THORNS, 3)], BOTH)
+	thorn_armor.duration = GameEnums.Duration.BATTLE
+
 	var cards: Array = [spark, guard, fireball, frost_lance, meditation, heal, steam_blast, summon_sprite, summon_wolf, mana_surge,
-		ice_wall, arcane_burst, inferno, blizzard, elixir, meteor]
+		ice_wall, arcane_burst, inferno, blizzard, elixir, meteor,
+		poison_mist, thunderbolt, curse, shatter_mark, power_chant, thorn_armor]
 	for i in cards.size():
 		var card: CardData = cards[i]
 		cards[i] = _save_new(card, "res://data/cards/%s.tres" % card.id)
@@ -133,6 +149,16 @@ func _init() -> void:
 	frost_giant = _save_new(frost_giant, "res://data/enemies/frost_giant.tres")
 	var elites: Array[EnemyData] = [ogre, wraith]
 
+	# 状態効果を使う敵（毒を吐く・麻痺させる）
+	var spit := _action(GameEnums.EnemyActionType.APPLY_STATUS, 3)
+	spit.status = GameEnums.StatusType.POISON
+	var venom_spider := _enemy(&"venom_spider", "ENEMY_VENOM_SPIDER_NAME", 18, 2, 4, [spit, _action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK)])
+	var shock := _action(GameEnums.EnemyActionType.APPLY_STATUS, 1)
+	shock.status = GameEnums.StatusType.PARALYSIS
+	var thunder_wisp := _enemy(&"thunder_wisp", "ENEMY_THUNDER_WISP_NAME", 16, 3, 5, [_action(GameEnums.EnemyActionType.ATTACK), shock, _action(GameEnums.EnemyActionType.ATTACK)])
+	venom_spider = _save_new(venom_spider, "res://data/enemies/venom_spider.tres")
+	thunder_wisp = _save_new(thunder_wisp, "res://data/enemies/thunder_wisp.tres")
+
 	# --- 装備（数値は仮。マナ基準値・触媒力・ドロー数はレア以上だけ） ---
 	var P := GameEnums.Param
 	var R := GameEnums.Rarity
@@ -184,7 +210,7 @@ func _init() -> void:
 	dungeon.id = &"lost_forest"
 	dungeon.name_key = &"DUNGEON_LOST_FOREST_NAME"
 	dungeon.floor_count = 10
-	var normal: Array[EnemyData] = [slime, goblin, bat]
+	var normal: Array[EnemyData] = [slime, goblin, bat, venom_spider, thunder_wisp]
 	dungeon.normal_enemies = normal
 	dungeon.boss = boss
 	dungeon.events = events
@@ -197,7 +223,7 @@ func _init() -> void:
 	cave.name_key = &"DUNGEON_FROZEN_CAVE_NAME"
 	cave.unlocked_by_clearing = FIRST_DUNGEON_ID
 	cave.floor_count = 11
-	var cave_normal: Array[EnemyData] = [bat, goblin, slime]
+	var cave_normal: Array[EnemyData] = [bat, goblin, slime, venom_spider, thunder_wisp]
 	cave.normal_enemies = cave_normal
 	cave.elite_enemies = elites
 	cave.boss = frost_giant
@@ -278,6 +304,13 @@ func _draw(count: int) -> DrawEffect:
 func _modify(param: GameEnums.Param, amount: int) -> ModifyParamEffect:
 	var effect := ModifyParamEffect.new()
 	effect.param = param
+	effect.amount = amount
+	return effect
+
+
+func _status(type: GameEnums.StatusType, amount: int) -> StatusEffect:
+	var effect := StatusEffect.new()
+	effect.status = type
 	effect.amount = amount
 	return effect
 

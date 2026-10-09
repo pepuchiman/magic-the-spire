@@ -22,7 +22,7 @@ func test_loader_reads_sample_data() -> void:
 	assert_not_null(loader.get_card(&"fireball"), "カードを読み込める")
 	assert_not_null(loader.get_enemy(&"boss_witch"), "ボスを読み込める")
 	assert_false(loader.index.cards.is_empty(), "カードがある")
-	assert_eq(loader.get_dungeon(&"lost_forest").normal_enemies.size(), 3, "サンプルダンジョンの通常の敵は3種")
+	assert_true(loader.get_dungeon(&"lost_forest").normal_enemies.has(loader.get_enemy(&"slime")), "サンプルダンジョンに通常の敵がいる")
 
 
 func test_sample_data_covers_required_card_kinds() -> void:

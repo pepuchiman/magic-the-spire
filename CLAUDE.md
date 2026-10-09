@@ -2,10 +2,11 @@
 - ゲームの仮タイトル：Magic The Spire
 - Godot 4 で作る、魔法使いが主人公のローグライク・カードバトルゲーム（Slay the Spire 風）
 - 対象：スマホ（Android／iOS）の縦画面。開発中の動作確認は Windows で行う
-- 仕様の正は Game_Rule.md。開発の手順・フェーズは Dev_Plan.md に従う
+- 仕様の正は Game_Rule.md と Game_Elements.md（状態効果・種族などの要素の一覧）。開発の手順・フェーズは Dev_Plan.md に従う
 
 # 詳細資料
 - ゲーム仕様：@docs/Game_Rule.md
+- ゲーム要素の一覧（状態効果・種族など。今後も追加される）：@docs/Game_Elements.md
 - 開発計画：@docs/Dev_Plan.md
 
 # 環境

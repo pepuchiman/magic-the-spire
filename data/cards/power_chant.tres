@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_rdafo"]
+[ext_resource type="Script" path="res://scripts/resources/status_effect.gd" id="2_3f66e"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_uuxef"]
+
+[sub_resource type="Resource" id="Resource_8p8ox"]
+script = ExtResource("2_3f66e")
+status = 4
+amount = 2
+
+[resource]
+script = ExtResource("3_uuxef")
+id = &"power_chant"
+name_key = &"CARD_POWER_CHANT_NAME"
+card_type = 2
+rarity = 1
+usable_heroes = Array[StringName]([&"flame_mage", &"frost_mage"])
+targets = Array[int]([6])
+cost_mana = 1
+duration = 2
+effects = Array[ExtResource("1_rdafo")]([SubResource("Resource_8p8ox")])
+description_key = &"CARD_POWER_CHANT_DESC"

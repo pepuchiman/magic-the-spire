@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_y2wvb"]
+[ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_1gi4p"]
+[ext_resource type="Script" path="res://scripts/resources/status_effect.gd" id="3_bhyb5"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="4_pfjsp"]
+
+[sub_resource type="Resource" id="Resource_numng"]
+script = ExtResource("2_1gi4p")
+amount = 5
+
+[sub_resource type="Resource" id="Resource_ogtd6"]
+script = ExtResource("3_bhyb5")
+status = 1
+
+[resource]
+script = ExtResource("4_pfjsp")
+id = &"thunderbolt"
+name_key = &"CARD_THUNDERBOLT_NAME"
+rarity = 1
+usable_heroes = Array[StringName]([&"flame_mage", &"frost_mage"])
+targets = Array[int]([6])
+cost_mana = 2
+required_blue = 1
+effects = Array[ExtResource("1_y2wvb")]([SubResource("Resource_numng"), SubResource("Resource_ogtd6")])
+description_key = &"CARD_THUNDERBOLT_DESC"

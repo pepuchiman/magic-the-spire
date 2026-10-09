@@ -12,12 +12,14 @@
 [ext_resource type="Resource" path="res://data/events/traveling_mage.tres" id="5_kj40p"]
 [ext_resource type="Resource" path="res://data/enemies/bat.tres" id="6_kj40p"]
 [ext_resource type="Script" path="res://scripts/resources/dungeon_data.gd" id="7_rfc6l"]
+[ext_resource type="Resource" path="res://data/enemies/venom_spider.tres" id="12_p1ado"]
+[ext_resource type="Resource" path="res://data/enemies/thunder_wisp.tres" id="13_po6od"]
 
 [resource]
 script = ExtResource("7_rfc6l")
 id = &"lost_forest"
 name_key = &"DUNGEON_LOST_FOREST_NAME"
-normal_enemies = Array[ExtResource("3_6aos1")]([ExtResource("4_fjkxm"), ExtResource("5_ihtdj"), ExtResource("6_kj40p")])
+normal_enemies = Array[ExtResource("3_6aos1")]([ExtResource("4_fjkxm"), ExtResource("5_ihtdj"), ExtResource("6_kj40p"), ExtResource("12_p1ado"), ExtResource("13_po6od")])
 elite_enemies = Array[ExtResource("3_6aos1")]([ExtResource("3_kj40p"), ExtResource("4_rfc6l")])
 boss = ExtResource("1_fs8ae")
 events = Array[ExtResource("2_tes4l")]([ExtResource("3_fjkxm"), ExtResource("4_ihtdj"), ExtResource("5_kj40p")])

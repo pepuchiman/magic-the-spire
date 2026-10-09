@@ -27,12 +27,22 @@ static func intent_text(enemy: EnemyCombatant) -> String:
 			return t("UI_INTENT_DEFEND").format({"amount": action.amount})
 		GameEnums.EnemyActionType.SUMMON:
 			return t("UI_INTENT_SUMMON")
+		GameEnums.EnemyActionType.APPLY_STATUS:
+			var status_name := t(TextKeys.status(action.status))
+			if StatusRules.uses_value(action.status):
+				return fmt("UI_INTENT_STATUS", {"status": status_name, "amount": action.amount})
+			return fmt("UI_INTENT_STATUS_PLAIN", {"status": status_name})
 	return ""
 
 
-## 状態効果（補正）の一覧の文章。「永続」は基本パラメーターに反映されるため表示しない
+## 状態効果と補正の一覧の文章（例：「毒 5　弱体（残り2）　筋力 2（バトル中）」）。
+## 横に並べ、枠の幅で折り返す。「永続」の補正は基本パラメーターに反映されるため表示しない
 static func status_text(combatant: Combatant) -> String:
 	var lines := PackedStringArray()
+	for type: int in GameEnums.StatusType.values():
+		var status: StatusInstance = combatant.statuses.get(type)
+		if status != null:
+			lines.append(status_line(status))
 	for modifier: StatModifier in combatant.modifiers:
 		var params := {
 			"param": t(TextKeys.param(modifier.param)),
@@ -44,7 +54,22 @@ static func status_text(combatant: Combatant) -> String:
 				lines.append(t("UI_STATUS_TURNS").format(params))
 			GameEnums.Duration.BATTLE:
 				lines.append(t("UI_STATUS_BATTLE").format(params))
-	return "\n".join(lines)
+	return STATUS_SEPARATOR.join(lines)
+
+
+## 状態効果を横に並べる時の区切り（文章ではなく空白）
+const STATUS_SEPARATOR := "　"
+
+
+## 状態効果1つ分の文章
+static func status_line(status: StatusInstance) -> String:
+	var params := {"status": t(TextKeys.status(status.type)), "value": status.value, "turns": status.turns}
+	if StatusRules.is_value_type(status.type):
+		return fmt("UI_STATUS_VALUE", params)  # 毒 5／麻痺 2
+	var battle_long := status.turns == StatusInstance.BATTLE_LONG
+	if StatusRules.uses_value(status.type):
+		return fmt("UI_STATUS_VALUE_BATTLE" if battle_long else "UI_STATUS_VALUE_TURNS", params)  # 筋力 2（バトル中）
+	return fmt("UI_STATUS_PLAIN_BATTLE" if battle_long else "UI_STATUS_PLAIN_TURNS", params)  # 弱体（残り2）
 
 
 ## 装備の効果の一覧（例：「最大HP +4」）
@@ -90,4 +115,6 @@ static func cannot_play_text(result: Battle.PlayResult) -> String:
 			return t("UI_CANNOT_PLAY_MANA")
 		Battle.PlayResult.CATALYST_NOT_MET:
 			return t("UI_CANNOT_PLAY_CATALYST")
+		Battle.PlayResult.PARALYZED:
+			return t("UI_CANNOT_PLAY_PARALYZED")
 	return ""

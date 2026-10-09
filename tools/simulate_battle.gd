@@ -20,6 +20,7 @@ func _init() -> void:
 		return
 
 	var battle := Battle.new(hero, hero.starting_deck, enemy, int(options["seed"]))
+	battle.config = loader.get_config()
 	var result := AutoPlayer.run(battle)
 	for line: String in battle.history:
 		print(line)

@@ -51,7 +51,7 @@ func decide_next_action(can_summon: bool) -> void:
 			return
 
 
-## その行動を、いま実行できるか
+## その行動を、いま実行できるか（攻撃・防御・状態効果を与える はいつでもできる）
 static func is_executable(action: EnemyActionData, can_summon: bool) -> bool:
 	if action.action_type == GameEnums.EnemyActionType.SUMMON:
 		return can_summon and action.summon_enemy != null

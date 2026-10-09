@@ -111,7 +111,9 @@ func move_to(node: MapNode) -> bool:
 func create_battle() -> Battle:
 	var modifiers := permanent_modifiers.duplicate()
 	modifiers.append_array(get_equipment_modifiers())
-	return Battle.new(hero, deck, current_node.enemy, rng.randi(), hp, modifiers)
+	var battle := Battle.new(hero, deck, current_node.enemy, rng.randi(), hp, modifiers)
+	battle.config = config
+	return battle
 
 
 ## バトルの結果を反映する。引き継ぐのは主人公のHPと「永続」の補正だけ

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_p2dt8"]
+[ext_resource type="Script" path="res://scripts/resources/status_effect.gd" id="2_4pf8k"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_x3twn"]
+
+[sub_resource type="Resource" id="Resource_7m5ul"]
+script = ExtResource("2_4pf8k")
+amount = 4
+
+[resource]
+script = ExtResource("3_x3twn")
+id = &"poison_mist"
+name_key = &"CARD_POISON_MIST_NAME"
+card_type = 2
+usable_heroes = Array[StringName]([&"flame_mage", &"frost_mage"])
+targets = Array[int]([6])
+cost_mana = 1
+required_green = 1
+effects = Array[ExtResource("1_p2dt8")]([SubResource("Resource_7m5ul")])
+description_key = &"CARD_POISON_MIST_DESC"

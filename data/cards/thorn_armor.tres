@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_l7xrv"]
+[ext_resource type="Script" path="res://scripts/resources/status_effect.gd" id="2_tgvmo"]
+[ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_y87wa"]
+
+[sub_resource type="Resource" id="Resource_w1q8j"]
+script = ExtResource("2_tgvmo")
+status = 5
+amount = 3
+
+[resource]
+script = ExtResource("3_y87wa")
+id = &"thorn_armor"
+name_key = &"CARD_THORN_ARMOR_NAME"
+card_type = 2
+rarity = 1
+usable_heroes = Array[StringName]([&"flame_mage", &"frost_mage"])
+targets = Array[int]([6])
+cost_mana = 1
+required_green = 1
+duration = 2
+effects = Array[ExtResource("1_l7xrv")]([SubResource("Resource_w1q8j")])
+description_key = &"CARD_THORN_ARMOR_DESC"

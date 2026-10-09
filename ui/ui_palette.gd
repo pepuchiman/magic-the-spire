@@ -19,6 +19,9 @@ const MANA := Color(0.30, 0.62, 1.0)
 const HIGHLIGHT := Color(1.0, 0.85, 0.30)
 const SELECTED := Color(1.0, 0.55, 0.20)
 const INTENT := Color(1.0, 0.90, 0.60)
+## 毒のダメージ・状態効果の演出の色
+const POISON := Color(0.60, 0.90, 0.30)
+const STATUS := Color(0.85, 0.70, 1.0)
 const BUTTON := Color(0.30, 0.26, 0.48)
 ## 目立たせたいボタン（ターン終了など）
 const BUTTON_ACCENT := Color(0.85, 0.45, 0.20)

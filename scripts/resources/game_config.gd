@@ -19,6 +19,12 @@ extends Resource
 ## デッキに多い触媒色のカードを出やすくする強さ（％。0 なら色で重み付けしない）
 @export_range(0, 1000) var color_weight_strength: int = 200
 
+@export_group("状態効果")
+## 弱体：与えるダメージを何％減らすか
+@export_range(0, 100) var weak_percent: int = 25
+## 脆弱：受けるダメージを何％増やすか
+@export_range(0, 300) var vulnerable_percent: int = 50
+
 @export_group("レアリティの出やすさ（重み）")
 @export_range(0, 1000) var common_weight: int = 60
 @export_range(0, 1000) var uncommon_weight: int = 30
