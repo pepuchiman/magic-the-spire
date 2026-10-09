@@ -65,6 +65,9 @@ UI_CLEARED_MARK,（クリア済み）
 UI_NEW_UNLOCK_HERO,新しい主人公：{name}
 UI_NEW_UNLOCK_DUNGEON,新しいダンジョン：{name}
 UI_NEW_UNLOCK_CARD,新しいカード：{name}
+UI_CONFIRM_NEW_GAME,中断データは消えます。新しく始めますか？
+UI_YES,はい
+UI_NO,いいえ
 UI_DEBUG_RESET,（開発用）データをリセット
 UI_DEBUG_RESET_DONE,データをリセットしました
 EQUIPMENT_TYPE_RING,指輪

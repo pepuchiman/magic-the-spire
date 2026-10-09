@@ -17,6 +17,7 @@ card_type = 0
 usable_heroes = Array[StringName]([&"flame_mage"])
 targets = Array[int]([5])
 cost_mana = 2
+uses_per_battle = 1
 required_red = 1
 effects = Array[ExtResource("1_3ixq3")]([SubResource("Resource_vlanr")])
 description_key = &"CARD_SUMMON_SPRITE_DESC"

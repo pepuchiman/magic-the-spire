@@ -2,6 +2,7 @@ extends Node
 ## 全体の管理（自動で読み込まれ、どこからでも Game.～ で使える）
 ## ・現在のラン（RunState）と、ゲームの進み具合（アンロックの状況）を持つ
 ## ・画面の切り替えをまとめて行う（「次にどの画面へ進むか」は、ここだけで決める）
+## ・ランの中の画面に入るたびに中断データを保存し、「続きから」で再開できるようにする
 
 ## 画面の切り替えを頼まれた時（テストで、どの画面に進んだかを確かめるのに使う）
 signal screen_requested(screen: Screen)
@@ -37,12 +38,29 @@ var selected_dungeon: DungeonData
 var current_screen: Screen = Screen.TITLE
 ## false にすると、画面を実際には切り替えない（テスト用）
 var change_scenes: bool = true
+## ランの中断データのファイル
+var run_save: RunSaveStore
+## 最後に保存した中断データ（アプリを閉じる時に、プレイ時間だけを更新して書き直すのに使う）
+var _last_save: Dictionary = {}
+
+## 入った時に中断データを保存する画面（中断したら、その画面の始めから再開する）
+const SAVE_SCREENS: Array[Screen] = [Screen.MAP, Screen.BATTLE, Screen.REWARD, Screen.REST, Screen.EVENT, Screen.TREASURE]
 
 
 func _ready() -> void:
 	data = DataLoader.new()
 	progress = ProgressStore.new()
 	progress.load_progress()
+	run_save = RunSaveStore.new()
+
+
+## アプリが閉じられる・裏に回る時：最後の中断データのプレイ時間だけを更新する
+## （途中の操作は保存しないので、再開はその画面の始めから）
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_PAUSED:
+		if run != null and not run.finished and not _last_save.is_empty():
+			_last_save["play_seconds"] = run.play_seconds
+			run_save.write(_last_save)
 
 
 ## 主人公・ダンジョン・カードが解放されているか
@@ -61,8 +79,12 @@ func _process(delta: float) -> void:
 		run.play_seconds += delta
 
 
+## 画面を切り替える。ランの中の画面なら、切り替える前に中断データを保存する
+## （画面の中身を作る前の乱数の状態で保存するので、再開すると同じ中身になる）
 func go_to(screen: Screen) -> void:
 	current_screen = screen
+	if run != null and not run.finished and SAVE_SCREENS.has(screen):
+		save_run()
 	screen_requested.emit(screen)
 	if change_scenes:
 		get_tree().change_scene_to_file(SCENE_PATHS[screen])
@@ -70,7 +92,40 @@ func go_to(screen: Screen) -> void:
 
 func go_to_title() -> void:
 	run = null
+	_last_save = {}
 	go_to(Screen.TITLE)
+
+
+## 今のランを中断データとして保存する
+func save_run() -> void:
+	_last_save = RunSerializer.to_dict(run, current_screen)
+	run_save.write(_last_save)
+
+
+## 中断データがあるか（タイトル画面の「続きから」を押せるか）
+func has_saved_run() -> bool:
+	return run_save.exists()
+
+
+## 中断データを消す
+func delete_saved_run() -> void:
+	run_save.delete()
+	_last_save = {}
+
+
+## 「続きから」：中断データを読み込み、保存した画面から再開する。
+## 読み込めなかった時（壊れている、データが変わった など）は中断データを消して false
+func continue_run() -> bool:
+	var saved := run_save.read()
+	var restored := RunSerializer.from_dict(saved, data)
+	var screen := int(saved.get("screen", -1))
+	if restored == null or not SAVE_SCREENS.has(screen):
+		delete_saved_run()
+		return false
+	run = restored
+	selected_dungeon = run.dungeon
+	go_to(screen)
+	return true
 
 
 func select_dungeon(dungeon: DungeonData) -> void:
@@ -109,7 +164,9 @@ func finish_battle(result: BattleResult) -> void:
 	run.apply_battle_result(result)
 	if not run.finished:
 		go_to(Screen.REWARD)
-	elif run.cleared:
+		return
+	delete_saved_run()  # ランが終わったら中断データは消す
+	if run.cleared:
 		_record_clear()
 		go_to(Screen.CLEAR)
 	else:

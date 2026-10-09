@@ -5,8 +5,10 @@ extends GutTest
 const Screen := preload("res://scripts/autoload/game.gd").Screen
 ## テストでは本物のセーブデータを使わない
 const TEST_PROGRESS_PATH := "user://test_progress_flow.cfg"
+const TEST_RUN_SAVE_PATH := "user://test_run_save_flow.json"
 
 var _real_progress: ProgressStore
+var _real_run_save: RunSaveStore
 
 
 func before_each() -> void:
@@ -17,11 +19,15 @@ func before_each() -> void:
 	Game.selected_dungeon = Game.data.get_dungeon(&"lost_forest")
 	_real_progress = Game.progress
 	Game.progress = ProgressStore.new(TEST_PROGRESS_PATH)
+	_real_run_save = Game.run_save
+	Game.run_save = RunSaveStore.new(TEST_RUN_SAVE_PATH)
 
 
 func after_each() -> void:
 	Game.progress.reset()
 	Game.progress = _real_progress
+	Game.run_save.delete()
+	Game.run_save = _real_run_save
 	Game.newly_unlocked.clear()
 	Game.run = null
 	Game.current_screen = Screen.TITLE
@@ -94,6 +100,86 @@ func test_treasure_node_leads_to_treasure_screen() -> void:
 	Game.run.move_to(first)
 	Game.enter_node(treasure)
 	assert_eq(Game.current_screen, Screen.TREASURE)
+
+
+# ---------- 中断と再開 ----------
+
+## アプリを終了して、もう一度起動した状態にする（メモリ上のランを消す）
+func _restart_app() -> void:
+	Game.run = null
+	Game.current_screen = Screen.TITLE
+
+
+func test_map_is_saved_and_resumed() -> void:
+	_start()
+	assert_true(Game.has_saved_run(), "マップに入ると保存される")
+	var floor_before := Game.run.map.get_floor(0).size()
+	_restart_app()
+	assert_true(Game.continue_run(), "続きから再開できる")
+	assert_eq(Game.current_screen, Screen.MAP, "マップから再開")
+	assert_eq(Game.run.map.get_floor(0).size(), floor_before)
+
+
+func test_battle_resumes_from_its_start() -> void:
+	_start()
+	var node: MapNode = Game.run.available_nodes()[0]
+	Game.enter_node(node)
+	var screen_a: BattleScreen = _open(Game.SCENE_PATHS[Screen.BATTLE], true)
+	var hand_a: Array = screen_a.battle.deck.hand.map(func(c: CardInstance) -> StringName: return c.data.id)
+	screen_a.request_end_turn()  # 少し進めてから中断する
+	_restart_app()
+	Game.continue_run()
+	assert_eq(Game.current_screen, Screen.BATTLE, "バトルから再開")
+	var screen_b: BattleScreen = _open(Game.SCENE_PATHS[Screen.BATTLE], true)
+	assert_eq(screen_b.battle.turn, 1, "バトルの最初から")
+	assert_eq(screen_b.battle.main_enemy.data, node.enemy, "同じ敵")
+	assert_eq(screen_b.battle.deck.hand.map(func(c: CardInstance) -> StringName: return c.data.id), hand_a, "同じ手札")
+
+
+func test_reward_resumes_with_same_choices() -> void:
+	_start()
+	Game.enter_node(Game.run.available_nodes()[0])
+	Game.finish_battle(BattleResult.new(true, 15, [], 3, 1))
+	var reward_a: Control = _open(Game.SCENE_PATHS[Screen.REWARD])
+	var choices_a: Array = reward_a.choices.duplicate()
+	_restart_app()
+	Game.continue_run()
+	assert_eq(Game.current_screen, Screen.REWARD, "報酬画面から再開（バトルはやり直さない）")
+	var reward_b: Control = _open(Game.SCENE_PATHS[Screen.REWARD])
+	assert_eq(reward_b.choices, choices_a, "同じ3枚が出る")
+
+
+func test_run_end_deletes_save() -> void:
+	_start()
+	Game.enter_node(Game.run.available_nodes()[0])
+	assert_true(Game.has_saved_run())
+	Game.finish_battle(BattleResult.new(false, 0, [], 3))
+	assert_false(Game.has_saved_run(), "ゲームオーバーで中断データが消える")
+
+
+func test_broken_save_is_discarded() -> void:
+	Game.run_save.write({"version": 1, "hero": "no_such_hero"})
+	assert_false(Game.continue_run(), "読み込めないデータでは再開しない")
+	assert_false(Game.has_saved_run(), "読み込めないデータは消す")
+
+
+func test_title_continue_and_confirm() -> void:
+	var title: Control = _open("res://scenes/title/title_screen.tscn")
+	assert_true(title.get_node("%ContinueButton").disabled, "中断データが無ければ「続きから」は押せない")
+	title.free()
+	_start()
+	_restart_app()
+	title = _open("res://scenes/title/title_screen.tscn")
+	assert_false(title.get_node("%ContinueButton").disabled, "中断データがあれば押せる")
+	title.get_node("%NewGameButton").pressed.emit()
+	assert_true(title.get_node("%ConfirmPanel").visible, "「はじめから」で確認が出る")
+	assert_eq(Game.current_screen, Screen.TITLE, "確認するまで進まない")
+	title.get_node("%ConfirmNoButton").pressed.emit()
+	assert_true(Game.has_saved_run(), "「いいえ」なら中断データは残る")
+	title.get_node("%NewGameButton").pressed.emit()
+	title.get_node("%ConfirmYesButton").pressed.emit()
+	assert_false(Game.has_saved_run(), "「はい」なら中断データを消す")
+	assert_eq(Game.current_screen, Screen.DUNGEON_SELECT)
 
 
 # ---------- アンロックの表示 ----------

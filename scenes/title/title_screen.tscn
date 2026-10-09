@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://c18lav42vye33"]
 
-[ext_resource type="Script" path="res://scenes/title/title_screen.gd" id="1_title"]
+[ext_resource type="Script" uid="uid://bvn0wfljrhcpp" path="res://scenes/title/title_screen.gd" id="1_title"]
 
-[node name="TitleScreen" type="Control"]
+[node name="TitleScreen" type="Control" unique_id=882492853]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_title")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=2031441960]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,7 +20,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.1, 0.08, 0.2, 1)
 
-[node name="TitleLabel" type="Label" parent="."]
+[node name="TitleLabel" type="Label" parent="." unique_id=1537403429]
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.08
@@ -35,7 +35,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="SubtitleLabel" type="Label" parent="."]
+[node name="SubtitleLabel" type="Label" parent="." unique_id=2109332451]
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.2
@@ -50,7 +50,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="HeroArt" type="ColorRect" parent="."]
+[node name="HeroArt" type="ColorRect" parent="." unique_id=860561048]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.3
@@ -60,7 +60,7 @@ anchor_bottom = 0.55
 mouse_filter = 2
 color = Color(0.55, 0.4, 0.85, 1)
 
-[node name="Buttons" type="VBoxContainer" parent="."]
+[node name="Buttons" type="VBoxContainer" parent="." unique_id=1432446878]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.12
@@ -71,7 +71,7 @@ grow_horizontal = 2
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="NewGameButton" type="Button" parent="Buttons"]
+[node name="NewGameButton" type="Button" parent="Buttons" unique_id=1844001761]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 110)
 layout_mode = 2
@@ -79,7 +79,7 @@ theme_override_font_sizes/font_size = 38
 text = "UI_NEW_GAME"
 autowrap_mode = 3
 
-[node name="ContinueButton" type="Button" parent="Buttons"]
+[node name="ContinueButton" type="Button" parent="Buttons" unique_id=772110769]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
@@ -88,7 +88,7 @@ disabled = true
 text = "UI_CONTINUE"
 autowrap_mode = 3
 
-[node name="SettingsButton" type="Button" parent="Buttons"]
+[node name="SettingsButton" type="Button" parent="Buttons" unique_id=1398904753]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
@@ -97,11 +97,67 @@ disabled = true
 text = "UI_SETTINGS"
 autowrap_mode = 3
 
-[node name="DebugResetButton" type="Button" parent="Buttons"]
+[node name="DebugResetButton" type="Button" parent="Buttons" unique_id=1127279030]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "UI_DEBUG_RESET"
+autowrap_mode = 3
+
+[node name="ConfirmPanel" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="ConfirmBox" type="PanelContainer" parent="ConfirmPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.06
+anchor_top = 0.55
+anchor_right = 0.94
+anchor_bottom = 0.85
+grow_horizontal = 2
+
+[node name="ConfirmContent" type="VBoxContainer" parent="ConfirmPanel/ConfirmBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ConfirmLabel" type="Label" parent="ConfirmPanel/ConfirmBox/ConfirmContent"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 30
+text = "UI_CONFIRM_NEW_GAME"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="ConfirmButtons" type="HBoxContainer" parent="ConfirmPanel/ConfirmBox/ConfirmContent"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ConfirmNoButton" type="Button" parent="ConfirmPanel/ConfirmBox/ConfirmContent/ConfirmButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 30
+text = "UI_NO"
+autowrap_mode = 3
+
+[node name="ConfirmYesButton" type="Button" parent="ConfirmPanel/ConfirmBox/ConfirmContent/ConfirmButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 30
+text = "UI_YES"
 autowrap_mode = 3
