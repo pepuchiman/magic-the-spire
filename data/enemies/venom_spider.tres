@@ -19,6 +19,5 @@ script = ExtResource("2_p4tv1")
 id = &"venom_spider"
 name_key = &"ENEMY_VENOM_SPIDER_NAME"
 max_hp = 18
-attack_min = 2
-attack_max = 4
+attack = 3
 pattern = Array[ExtResource("1_fimnm")]([SubResource("Resource_wuvvt"), SubResource("Resource_6swf0"), SubResource("Resource_75ofq")])

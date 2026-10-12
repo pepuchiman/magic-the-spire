@@ -17,6 +17,5 @@ script = ExtResource("2_3p0q2")
 id = &"bat"
 name_key = &"ENEMY_BAT_NAME"
 max_hp = 14
-attack_min = 2
-attack_max = 4
+attack = 3
 pattern = Array[ExtResource("1_w5w5p")]([SubResource("Resource_jcxsq"), SubResource("Resource_4pae2"), SubResource("Resource_yobf3")])

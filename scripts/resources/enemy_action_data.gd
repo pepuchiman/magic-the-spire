@@ -4,7 +4,7 @@ extends Resource
 ## （条件付きの行動は、条件を満たし実行できれば優先される）
 
 @export var action_type: GameEnums.EnemyActionType = GameEnums.EnemyActionType.ATTACK
-## 防御：得るアーマーの量／状態効果を与える：状態効果の値（攻撃のダメージは敵の攻撃力最少値〜最大値を使う）
+## 防御：得るアーマーの量／状態効果を与える：状態効果の値（攻撃のダメージは敵の攻撃力を使う）
 @export_range(0, 9999) var amount: int = 0
 ## 「クリーチャーを呼ぶ」時に呼ぶ敵
 @export var summon_enemy: EnemyData

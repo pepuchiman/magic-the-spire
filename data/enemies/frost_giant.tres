@@ -26,6 +26,5 @@ id = &"frost_giant"
 name_key = &"ENEMY_FROST_GIANT_NAME"
 max_hp = 95
 defense = 1
-attack_min = 7
-attack_max = 11
+attack = 9
 pattern = Array[ExtResource("1_2ah5k")]([SubResource("Resource_ji272"), SubResource("Resource_ufl78"), SubResource("Resource_47qti"), SubResource("Resource_6rd1k")])

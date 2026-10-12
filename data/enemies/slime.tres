@@ -19,6 +19,5 @@ script = ExtResource("2_s20qs")
 id = &"slime"
 name_key = &"ENEMY_SLIME_NAME"
 max_hp = 20
-attack_min = 3
-attack_max = 5
+attack = 4
 pattern = Array[ExtResource("1_f5jfp")]([SubResource("Resource_n28aa"), SubResource("Resource_nl3q0"), SubResource("Resource_r0o31")])

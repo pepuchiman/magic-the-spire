@@ -16,13 +16,10 @@ enum Mode {
 	ENDED,  ## バトル終了
 }
 
-const UNIT_SCENE := preload("res://ui/unit_view.tscn")
+const UNIT_SCENE := preload("res://ui/unit_sprite.tscn")
 const CARD_SCENE := preload("res://ui/card_view.tscn")
 ## これ以上指が動いたらドラッグとみなす（それ未満で離したらタップ）
 const DRAG_THRESHOLD := 16.0
-const HERO_WIDTH := 170.0
-const MAIN_ENEMY_WIDTH := 220.0
-const UNIT_WIDTH := 140.0
 ## 演出1つ分の基本の長さ（秒）
 const STEP_TIME := 0.45
 
@@ -45,7 +42,8 @@ const STEP_TIME := 0.45
 var battle: Battle
 var mode: Mode = Mode.NORMAL
 
-var _views: Dictionary = {}  # Combatant → UnitView
+var _views: Dictionary = {}  # Combatant → UnitSprite（戦場の姿）
+var _info_panels: Dictionary = {}  # Combatant → UnitInfoPanel（主人公と敵本体の情報の枠）
 var _events: Array[Dictionary] = []
 var _playing_events: bool = false
 var _discard_selection: Array[int] = []
@@ -54,16 +52,22 @@ var _pending_summon_index: int = -1
 ## ドラッグ中の情報（view、start、moved）
 var _drag: Dictionary = {}
 var _drag_ghost: CardView
-var _drag_target: UnitView
+var _drag_target: UnitSprite
 var _toast_tween: Tween
 
 @onready var _header: PanelContainer = %Header
 @onready var _dungeon_label: FitLabel = %DungeonLabel
 @onready var _floor_label: FitLabel = %FloorLabel
 @onready var _settings_button: Button = %SettingsButton
-@onready var _enemy_area: HBoxContainer = %EnemyArea
-@onready var _hero_holder: HBoxContainer = %HeroHolder
-@onready var _ally_row: HBoxContainer = %AllyRow
+## 戦場の立ち位置（エディターで枠を動かすと、キャラクターの位置と大きさが変わる）。
+## 後に並んでいる立ち位置ほど手前に描かれる
+@onready var _enemy_main_slot: Control = %EnemyMainSlot
+@onready var _enemy_creature_slots: Array[Control] = [%EnemyCreatureSlot1, %EnemyCreatureSlot2]
+@onready var _hero_slot: Control = %HeroSlot
+@onready var _ally_slots: Array[Control] = [%AllySlot1, %AllySlot2]
+@onready var _enemy_info: UnitInfoPanel = %EnemyInfo
+@onready var _hero_info: UnitInfoPanel = %HeroInfo
+@onready var _detail_popup: UnitDetailPopup = %UnitDetailPopup
 @onready var _status_bar: PanelContainer = %StatusBar
 @onready var _catalyst_labels: Array[FitLabel] = [%CatalystRedLabel, %CatalystBlueLabel, %CatalystGreenLabel]
 @onready var _deck_button: Button = %DeckButton
@@ -265,15 +269,15 @@ func _play_event(event: Dictionary) -> float:
 			_show_toast(event["text"])
 			return step
 		"damage", "heal", "armor":
-			var view: UnitView = _views.get(event["target"])
+			var view: UnitSprite = _views.get(event["target"])
 			if view == null:
 				return 0.0
-			view.show_values(event["hp"], event["armor"])
+			_show_values(event["target"], event["hp"], event["armor"])
 			var color := UiPalette.DAMAGE
 			var text := "-%d" % event["amount"]
 			if event["type"] == "damage":
 				view.play_hit_flash(step)
-				var source_view: UnitView = _views.get(event["source"])
+				var source_view: UnitSprite = _views.get(event["source"])
 				if source_view != null:
 					source_view.play_attack_motion(step * 0.6)
 				if event["poison"]:
@@ -284,7 +288,7 @@ func _play_event(event: Dictionary) -> float:
 			else:
 				color = UiPalette.ARMOR
 				text = "+%d" % event["amount"]
-			FloatingNumber.spawn(_effect_layer, _center_of(view), text, color, step * 2.0)
+			FloatingNumber.spawn(_effect_layer, _center_of(view.effect_anchor()), text, color, step * 2.0)
 			return step
 		"died":
 			var target: Combatant = event["target"]
@@ -297,14 +301,17 @@ func _play_event(event: Dictionary) -> float:
 				_remove_view(event["replaced"])
 			return step
 		"status":
-			var status_view: UnitView = _views.get(event["target"])
+			var status_view: UnitSprite = _views.get(event["target"])
 			if status_view != null:
 				status_view.refresh_statuses()  # 状態効果の一覧を表示し直す
+			var status_info: UnitInfoPanel = _info_panels.get(event["target"])
+			if status_info != null:
+				status_info.refresh_statuses()
 			return step * 0.4
 		"prevented":
-			var prevented_view: UnitView = _views.get(event["target"])
+			var prevented_view: UnitSprite = _views.get(event["target"])
 			if prevented_view != null:
-				FloatingNumber.spawn(_effect_layer, _center_of(prevented_view), UiText.t("UI_PARALYZED_POPUP"), UiPalette.STATUS, step * 2.0)
+				FloatingNumber.spawn(_effect_layer, _center_of(prevented_view.effect_anchor()), UiText.t("UI_PARALYZED_POPUP"), UiPalette.STATUS, step * 2.0)
 			return step
 	return 0.0
 
@@ -344,8 +351,15 @@ func _refresh_all() -> void:
 	if battle == null:
 		return
 	_sync_units()
-	for view: UnitView in _views.values():
+	for view: UnitSprite in _views.values():
 		view.refresh()
+	for panel: UnitInfoPanel in _info_panels.values():
+		panel.refresh()
+	if _detail_popup.visible and _detail_popup.combatant != null:
+		if _views.has(_detail_popup.combatant):
+			_detail_popup.open(_detail_popup.combatant)
+		else:
+			_detail_popup.hide()  # 詳しく見ていたクリーチャーが倒れた
 	_refresh_hand()
 	_refresh_status()
 	_update_buttons()
@@ -388,40 +402,72 @@ func _sync_units() -> void:
 			_remove_view(combatant)
 	for combatant: Combatant in wanted:
 		_ensure_view(combatant)
-	# 並び順：敵エリアは敵本体が先、仲間は呼ばれた順
-	_enemy_area.move_child(_views[battle.main_enemy], 0)
-	for i in battle.enemy_allies.size():
-		_enemy_area.move_child(_views[battle.enemy_allies[i]], i + 1)
+	# 立ち位置：クリーチャーは呼ばれた順に1番目・2番目の立ち位置へ
+	_place(_views[battle.hero], _hero_slot)
+	_place(_views[battle.main_enemy], _enemy_main_slot)
 	for i in battle.allies.size():
-		_ally_row.move_child(_views[battle.allies[i]], i)
+		_place(_views[battle.allies[i]], _ally_slots[i])
+	for i in battle.enemy_allies.size():
+		_place(_views[battle.enemy_allies[i]], _enemy_creature_slots[i])
+	if not _info_panels.has(battle.hero):
+		_info_panels = {battle.hero: _hero_info, battle.main_enemy: _enemy_info}
+		_hero_info.set_combatant(battle.hero)
+		_enemy_info.set_combatant(battle.main_enemy)
 
 
 func _ensure_view(combatant: Combatant) -> void:
 	if _views.has(combatant):
 		return
-	var view: UnitView = UNIT_SCENE.instantiate()
-	var parent: Control = _enemy_area
-	var width := UNIT_WIDTH
-	if combatant is HeroCombatant:
-		parent = _hero_holder
-		width = HERO_WIDTH
-	elif combatant is AllyCombatant:
-		parent = _ally_row
-	elif combatant == battle.main_enemy:
-		width = MAIN_ENEMY_WIDTH
-	view.custom_minimum_size.x = width
-	parent.add_child(view)
-	view.set_combatant(combatant)
+	var view: UnitSprite = UNIT_SCENE.instantiate()
+	var is_friend := combatant is HeroCombatant or combatant is AllyCombatant
+	var is_creature := combatant is AllyCombatant or (combatant is EnemyCombatant and combatant != battle.main_enemy)
+	# 主人公側は背中、敵側は正面を向く。クリーチャーだけ足元にHPなどを出す
+	view.setup(combatant, UnitFigure.Facing.BACK if is_friend else UnitFigure.Facing.FRONT, is_creature)
 	view.tapped.connect(_on_unit_tapped)
 	_views[combatant] = view
 
 
+## キャラクターの姿を立ち位置に置く（すでにそこにいれば何もしない）
+func _place(view: UnitSprite, slot: Control) -> void:
+	if view.get_parent() == slot:
+		return
+	if view.get_parent() != null:
+		view.get_parent().remove_child(view)
+	slot.add_child(view)
+	view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+
 func _remove_view(combatant: Combatant) -> void:
-	var view: UnitView = _views.get(combatant)
+	var view: UnitSprite = _views.get(combatant)
 	if view == null:
 		return
 	_views.erase(combatant)
 	view.queue_free()
+
+
+## 主人公・敵本体は情報の枠、クリーチャーは足元のHPを、その時点の値にする
+func _show_values(combatant: Combatant, hp: int, armor: int) -> void:
+	var view: UnitSprite = _views.get(combatant)
+	if view != null:
+		view.show_values(hp, armor)
+	var panel: UnitInfoPanel = _info_panels.get(combatant)
+	if panel != null:
+		panel.show_values(hp, armor)
+
+
+## 戦場のキャラクターの姿を、手前に描かれているものから順に並べる
+## （重なった場所では、手前のキャラクターを選ぶため）
+func _views_front_to_back() -> Array[UnitSprite]:
+	var slots: Array[Control] = []
+	for child: Node in _hero_slot.get_parent().get_children():
+		if child is Control and child.get_child_count() > 0:
+			slots.append(child as Control)
+	var result: Array[UnitSprite] = []
+	for i in range(slots.size() - 1, -1, -1):
+		for child: Node in slots[i].get_children():
+			if child is UnitSprite and _views.values().has(child):
+				result.append(child as UnitSprite)
+	return result
 
 
 func _center_of(control: Control) -> Vector2:
@@ -538,19 +584,25 @@ func _end_drag(pos: Vector2) -> void:
 	_refresh_hand()  # キャンセル：手札に戻す
 
 
-## 指の位置にいる、そのカードの対象にできるキャラクター
-func _unit_view_at(pos: Vector2, card: CardData) -> UnitView:
+## 指の位置にいる、そのカードの対象にできるキャラクター。
+## 重なった場所では、手前に描かれているキャラクターを選ぶ
+func _unit_view_at(pos: Vector2, card: CardData) -> UnitSprite:
 	if not battle.needs_target(card):
 		return null
-	for view: UnitView in _views.values():
+	for view: UnitSprite in _views_front_to_back():
 		if view.get_global_rect().has_point(pos) and battle.is_valid_target(card, view.combatant):
 			return view
 	return null
 
 
-func _on_unit_tapped(view: UnitView) -> void:
-	if mode == Mode.REPLACE_SELECT and view.combatant is AllyCombatant:
-		choose_replace(view.combatant as AllyCombatant)
+## キャラクターをタップした時：入れ替えの選択中なら選ぶ。クリーチャーなら詳しい情報を出す
+func _on_unit_tapped(view: UnitSprite) -> void:
+	if mode == Mode.REPLACE_SELECT:
+		if view.combatant is AllyCombatant:
+			choose_replace(view.combatant as AllyCombatant)
+		return
+	if view.show_plate and _drag.is_empty():
+		_detail_popup.open(view.combatant)
 
 
 # ---------- 選択の表示 ----------
@@ -566,7 +618,7 @@ func _leave_select() -> void:
 	mode = Mode.NORMAL
 	_pending_summon_index = -1
 	_select_banner.hide()
-	for view: UnitView in _views.values():
+	for view: UnitSprite in _views.values():
 		view.set_highlight(false)
 
 

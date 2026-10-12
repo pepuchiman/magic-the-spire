@@ -68,13 +68,6 @@ func test_duplicate_card_id_is_reported() -> void:
 	assert_true(_has_error(DataValidator.validate_index(index), "重複"))
 
 
-func test_attack_min_over_max_is_reported() -> void:
-	var index := _valid_index()
-	index.enemies[0].attack_min = 9
-	index.enemies[0].attack_max = 3
-	assert_true(_has_error(DataValidator.validate_index(index), "攻撃力最少値"))
-
-
 func test_summon_effect_without_ally_is_reported() -> void:
 	var index := _valid_index()
 	var card := _card(&"summon_none")
@@ -202,8 +195,7 @@ func _valid_index() -> DataIndex:
 	var enemy := EnemyData.new()
 	enemy.id = &"dummy"
 	enemy.name_key = &"ENEMY_DUMMY_NAME"
-	enemy.attack_min = 1
-	enemy.attack_max = 2
+	enemy.attack = 1
 	enemy.pattern.append(EnemyActionData.new())
 	index.enemies.append(enemy)
 	index.config = GameConfig.new()

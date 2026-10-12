@@ -21,6 +21,5 @@ id = &"boss_witch"
 name_key = &"ENEMY_BOSS_WITCH_NAME"
 max_hp = 80
 defense = 1
-attack_min = 6
-attack_max = 10
+attack = 8
 pattern = Array[ExtResource("1_fcipq")]([SubResource("Resource_1furh"), SubResource("Resource_wx4p2"), SubResource("Resource_vukon")])

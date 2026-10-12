@@ -73,9 +73,6 @@ static func validate_index(index: DataIndex) -> PackedStringArray:
 	for hero: HeroData in index.heroes:
 		if hero != null:
 			errors.append_array(_check_hero(hero))
-	for ally: AllyData in index.allies:
-		if ally != null:
-			errors.append_array(_check_attack_range("クリーチャー %s" % ally.id, ally.attack_min, ally.attack_max))
 	for enemy: EnemyData in index.enemies:
 		if enemy != null:
 			errors.append_array(_check_enemy(enemy))
@@ -240,13 +237,6 @@ static func _check_ids(label: String, items: Array) -> PackedStringArray:
 	return errors
 
 
-static func _check_attack_range(label: String, attack_min: int, attack_max: int) -> PackedStringArray:
-	var errors := PackedStringArray()
-	if attack_min > attack_max:
-		errors.append("%s：攻撃力最少値（%d）が最大値（%d）を上回っています" % [label, attack_min, attack_max])
-	return errors
-
-
 static func _check_card(card: CardData, hero_ids: Dictionary) -> PackedStringArray:
 	var errors := PackedStringArray()
 	var label := "カード %s" % card.id
@@ -311,7 +301,7 @@ static func _check_hero(hero: HeroData) -> PackedStringArray:
 
 
 static func _check_enemy(enemy: EnemyData) -> PackedStringArray:
-	var errors := _check_attack_range("敵 %s" % enemy.id, enemy.attack_min, enemy.attack_max)
+	var errors := PackedStringArray()
 	var label := "敵 %s" % enemy.id
 	if enemy.pattern.is_empty():
 		errors.append("%s：行動パターンが空です" % label)

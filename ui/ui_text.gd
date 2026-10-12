@@ -13,16 +13,14 @@ static func fmt(key: String, params: Dictionary) -> String:
 	return t(key).format(params)
 
 
-## 敵の行動予告の文章（例：「攻撃 3〜5」「防御 4」）
+## 敵の行動予告の文章（例：「攻撃 5」「防御 4」）
 static func intent_text(enemy: EnemyCombatant) -> String:
 	var action := enemy.intent
 	if action == null:
 		return t("UI_INTENT_NONE")
 	match action.action_type:
 		GameEnums.EnemyActionType.ATTACK:
-			if enemy.data.attack_min == enemy.data.attack_max:
-				return t("UI_INTENT_ATTACK_FIXED").format({"amount": enemy.data.attack_min})
-			return t("UI_INTENT_ATTACK").format({"min": enemy.data.attack_min, "max": enemy.data.attack_max})
+			return fmt("UI_INTENT_ATTACK", {"amount": enemy.get_attack()})
 		GameEnums.EnemyActionType.DEFEND:
 			return t("UI_INTENT_DEFEND").format({"amount": action.amount})
 		GameEnums.EnemyActionType.SUMMON:

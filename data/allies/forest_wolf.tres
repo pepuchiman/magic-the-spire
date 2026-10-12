@@ -7,6 +7,5 @@ script = ExtResource("1_0g0hj")
 id = &"forest_wolf"
 name_key = &"ALLY_FOREST_WOLF_NAME"
 max_hp = 16
-attack_min = 4
-attack_max = 6
+attack = 5
 attack_effect = 2

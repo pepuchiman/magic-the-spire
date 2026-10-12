@@ -100,8 +100,7 @@ UI_CATALYST,{color} {value}（+{power}）
 UI_CATALYST_RED,赤
 UI_CATALYST_BLUE,青
 UI_CATALYST_GREEN,緑
-UI_INTENT_ATTACK,攻撃 {min}〜{max}
-UI_INTENT_ATTACK_FIXED,攻撃 {amount}
+UI_INTENT_ATTACK,攻撃 {amount}
 UI_INTENT_DEFEND,防御 {amount}
 UI_INTENT_SUMMON,クリーチャーを呼ぶ
 UI_INTENT_NONE,様子見

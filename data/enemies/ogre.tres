@@ -19,6 +19,5 @@ script = ExtResource("2_833kp")
 id = &"ogre"
 name_key = &"ENEMY_OGRE_NAME"
 max_hp = 45
-attack_min = 7
-attack_max = 10
+attack = 8
 pattern = Array[ExtResource("1_q844f")]([SubResource("Resource_0plj4"), SubResource("Resource_6qsie"), SubResource("Resource_g7aci")])

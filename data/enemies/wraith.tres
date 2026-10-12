@@ -21,6 +21,5 @@ id = &"wraith"
 name_key = &"ENEMY_WRAITH_NAME"
 max_hp = 36
 defense = 1
-attack_min = 5
-attack_max = 8
+attack = 6
 pattern = Array[ExtResource("1_l0kss")]([SubResource("Resource_tf0j3"), SubResource("Resource_c8chv"), SubResource("Resource_y6reu")])

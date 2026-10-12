@@ -22,9 +22,9 @@ func _init(enemy_data: EnemyData, main: bool) -> void:
 	armor = data.armor
 
 
-## 攻撃のダメージ値（攻撃力最少値〜最大値でランダム）
-func roll_attack(rng: RandomNumberGenerator) -> int:
-	return rng.randi_range(data.attack_min, data.attack_max)
+## 攻撃のダメージ値（攻撃力。固定値）
+func get_attack() -> int:
+	return data.attack
 
 
 ## 次の行動を決める。実行できない行動（例：敵の仲間が上限の時の「味方を呼ぶ」）は無視する。

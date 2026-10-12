@@ -7,6 +7,9 @@
 [ext_resource type="Script" uid="uid://cs3l20ktxg5h" path="res://ui/card_zoom_popup.gd" id="5_zoom"]
 [ext_resource type="Script" uid="uid://bg7ty3vk1hfgc" path="res://ui/pile_popup.gd" id="6_pile"]
 [ext_resource type="Script" uid="uid://dimg3py4ltxlp" path="res://ui/result_overlay.gd" id="7_result"]
+[ext_resource type="Script" path="res://ui/field_platform.gd" id="8_platform"]
+[ext_resource type="PackedScene" path="res://ui/unit_info_panel.tscn" id="9_info"]
+[ext_resource type="Script" path="res://ui/unit_detail_popup.gd" id="10_detail"]
 
 [node name="BattleScreen" type="Control" unique_id=1262949869]
 layout_mode = 3
@@ -88,34 +91,112 @@ theme_override_font_sizes/font_size = 22
 text = "UI_SETTINGS"
 autowrap_mode = 3
 
-[node name="EnemyArea" type="HBoxContainer" parent="SafeArea/Main" unique_id=1587385869]
+[node name="Field" type="Control" parent="SafeArea/Main"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 30.0
+size_flags_stretch_ratio = 48.0
 mouse_filter = 2
-theme_override_constants/separation = 8
-alignment = 1
 
-[node name="AllyArea" type="HBoxContainer" parent="SafeArea/Main" unique_id=607719210]
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 18.0
+[node name="EnemyPlatform" type="Control" parent="SafeArea/Main/Field"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.42
+anchor_top = 0.34
+anchor_right = 0.98
+anchor_bottom = 0.47
 mouse_filter = 2
-theme_override_constants/separation = 8
+script = ExtResource("8_platform")
 
-[node name="HeroHolder" type="HBoxContainer" parent="SafeArea/Main/AllyArea" unique_id=15968404]
+[node name="HeroPlatform" type="Control" parent="SafeArea/Main/Field"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.9
+anchor_right = 0.5
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("8_platform")
+
+[node name="EnemyMainSlot" type="Control" parent="SafeArea/Main/Field"]
 unique_name_in_owner = true
-layout_mode = 2
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.52
+anchor_right = 0.88
+anchor_bottom = 0.46
 mouse_filter = 2
 
-[node name="AllyRow" type="HBoxContainer" parent="SafeArea/Main/AllyArea" unique_id=1330112259]
+[node name="EnemyCreatureSlot1" type="Control" parent="SafeArea/Main/Field"]
 unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.4
+anchor_top = 0.18
+anchor_right = 0.62
+anchor_bottom = 0.5
 mouse_filter = 2
-theme_override_constants/separation = 8
-alignment = 2
+
+[node name="EnemyCreatureSlot2" type="Control" parent="SafeArea/Main/Field"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.77
+anchor_top = 0.18
+anchor_right = 0.99
+anchor_bottom = 0.5
+mouse_filter = 2
+
+[node name="EnemyInfo" parent="SafeArea/Main/Field" instance=ExtResource("9_info")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.01
+anchor_top = 0.02
+anchor_right = 0.39
+anchor_bottom = 0.34
+offset_right = 0.0
+offset_bottom = 0.0
+
+[node name="AllySlot2" type="Control" parent="SafeArea/Main/Field"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.43
+anchor_top = 0.5
+anchor_right = 0.59
+anchor_bottom = 0.76
+mouse_filter = 2
+
+[node name="AllySlot1" type="Control" parent="SafeArea/Main/Field"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.27
+anchor_top = 0.55
+anchor_right = 0.44
+anchor_bottom = 0.83
+mouse_filter = 2
+
+[node name="HeroSlot" type="Control" parent="SafeArea/Main/Field"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.02
+anchor_top = 0.44
+anchor_right = 0.42
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="HeroInfo" parent="SafeArea/Main/Field" instance=ExtResource("9_info")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.62
+anchor_top = 0.74
+anchor_right = 0.99
+anchor_bottom = 0.99
+offset_right = 0.0
+offset_bottom = 0.0
 
 [node name="StatusBar" type="PanelContainer" parent="SafeArea/Main" unique_id=270722212]
 unique_name_in_owner = true
@@ -233,6 +314,7 @@ autowrap_mode = 3
 
 [node name="SelectBanner" type="PanelContainer" parent="." unique_id=1735124387]
 unique_name_in_owner = true
+z_index = 2
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.545
@@ -276,6 +358,7 @@ autowrap_mode = 3
 
 [node name="ToastLabel" type="Label" parent="." unique_id=1203280704]
 unique_name_in_owner = true
+z_index = 2
 auto_translate_mode = 2
 visible = false
 layout_mode = 1
@@ -293,6 +376,7 @@ autowrap_mode = 3
 
 [node name="EffectLayer" type="Control" parent="." unique_id=107662156]
 unique_name_in_owner = true
+z_index = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -301,8 +385,21 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
+[node name="UnitDetailPopup" type="ColorRect" parent="."]
+unique_name_in_owner = true
+z_index = 2
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("10_detail")
+
 [node name="CardZoomPopup" type="ColorRect" parent="." unique_id=55220823]
 unique_name_in_owner = true
+z_index = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -313,6 +410,7 @@ script = ExtResource("5_zoom")
 
 [node name="PilePopup" type="ColorRect" parent="." unique_id=1650008443]
 unique_name_in_owner = true
+z_index = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -367,6 +465,7 @@ text = "UI_CLOSE"
 
 [node name="ResultOverlay" type="ColorRect" parent="." unique_id=1935808088]
 unique_name_in_owner = true
+z_index = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

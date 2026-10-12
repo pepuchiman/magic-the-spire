@@ -20,6 +20,5 @@ script = ExtResource("2_vncps")
 id = &"thunder_wisp"
 name_key = &"ENEMY_THUNDER_WISP_NAME"
 max_hp = 16
-attack_min = 3
-attack_max = 5
+attack = 4
 pattern = Array[ExtResource("1_0e10c")]([SubResource("Resource_pe47n"), SubResource("Resource_uvbnn"), SubResource("Resource_16ga4")])

@@ -6,7 +6,6 @@
 script = ExtResource("1_w5dtl")
 id = &"fire_sprite"
 name_key = &"ALLY_FIRE_SPRITE_NAME"
-attack_min = 3
-attack_max = 5
+attack = 4
 race = 1
 attack_effect = 3

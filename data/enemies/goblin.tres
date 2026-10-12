@@ -16,6 +16,5 @@ script = ExtResource("2_k871p")
 id = &"goblin"
 name_key = &"ENEMY_GOBLIN_NAME"
 max_hp = 26
-attack_min = 4
-attack_max = 7
+attack = 5
 pattern = Array[ExtResource("1_dk6at")]([SubResource("Resource_powyv"), SubResource("Resource_tsokr")])

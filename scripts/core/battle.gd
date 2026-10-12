@@ -317,7 +317,7 @@ func _finish_turn() -> void:
 		var target := Targeting.pick_attack_target(main_enemy, enemy_allies)
 		if target == null:
 			break
-		_deal_damage(ally, target, ally.roll_attack(rng))
+		_deal_damage(ally, target, ally.get_attack())
 		if phase == Phase.ENDED:
 			return
 	# 9. 敵のターン開始時効果（敵側の毒のダメージ）
@@ -367,7 +367,7 @@ func _do_enemy_action(enemy: EnemyCombatant) -> void:
 					# 攻撃対象は攻撃の瞬間に決める（仲間がいれば後から召喚された仲間、いなければ主人公）
 					var target := Targeting.pick_attack_target(hero, allies)
 					if target != null:
-						_deal_damage(enemy, target, enemy.roll_attack(rng))
+						_deal_damage(enemy, target, enemy.get_attack())
 			GameEnums.EnemyActionType.DEFEND:
 				_gain_armor(enemy, action.amount)
 			GameEnums.EnemyActionType.SUMMON:

@@ -17,8 +17,8 @@ func _init() -> void:
 	var results: Array = []
 
 	# --- 仲間 ---
-	var sprite := _ally(&"fire_sprite", "ALLY_FIRE_SPRITE_NAME", 10, 3, 5, GameEnums.Race.SPIRIT, GameEnums.AttackEffect.FIRE)
-	var wolf := _ally(&"forest_wolf", "ALLY_FOREST_WOLF_NAME", 16, 4, 6, GameEnums.Race.BEAST, GameEnums.AttackEffect.PIERCE)
+	var sprite := _ally(&"fire_sprite", "ALLY_FIRE_SPRITE_NAME", 10, 4, GameEnums.Race.SPIRIT, GameEnums.AttackEffect.FIRE)
+	var wolf := _ally(&"forest_wolf", "ALLY_FOREST_WOLF_NAME", 16, 5, GameEnums.Race.BEAST, GameEnums.AttackEffect.PIERCE)
 	results.append(_save_new(sprite, "res://data/allies/fire_sprite.tres"))
 	results.append(_save_new(wolf, "res://data/allies/forest_wolf.tres"))
 	sprite = results[0]
@@ -120,9 +120,9 @@ func _init() -> void:
 	_save_new(frost, "res://data/heroes/frost_mage.tres")
 
 	# --- 敵 ---
-	var slime := _enemy(&"slime", "ENEMY_SLIME_NAME", 20, 3, 5, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.DEFEND, 4)])
-	var goblin := _enemy(&"goblin", "ENEMY_GOBLIN_NAME", 26, 4, 7, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.DEFEND, 5)])
-	var bat := _enemy(&"bat", "ENEMY_BAT_NAME", 14, 2, 4, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK)])
+	var slime := _enemy(&"slime", "ENEMY_SLIME_NAME", 20, 4, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.DEFEND, 4)])
+	var goblin := _enemy(&"goblin", "ENEMY_GOBLIN_NAME", 26, 5, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.DEFEND, 5)])
+	var bat := _enemy(&"bat", "ENEMY_BAT_NAME", 14, 3, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK)])
 	slime = _save_new(slime, "res://data/enemies/slime.tres")
 	goblin = _save_new(goblin, "res://data/enemies/goblin.tres")
 	bat = _save_new(bat, "res://data/enemies/bat.tres")
@@ -130,19 +130,19 @@ func _init() -> void:
 	# ボス：攻撃、攻撃、スライムを呼ぶ、のループ
 	var summon_action := _action(GameEnums.EnemyActionType.SUMMON)
 	summon_action.summon_enemy = slime
-	var boss := _enemy(&"boss_witch", "ENEMY_BOSS_WITCH_NAME", 80, 6, 10, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK), summon_action])
+	var boss := _enemy(&"boss_witch", "ENEMY_BOSS_WITCH_NAME", 80, 8, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK), summon_action])
 	boss.defense = 1
 	boss = _save_new(boss, "res://data/enemies/boss_witch.tres")
 
 	# エリート（強敵）とボス2体目
-	var ogre := _enemy(&"ogre", "ENEMY_OGRE_NAME", 45, 7, 10, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.DEFEND, 6)])
+	var ogre := _enemy(&"ogre", "ENEMY_OGRE_NAME", 45, 8, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.DEFEND, 6)])
 	var call_bat := _action(GameEnums.EnemyActionType.SUMMON)
 	call_bat.summon_enemy = bat
-	var wraith := _enemy(&"wraith", "ENEMY_WRAITH_NAME", 36, 5, 8, [_action(GameEnums.EnemyActionType.ATTACK), call_bat, _action(GameEnums.EnemyActionType.ATTACK)])
+	var wraith := _enemy(&"wraith", "ENEMY_WRAITH_NAME", 36, 6, [_action(GameEnums.EnemyActionType.ATTACK), call_bat, _action(GameEnums.EnemyActionType.ATTACK)])
 	wraith.defense = 1
 	var call_goblin := _action(GameEnums.EnemyActionType.SUMMON)
 	call_goblin.summon_enemy = goblin
-	var frost_giant := _enemy(&"frost_giant", "ENEMY_FROST_GIANT_NAME", 95, 7, 11, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.DEFEND, 8), _action(GameEnums.EnemyActionType.ATTACK), call_goblin])
+	var frost_giant := _enemy(&"frost_giant", "ENEMY_FROST_GIANT_NAME", 95, 9, [_action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.DEFEND, 8), _action(GameEnums.EnemyActionType.ATTACK), call_goblin])
 	frost_giant.defense = 1
 	ogre = _save_new(ogre, "res://data/enemies/ogre.tres")
 	wraith = _save_new(wraith, "res://data/enemies/wraith.tres")
@@ -152,10 +152,10 @@ func _init() -> void:
 	# 状態効果を使う敵（毒を吐く・麻痺させる）
 	var spit := _action(GameEnums.EnemyActionType.APPLY_STATUS, 3)
 	spit.status = GameEnums.StatusType.POISON
-	var venom_spider := _enemy(&"venom_spider", "ENEMY_VENOM_SPIDER_NAME", 18, 2, 4, [spit, _action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK)])
+	var venom_spider := _enemy(&"venom_spider", "ENEMY_VENOM_SPIDER_NAME", 18, 3, [spit, _action(GameEnums.EnemyActionType.ATTACK), _action(GameEnums.EnemyActionType.ATTACK)])
 	var shock := _action(GameEnums.EnemyActionType.APPLY_STATUS, 1)
 	shock.status = GameEnums.StatusType.PARALYSIS
-	var thunder_wisp := _enemy(&"thunder_wisp", "ENEMY_THUNDER_WISP_NAME", 16, 3, 5, [_action(GameEnums.EnemyActionType.ATTACK), shock, _action(GameEnums.EnemyActionType.ATTACK)])
+	var thunder_wisp := _enemy(&"thunder_wisp", "ENEMY_THUNDER_WISP_NAME", 16, 4, [_action(GameEnums.EnemyActionType.ATTACK), shock, _action(GameEnums.EnemyActionType.ATTACK)])
 	venom_spider = _save_new(venom_spider, "res://data/enemies/venom_spider.tres")
 	thunder_wisp = _save_new(thunder_wisp, "res://data/enemies/thunder_wisp.tres")
 
@@ -247,13 +247,12 @@ func _save_new(res: Resource, path: String) -> Resource:
 	return res
 
 
-func _ally(id: StringName, name_key: String, max_hp: int, atk_min: int, atk_max: int, race: GameEnums.Race, effect: GameEnums.AttackEffect) -> AllyData:
+func _ally(id: StringName, name_key: String, max_hp: int, attack: int, race: GameEnums.Race, effect: GameEnums.AttackEffect) -> AllyData:
 	var ally := AllyData.new()
 	ally.id = id
 	ally.name_key = StringName(name_key)
 	ally.max_hp = max_hp
-	ally.attack_min = atk_min
-	ally.attack_max = atk_max
+	ally.attack = attack
 	ally.race = race
 	ally.attack_effect = effect
 	return ally
@@ -321,13 +320,12 @@ func _summon(ally: AllyData) -> SummonEffect:
 	return effect
 
 
-func _enemy(id: StringName, name_key: String, max_hp: int, atk_min: int, atk_max: int, pattern: Array) -> EnemyData:
+func _enemy(id: StringName, name_key: String, max_hp: int, attack: int, pattern: Array) -> EnemyData:
 	var enemy := EnemyData.new()
 	enemy.id = id
 	enemy.name_key = StringName(name_key)
 	enemy.max_hp = max_hp
-	enemy.attack_min = atk_min
-	enemy.attack_max = atk_max
+	enemy.attack = attack
 	enemy.pattern.assign(pattern)
 	return enemy
 

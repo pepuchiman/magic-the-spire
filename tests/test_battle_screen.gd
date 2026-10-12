@@ -75,10 +75,75 @@ func test_replace_selection_flow() -> void:
 	assert_eq(screen.mode, BattleScreen.Mode.NORMAL)
 
 
+func test_units_stand_in_their_slots() -> void:
+	var battle := screen.battle
+	assert_eq(screen._views[battle.hero].get_parent(), screen.get_node("%HeroSlot"), "主人公は主人公の立ち位置")
+	assert_eq(screen._views[battle.main_enemy].get_parent(), screen.get_node("%EnemyMainSlot"), "敵本体は敵本体の立ち位置")
+	assert_eq(screen._views[battle.hero].facing, UnitFigure.Facing.BACK, "主人公は背中を向ける")
+	assert_eq(screen._views[battle.main_enemy].facing, UnitFigure.Facing.FRONT, "敵は正面を向く")
+	assert_false(screen._views[battle.hero].show_plate, "主人公のHPは情報の枠に出す（足元には出さない）")
+	assert_eq(screen.get_node("%HeroInfo").combatant, battle.hero)
+	assert_eq(screen.get_node("%EnemyInfo").combatant, battle.main_enemy)
+	var first := AllyCombatant.new(H.ally(&"a0"), 1)
+	var second := AllyCombatant.new(H.ally(&"a1"), 1)
+	battle.allies.append_array([first, second])
+	var minion := EnemyCombatant.new(DataLoader.new().get_enemy(&"slime"), false)
+	battle.enemy_allies.append(minion)
+	screen._refresh_all()
+	assert_eq(screen._views[first].get_parent(), screen.get_node("%AllySlot1"), "先に呼んだクリーチャーは1番目の立ち位置")
+	assert_eq(screen._views[second].get_parent(), screen.get_node("%AllySlot2"))
+	assert_eq(screen._views[first].facing, UnitFigure.Facing.BACK, "自分のクリーチャーも背中を向ける")
+	assert_true(screen._views[first].show_plate, "クリーチャーは足元にHPを出す")
+	assert_eq(screen._views[minion].get_parent(), screen.get_node("%EnemyCreatureSlot1"), "敵のクリーチャーは敵本体の手前")
+	battle.allies.erase(first)
+	screen._refresh_all()
+	assert_false(screen._views.has(first), "いなくなったクリーチャーの姿は消える")
+	assert_eq(screen._views[second].get_parent(), screen.get_node("%AllySlot1"), "残ったクリーチャーが1番目の立ち位置に移る")
+
+
+func test_front_unit_is_chosen_where_units_overlap() -> void:
+	var battle := screen.battle
+	var minion := EnemyCombatant.new(DataLoader.new().get_enemy(&"slime"), false)
+	battle.enemy_allies.append(minion)
+	screen._refresh_all()
+	await wait_frames(2)  # 立ち位置の大きさが決まるのを待つ
+	var main_rect: Rect2 = screen._views[battle.main_enemy].get_global_rect()
+	var minion_rect: Rect2 = screen._views[minion].get_global_rect()
+	var overlap := main_rect.intersection(minion_rect)
+	assert_true(overlap.has_area(), "敵本体と敵のクリーチャーは少し重なっている")
+	var spark := DataLoader.new().get_card(&"spark")
+	var picked: UnitSprite = screen._unit_view_at(overlap.get_center(), spark)
+	assert_eq(picked.combatant, minion, "重なった場所では手前のクリーチャーが選ばれる")
+	var hero_rect: Rect2 = screen._views[battle.hero].get_global_rect()
+	var ally := AllyCombatant.new(H.ally(&"a0"), 1)
+	battle.allies.append(ally)
+	screen._refresh_all()
+	await wait_frames(2)
+	var ally_overlap := hero_rect.intersection(screen._views[ally].get_global_rect())
+	assert_true(ally_overlap.has_area(), "主人公と自分のクリーチャーは少し重なっている")
+	var order := screen._views_front_to_back()
+	assert_true(order.find(screen._views[battle.hero]) < order.find(screen._views[ally]), "主人公はクリーチャーより手前")
+
+
+func test_tapping_creature_shows_details() -> void:
+	var battle := screen.battle
+	var minion := EnemyCombatant.new(DataLoader.new().get_enemy(&"slime"), false)
+	minion.decide_next_action(true)
+	battle.enemy_allies.append(minion)
+	screen._refresh_all()
+	screen._on_unit_tapped(screen._views[minion])
+	var popup: UnitDetailPopup = screen.get_node("%UnitDetailPopup")
+	assert_true(popup.visible, "クリーチャーをタップすると詳しい情報が出る")
+	assert_eq(popup.combatant, minion)
+	popup.hide()
+	screen._on_unit_tapped(screen._views[battle.hero])
+	assert_false(popup.visible, "主人公は情報の枠があるので、詳しい情報の窓は出さない")
+
+
 func test_intent_text() -> void:
 	var boss := EnemyCombatant.new(DataLoader.new().get_enemy(&"boss_witch"), true)
 	boss.decide_next_action(true)
-	assert_eq(UiText.intent_text(boss), "攻撃 6〜10", "攻撃の予告は攻撃力の範囲を出す")
+	assert_eq(UiText.intent_text(boss), "攻撃 8", "攻撃の予告は攻撃力（固定値）を出す")
 
 
 func test_deck_list_does_not_reveal_order() -> void:

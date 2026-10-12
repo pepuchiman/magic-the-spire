@@ -62,8 +62,7 @@ static func ally(id: StringName = &"test_ally", attack: int = 0) -> AllyData:
 	var result := AllyData.new()
 	result.id = id
 	result.max_hp = 10
-	result.attack_min = attack
-	result.attack_max = attack
+	result.attack = attack
 	return result
 
 
@@ -79,8 +78,7 @@ static func enemy(hp: int = 100, attack: int = 0, pattern: Array = []) -> EnemyD
 	var result := EnemyData.new()
 	result.id = &"test_enemy"
 	result.max_hp = hp
-	result.attack_min = attack
-	result.attack_max = attack
+	result.attack = attack
 	if pattern.is_empty():
 		pattern = [action(GameEnums.EnemyActionType.DEFEND, 0)]
 	result.pattern.assign(pattern)

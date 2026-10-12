@@ -36,6 +36,18 @@ func test_ally_attacks_from_summoned_turn() -> void:
 	assert_eq(battle.main_enemy.hp, 46, "召喚したターンの「味方の攻撃」から参加する")
 
 
+func test_attack_damage_is_fixed() -> void:
+	# 攻撃力は固定値。シード（乱数）が変わっても、与えるダメージは同じ
+	for seed_value: int in [1, 2, 3, 99, 12345]:
+		var hero := H.hero([H.summon_card(&"call", H.ally(&"fighter", 4))])
+		var battle := H.battle(hero, H.enemy(50, 3, [H.action(ActionType.ATTACK)]), seed_value)
+		battle.start()
+		battle.play_card(0)
+		H.end_turn(battle)
+		assert_eq(battle.main_enemy.hp, 46, "クリーチャーの攻撃は攻撃力ちょうど（シード %d）" % seed_value)
+		assert_eq(battle.allies[0].hp, 7, "敵の攻撃は攻撃力ちょうど（シード %d）" % seed_value)
+
+
 func test_ally_target_respects_race() -> void:
 	var beast := H.ally(&"beast")
 	beast.race = GameEnums.Race.BEAST
