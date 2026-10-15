@@ -55,6 +55,7 @@ var _drag_ghost: CardView
 var _drag_target: UnitSprite
 var _toast_tween: Tween
 
+@onready var _background: BattleBackground = %Background
 @onready var _header: PanelContainer = %Header
 @onready var _dungeon_label: FitLabel = %DungeonLabel
 @onready var _floor_label: FitLabel = %FloorLabel
@@ -118,6 +119,7 @@ func is_run_battle() -> bool:
 func start_run_battle() -> void:
 	var run := Game.run
 	_dungeon_label.set_fitted_text(UiText.t(run.dungeon.name_key))
+	_background.setup(run.dungeon)
 	floor_number = run.current_floor_number()
 	_begin(run.create_battle())
 
@@ -132,6 +134,7 @@ func start_battle() -> void:
 		return
 	var dungeon := loader.get_dungeon(dungeon_id)
 	_dungeon_label.set_fitted_text(UiText.t(dungeon.name_key) if dungeon != null else "")
+	_background.setup(dungeon)
 	var used_seed := seed_value if seed_value != 0 else randi()
 	var sample := Battle.new(hero, hero.starting_deck, enemy, used_seed)
 	sample.config = loader.get_config()

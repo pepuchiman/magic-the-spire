@@ -12,3 +12,5 @@ extends Resource
 @export var dungeons: Array[DungeonData] = []
 ## ゲーム全体の数値の設定
 @export var config: GameConfig
+## 種類ごとのアイコンの一覧
+@export var icons: IconSet

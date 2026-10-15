@@ -204,6 +204,7 @@ func _init() -> void:
 
 	# --- ゲーム全体の設定（数値は仮） ---
 	_save_new(GameConfig.new(), "res://data/config/game_config.tres")
+	_save_new(IconSet.create_default(), "res://data/config/icon_set.tres")
 
 	# --- ダンジョン（階数は仮の値） ---
 	var dungeon := DungeonData.new()
@@ -215,6 +216,8 @@ func _init() -> void:
 	dungeon.boss = boss
 	dungeon.events = events
 	dungeon.elite_enemies = elites
+	dungeon.background_top = Color("24402F")
+	dungeon.background_bottom = Color("141F22")
 	_save_new(dungeon, "res://data/dungeons/lost_forest.tres")
 
 	# --- 2つ目のダンジョン（迷いの森のクリアで解放。階数は仮） ---
@@ -228,6 +231,8 @@ func _init() -> void:
 	cave.elite_enemies = elites
 	cave.boss = frost_giant
 	cave.events = events
+	cave.background_top = Color("2A4A6B")
+	cave.background_bottom = Color("161D36")
 	_save_new(cave, "res://data/dungeons/frozen_cave.tres")
 
 	print("サンプルデータの生成が終わりました")

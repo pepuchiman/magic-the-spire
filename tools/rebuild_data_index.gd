@@ -5,6 +5,7 @@ extends SceneTree
 
 const INDEX_PATH := "res://data/data_index.tres"
 const CONFIG_PATH := "res://data/config/game_config.tres"
+const ICONS_PATH := "res://data/config/icon_set.tres"
 
 
 func _init() -> void:
@@ -20,6 +21,10 @@ func _init() -> void:
 		index.config = ResourceLoader.load(CONFIG_PATH, "", ResourceLoader.CACHE_MODE_REPLACE)
 	else:
 		push_error("ゲーム全体の設定がありません：%s" % CONFIG_PATH)
+	if ResourceLoader.exists(ICONS_PATH):
+		index.icons = ResourceLoader.load(ICONS_PATH, "", ResourceLoader.CACHE_MODE_REPLACE)
+	else:
+		push_error("アイコンの一覧がありません：%s" % ICONS_PATH)
 
 	var err := ResourceSaver.save(index, INDEX_PATH)
 	if err != OK:

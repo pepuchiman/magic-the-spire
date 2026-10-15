@@ -63,6 +63,11 @@ func get_config() -> GameConfig:
 	return index.config if index != null and index.config != null else GameConfig.new()
 
 
+## 種類ごとのアイコンの一覧（無ければ空の一覧を返す。空の種類は図形で表示する）
+func get_icons() -> IconSet:
+	return index.icons if index != null and index.icons != null else IconSet.new()
+
+
 func _fill(target: Dictionary, items: Array) -> void:
 	for item: Resource in items:
 		if item != null:

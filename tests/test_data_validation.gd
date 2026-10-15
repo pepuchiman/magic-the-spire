@@ -199,4 +199,5 @@ func _valid_index() -> DataIndex:
 	enemy.pattern.append(EnemyActionData.new())
 	index.enemies.append(enemy)
 	index.config = GameConfig.new()
+	index.icons = IconSet.create_default()
 	return index

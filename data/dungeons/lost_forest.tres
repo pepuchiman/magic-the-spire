@@ -23,3 +23,5 @@ normal_enemies = Array[ExtResource("3_6aos1")]([ExtResource("4_fjkxm"), ExtResou
 elite_enemies = Array[ExtResource("3_6aos1")]([ExtResource("3_kj40p"), ExtResource("4_rfc6l")])
 boss = ExtResource("1_fs8ae")
 events = Array[ExtResource("2_tes4l")]([ExtResource("3_fjkxm"), ExtResource("4_ihtdj"), ExtResource("5_kj40p")])
+background_top = Color(0.14117648, 0.2509804, 0.18431373, 1)
+background_bottom = Color(0.078431375, 0.12156863, 0.13333334, 1)

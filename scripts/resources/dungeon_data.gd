@@ -17,6 +17,14 @@ extends Resource
 ## このダンジョンで起きるイベント
 @export var events: Array[EventData] = []
 
+@export_group("戦闘背景")
+## 戦闘背景の絵（空なら下の2色のグラデーションで仮表示。assets/backgrounds/bg_<ID>.png）
+@export var background: Texture2D
+## 仮表示の上側の色
+@export var background_top: Color = Color("2E2550")
+## 仮表示の下側の色
+@export var background_bottom: Color = Color("1E2340")
+
 @export_group("ノードの出やすさ（重み）")
 ## 数字が大きいほど出やすい（1階は通常戦のみ、ボス直前は休憩のみ、エリートは中盤以降のみ、などの決まりは別にある）
 @export_range(0, 100) var battle_weight: int = 55

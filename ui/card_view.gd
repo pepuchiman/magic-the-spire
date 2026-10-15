@@ -1,17 +1,17 @@
 class_name CardView
 extends PanelContainer
 ## カード1枚の表示。名前・種別・消費マナ・必要触媒・レアリティ（枠の色）・説明文を出す。
-## 絵は Art（TextureRect）に画像を入れれば表示される（今は種別の色の四角形）。
+## 絵はカードのデータの「絵」に画像があれば表示される（無ければ種別の色と記号で仮表示）。
 
 ## 押された時（画面の進行役が、タップかドラッグかを判断する）
 signal pressed(card_view: CardView)
 
 const BASE_SIZE := Vector2(140, 200)
+## 絵の枠の高さ（card_scale が 1.0 の時）
+const ART_HEIGHT := 36.0
 
 ## 表示の大きさ（1.0 が手札の大きさ。拡大表示などで大きくする）
 @export var card_scale: float = 1.0
-## 絵（あれば表示する。今は未使用）
-@export var art_texture: Texture2D
 
 var card: CardData
 ## 残りの使用回数（-1 なら表示しない。使用回数の制限がないカードや、バトル外の表示）
@@ -27,6 +27,7 @@ var selected: bool = false
 @onready var _type_label: FitLabel = %TypeLabel
 @onready var _art_background: ColorRect = %ArtBackground
 @onready var _art: TextureRect = %Art
+@onready var _symbol: ShapeIcon = %Symbol
 @onready var _uses_label: FitLabel = %UsesLabel
 @onready var _catalysts: HBoxContainer = %Catalysts
 @onready var _desc_label: FitLabel = %DescLabel
@@ -75,7 +76,9 @@ func refresh() -> void:
 	_type_label.set_fitted_text("%s / %s" % [UiText.t(TextKeys.card_type(card.card_type)), UiText.t(TextKeys.rarity(card.rarity))])
 	_desc_label.set_fitted_text(card.get_description())
 	_art_background.color = UiPalette.card_type_color(card.card_type)
-	_art.texture = art_texture
+	_art.texture = card.art
+	_symbol.visible = card.art == null
+	_symbol.setup(ShapeIcon.card_type_shape(card.card_type), UiPalette.card_type_color(card.card_type).lightened(0.55))
 	_uses_label.set_fitted_text(UiText.fmt("UI_USES_LEFT", {"count": uses_left}) if uses_left >= 0 else "")
 	_rebuild_catalysts()
 	_update_look()
@@ -130,7 +133,7 @@ func _apply_scale() -> void:
 	_name_label.max_font_size = int(18 * card_scale)
 	_type_label.custom_minimum_size.y = 18 * card_scale
 	_type_label.max_font_size = int(13 * card_scale)
-	_art_background.custom_minimum_size.y = 24 * card_scale
+	_art_background.custom_minimum_size.y = ART_HEIGHT * card_scale
 	_uses_label.max_font_size = int(13 * card_scale)
 	_catalysts.custom_minimum_size.y = 20 * card_scale
 	_desc_label.max_font_size = int(14 * card_scale)

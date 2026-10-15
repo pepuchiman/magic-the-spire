@@ -13,3 +13,5 @@ extends Resource
 @export_range(0, 9999) var attack: int = 0
 @export var race: GameEnums.Race = GameEnums.Race.BEAST
 @export var attack_effect: GameEnums.AttackEffect = GameEnums.AttackEffect.BLOW
+## 背中向きの絵（戦闘で使う。空なら図形で仮表示。assets/creatures/creature_<ID>_back.png）
+@export var art_back: Texture2D

@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://ui/unit_sprite.gd" id="1_sprite"]
 [ext_resource type="Script" path="res://ui/fit_label.gd" id="2_fit"]
 [ext_resource type="Script" path="res://ui/unit_figure.gd" id="3_figure"]
+[ext_resource type="Script" path="res://ui/status_row.gd" id="4_row"]
 
 [node name="UnitSprite" type="Control"]
 layout_mode = 3
@@ -90,13 +91,10 @@ vertical_alignment = 1
 auto_translate_mode = 2
 theme_override_font_sizes/font_size = 13
 
-[node name="StatusLabel" type="Label" parent="VBox/Plate"]
+[node name="StatusRow" type="HFlowContainer" parent="VBox/Plate"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-auto_translate_mode = 2
-script = ExtResource("2_fit")
-max_font_size = 13
-min_font_size = 8
+mouse_filter = 2
+alignment = 1
+script = ExtResource("4_row")
+font_size = 12

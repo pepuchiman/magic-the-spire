@@ -46,6 +46,7 @@ func _show(new_index: int) -> void:
 	%ConfirmButton.disabled = not unlocked
 	%DeckButton.disabled = not unlocked
 	%HeroArt.modulate = Color.WHITE if unlocked else Color(0.25, 0.25, 0.3)
+	_show_art(hero)
 	if not unlocked:
 		%StatsLabel.text = "%s\n%s" % [UiText.t("UI_LOCKED"), UiText.unlock_condition(Game.data.get_dungeon(hero.unlocked_by_clearing))]
 		return
@@ -67,3 +68,13 @@ func _show(new_index: int) -> void:
 func _open_deck() -> void:
 	var hero := current_hero()
 	_deck_popup.open_view(UiText.fmt("UI_STARTING_DECK_TITLE", {"count": hero.starting_deck.size()}), hero.starting_deck)
+
+
+## 主人公の絵（正面向き）。絵がなければ図形で表示する
+func _show_art(hero: HeroData) -> void:
+	var figure: UnitFigure = %Figure
+	figure.kind = UnitFigure.Kind.WIZARD
+	figure.facing = UnitFigure.Facing.FRONT
+	figure.body_color = UiPalette.BODY_HERO
+	figure.draw_shape = hero.art_front == null
+	%Art.texture = hero.art_front

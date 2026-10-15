@@ -1,6 +1,6 @@
 class_name MapView
 extends Control
-## マップの表示。下が1階、上がボス。ノードは色付きの丸、つながりは線で描く。
+## マップの表示。下が1階、上がボス。ノードは色付きの丸（中に記号と名前）、つながりは線で描く。
 ## ノードがタップされたら node_tapped で知らせる（進むかどうかは画面側で決める）
 
 signal node_tapped(node: MapNode)
@@ -27,10 +27,8 @@ func setup(run: RunState) -> void:
 		var button := Button.new()
 		button.custom_minimum_size = Vector2(NODE_SIZE, NODE_SIZE)
 		button.size = button.custom_minimum_size
-		button.text = TextKeys.map_node(node.type)
-		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		button.add_theme_font_size_override("font_size", 18)
 		button.pressed.connect(func() -> void: node_tapped.emit(node))
+		_add_face(button, node.type)
 		add_child(button)
 		_buttons[node] = button
 	_update_look()
@@ -68,7 +66,7 @@ func _update_look() -> void:
 	var available := _run.available_nodes()
 	for node: MapNode in _buttons:
 		var button: Button = _buttons[node]
-		var color := _type_color(node.type)
+		var color := UiPalette.map_node_color(node.type)
 		var border := color.darkened(0.4)
 		var border_width := 3
 		if node == _run.current_node:
@@ -103,16 +101,22 @@ func _draw() -> void:
 			draw_line(node_center(node), node_center(target), color, 6.0 if walked else 4.0, true)
 
 
-static func _type_color(type: GameEnums.MapNodeType) -> Color:
-	match type:
-		GameEnums.MapNodeType.BATTLE:
-			return Color(0.55, 0.28, 0.28)
-		GameEnums.MapNodeType.ELITE:
-			return Color(0.70, 0.20, 0.45)
-		GameEnums.MapNodeType.EVENT:
-			return Color(0.30, 0.45, 0.70)
-		GameEnums.MapNodeType.REST:
-			return Color(0.28, 0.58, 0.38)
-		GameEnums.MapNodeType.TREASURE:
-			return Color(0.75, 0.62, 0.25)
-	return Color(0.45, 0.12, 0.30)
+## ボタンの中身：上に記号（アイコンの一覧に画像があれば画像）、下にマスの種類の名前
+func _add_face(button: Button, type: GameEnums.MapNodeType) -> void:
+	var box := VBoxContainer.new()
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, 12)
+	box.add_theme_constant_override("separation", 0)
+	button.add_child(box)
+	var icon := ShapeIcon.new()
+	icon.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	icon.setup(ShapeIcon.map_node_shape(type), Color(1, 1, 1, 0.9), UiIcons.map_node(type))
+	box.add_child(icon)
+	var label := Label.new()
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.text = TextKeys.map_node(type)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 18)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 6)
+	box.add_child(label)

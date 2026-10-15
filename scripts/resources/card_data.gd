@@ -34,6 +34,8 @@ extends Resource
 @export var description_key: StringName
 ## 効果エフェクト（フェーズ7で使う）
 @export var visual_effect: StringName
+## カードの絵（空なら種別の色と記号で仮表示。tools/link_art.gd で assets/cards/card_<ID>.png を結び付けられる）
+@export var art: Texture2D
 
 
 ## 説明文に差し込む値（効果の部品の値）を集める。効果の数値を変えると説明文も変わる

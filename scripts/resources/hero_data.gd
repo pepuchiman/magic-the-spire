@@ -6,6 +6,11 @@ extends Resource
 @export var name_key: StringName
 ## このダンジョン（ID）をクリアすると使えるようになる。空なら最初から使える
 @export var unlocked_by_clearing: StringName
+@export_group("絵（空なら図形で仮表示）")
+## 正面向きの絵（主人公選択などで使う。assets/player/hero_<ID>_front.png）
+@export var art_front: Texture2D
+## 背中向きの絵（戦闘で使う。assets/player/hero_<ID>_back.png）
+@export var art_back: Texture2D
 
 @export_group("基本パラメーター")
 ## 初期HP（挑戦開始時のHP）

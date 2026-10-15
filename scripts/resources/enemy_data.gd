@@ -11,5 +11,7 @@ extends Resource
 @export_range(0, 9999) var attack: int = 0
 @export var race: GameEnums.Race = GameEnums.Race.MONSTER
 @export var attack_effect: GameEnums.AttackEffect = GameEnums.AttackEffect.BLOW
+## 正面向きの絵（空なら図形で仮表示。assets/enemies/enemy_<ID>.png）
+@export var art_front: Texture2D
 ## 行動パターン
 @export var pattern: Array[EnemyActionData] = []

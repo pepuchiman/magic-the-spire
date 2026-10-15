@@ -21,6 +21,8 @@ const STRONG_PARAMS: Array[GameEnums.Param] = [
 @export var modifiers: Array[ModifyParamEffect] = []
 ## 雰囲気の説明文のキー（空でもよい）
 @export var description_key: StringName
+## アイコン（空なら種類の記号で仮表示。assets/icons/equip_<ID>.png）
+@export var icon: Texture2D
 
 
 ## このパラメーターが装備でいくつ変わるか（同じパラメーターの効果が複数あれば合計）

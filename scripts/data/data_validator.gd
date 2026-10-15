@@ -88,6 +88,51 @@ static func validate_index(index: DataIndex) -> PackedStringArray:
 	errors.append_array(_check_unlocks(index))
 	if index.config == null:
 		errors.append("ゲーム全体の設定（data/config/game_config.tres）が索引にありません")
+	errors.append_array(_check_art(index))
+	errors.append_array(_check_icons(index.icons))
+	return errors
+
+
+## 絵の項目に設定した画像のファイルがあるか（画像を消した・名前を変えた時に気づくため）
+static func _check_art(index: DataIndex) -> PackedStringArray:
+	var errors := PackedStringArray()
+	var fields := {
+		"カード": [index.cards, ["art"]],
+		"主人公": [index.heroes, ["art_front", "art_back"]],
+		"クリーチャー": [index.allies, ["art_back"]],
+		"敵": [index.enemies, ["art_front"]],
+		"装備": [index.equipment, ["icon"]],
+		"ダンジョン": [index.dungeons, ["background"]],
+	}
+	for label: String in fields:
+		var items: Array = fields[label][0]
+		for item: Resource in items:
+			if item == null:
+				continue
+			for field: String in fields[label][1]:
+				var texture: Texture2D = item.get(field)
+				if texture != null and texture.resource_path.begins_with("res://") and not FileAccess.file_exists(texture.resource_path):
+					errors.append("%s %s：絵の画像が見つかりません（%s）" % [label, item.get("id"), texture.resource_path])
+	return errors
+
+
+## アイコンの一覧に、すべての種類が登録されているか（画像は空でもよい。空なら図形で表示する）
+static func _check_icons(icons: IconSet) -> PackedStringArray:
+	var errors := PackedStringArray()
+	if icons == null:
+		errors.append("アイコンの一覧（data/config/icon_set.tres）が索引にありません")
+		return errors
+	var groups := [
+		["状態効果", icons.status_icons, GameEnums.StatusType],
+		["マップのマス", icons.map_node_icons, GameEnums.MapNodeType],
+		["装備の種類", icons.equipment_type_icons, GameEnums.EquipmentType],
+	]
+	for group: Array in groups:
+		var registered: Dictionary = group[1]
+		var enum_dict: Dictionary = group[2]
+		for type_name: String in enum_dict.keys():
+			if not registered.has(enum_dict[type_name]):
+				errors.append("アイコンの一覧：%s「%s」が登録されていません" % [group[0], type_name])
 	return errors
 
 
@@ -139,6 +184,8 @@ static func check_unregistered(index: DataIndex, tres_paths: PackedStringArray) 
 	var registered: Dictionary = {}
 	if index.config != null:
 		registered[index.config.resource_path] = true
+	if index.icons != null:
+		registered[index.icons.resource_path] = true
 	for list: Array in _all_lists(index):
 		for item: Resource in list:
 			if item != null:

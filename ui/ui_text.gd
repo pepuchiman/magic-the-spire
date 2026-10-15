@@ -42,17 +42,25 @@ static func status_text(combatant: Combatant) -> String:
 		if status != null:
 			lines.append(status_line(status))
 	for modifier: StatModifier in combatant.modifiers:
-		var params := {
-			"param": t(TextKeys.param(modifier.param)),
-			"amount": "%+d" % modifier.amount,
-			"turns": modifier.remaining_turns,
-		}
-		match modifier.duration:
-			GameEnums.Duration.TURNS:
-				lines.append(t("UI_STATUS_TURNS").format(params))
-			GameEnums.Duration.BATTLE:
-				lines.append(t("UI_STATUS_BATTLE").format(params))
+		var line := modifier_line(modifier)
+		if line != "":
+			lines.append(line)
 	return STATUS_SEPARATOR.join(lines)
+
+
+## 補正1つ分の文章（例：「防御力 +2（残り2）」）。「永続」の補正は表示しないので空
+static func modifier_line(modifier: StatModifier) -> String:
+	var params := {
+		"param": t(TextKeys.param(modifier.param)),
+		"amount": "%+d" % modifier.amount,
+		"turns": modifier.remaining_turns,
+	}
+	match modifier.duration:
+		GameEnums.Duration.TURNS:
+			return t("UI_STATUS_TURNS").format(params)
+		GameEnums.Duration.BATTLE:
+			return t("UI_STATUS_BATTLE").format(params)
+	return ""
 
 
 ## 状態効果を横に並べる時の区切り（文章ではなく空白）

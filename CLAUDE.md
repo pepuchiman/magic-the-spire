@@ -3,11 +3,13 @@
 - Godot 4 で作る、魔法使いが主人公のローグライク・カードバトルゲーム（Slay the Spire 風）
 - 対象：スマホ（Android／iOS）の縦画面。開発中の動作確認は Windows で行う
 - 仕様の正は Game_Rule.md と Game_Elements.md（状態効果・種族などの要素の一覧）。開発の手順・フェーズは Dev_Plan.md に従う
+- イラスト関連は art_style.md に従う
 
 # 詳細資料
 - ゲーム仕様：@docs/Game_Rule.md
 - ゲーム要素の一覧（状態効果・種族など。今後も追加される）：@docs/Game_Elements.md
 - 開発計画：@docs/Dev_Plan.md
+- イラストの作り方・素材の名前の決まり：docs/art_style.md（絵の作業をする時に読む）
 
 # 環境
 - プロジェクトフォルダ：D:\User\radia\Documents\ClaudeDocument\magic-the-spire
@@ -69,7 +71,7 @@
 - Game_Rule.md の「未確定事項」は勝手に決めない。サンプル値で仮置きし、その旨を報告する
 - バトルのルールなどのロジックを変更したら、テストを追加・更新し、全テストが通ることを確認する
 - 何か変えたら、警告も含めてエラーが残っていないか見てから報告すること
-- 絵の素材は用意しないので、見た目は図形だけで作ること。ただし後々各種素材は差し替えられるように作る
+- 絵の素材は art_style.md に従って作り、assets/ に置いて差し替える。画像がまだない所は図形で仮表示する（画像を置けば、その部分だけ差し替わるように作る）
 - アプリの書き出し（ビルド）は、指示があったときだけ行う。ゲームを変更しただけでは自動でビルドしない（トークンと時間の節約のため）。ただし、動作確認やテストのための画面なしの起動（--headless）は行ってよい
 - コミットと GitHub へのプッシュ（git push）は、指示があったときだけ行う
 - プロジェクトフォルダ以外のファイルは絶対に変更、更新をしない（例外：%APPDATA%\MagicTheSpire\ の中の、このゲームのセーブデータなど、このプロジェクトに関連するファイルだけは、追加・書き換えしてよい。それ以外の %APPDATA%\ の中は変更しない）
@@ -89,4 +91,6 @@
 - 既存データの指定した項目だけを変更：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/set_data_value.gd -- file=res://data/cards/fireball.tres key=uses_per_battle value=1
 - バトルの自動実行（コンソールに経過を表示。-- の後ろは省略可）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/simulate_battle.gd -- seed=1 enemy=boss_witch hero=flame_mage
 - ラン1周の自動実行（コンソールに経過を表示。-- の後ろは省略可）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/simulate_run.gd -- seed=1 hero=flame_mage dungeon=lost_forest
+- assets/ に置いた画像を、ファイル名でデータの絵の項目に結び付ける（先に --import を実行する）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/link_art.gd
+- データの型から項目を削除した後、ファイルに残った古い項目を消す：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/resave_data.gd -- dir=res://data/enemies
 - スクリプトを追加・名前変更した後は、先に --headless --import を実行する（クラス名の登録のため）

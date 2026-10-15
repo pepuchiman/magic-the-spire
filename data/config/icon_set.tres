@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="IconSet" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/icon_set.gd" id="1_lfpri"]
+
+[resource]
+script = ExtResource("1_lfpri")
+status_icons = Dictionary[int, Texture2D]({
+0: null,
+1: null,
+2: null,
+3: null,
+4: null,
+5: null
+})
+map_node_icons = Dictionary[int, Texture2D]({
+0: null,
+1: null,
+2: null,
+3: null,
+4: null,
+5: null
+})
+equipment_type_icons = Dictionary[int, Texture2D]({
+0: null,
+1: null,
+2: null
+})

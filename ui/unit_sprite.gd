@@ -3,15 +3,10 @@ extends Control
 ## 戦場に立つキャラクター1体（主人公・クリーチャー・敵）の姿。
 ## 敵は頭の上に行動予告を出す。クリーチャーは足元に小さなHPバーと状態効果を出す。
 ## 主人公と敵本体の名前・HPなどは、別の「情報の枠」（UnitInfoPanel）に出す。
-## 絵は front_texture（正面）／back_texture（背中）に画像を入れれば、図形の代わりに表示される。
+## 絵は各データ（主人公・クリーチャー・敵）の絵の項目に画像があれば、図形の代わりに表示される。
 
 ## タップされた時（クリーチャーの入れ替え選択・詳しい情報の表示に使う）
 signal tapped(sprite: UnitSprite)
-
-## 正面向きの絵（あれば表示する。今は未使用）
-@export var front_texture: Texture2D
-## 背中向きの絵（あれば表示する。今は未使用）
-@export var back_texture: Texture2D
 
 var combatant: Combatant
 ## 向き（主人公側は背中、敵側は正面）
@@ -29,7 +24,7 @@ var _shown_armor: int = 0
 @onready var _plate: VBoxContainer = %Plate
 @onready var _hp_bar: ProgressBar = %HpBar
 @onready var _hp_label: Label = %HpLabel
-@onready var _status_label: FitLabel = %StatusLabel
+@onready var _status_row: StatusRow = %StatusRow
 
 
 func _ready() -> void:
@@ -37,7 +32,6 @@ func _ready() -> void:
 	_hp_bar.add_theme_stylebox_override("fill", UiPalette.make_box(UiPalette.HP, Color.TRANSPARENT, 0, 4))
 	_intent_label.add_theme_color_override("font_color", UiPalette.INTENT)
 	_intent_label.add_theme_stylebox_override("normal", UiPalette.make_box(UiPalette.PANEL, UiPalette.INTENT.darkened(0.4), 2, 10))
-	_status_label.add_theme_color_override("font_color", UiPalette.TEXT_SUB)
 	if combatant != null:
 		refresh()
 
@@ -60,9 +54,11 @@ func setup(value: Combatant, new_facing: UnitFigure.Facing, with_plate: bool) ->
 func refresh() -> void:
 	if combatant == null:
 		return
-	var texture := front_texture if facing == UnitFigure.Facing.FRONT else back_texture
+	var texture := _art_texture()
 	_art.texture = texture
 	_figure.facing = facing
+	_figure.kind = _figure_kind()
+	_figure.is_boss = combatant is EnemyCombatant and (combatant as EnemyCombatant).is_main
 	_figure.body_color = _body_color()
 	_figure.draw_shape = texture == null
 	_figure.highlighted = highlighted
@@ -91,15 +87,38 @@ func show_values(hp: int, armor: int) -> void:
 	_update_sub_line(armor)
 
 
-## HPバーの下の行：アーマー（あれば）と状態効果を横に並べる
+## HPバーの下の行：アーマー（あれば）と状態効果を、印つきで横に並べる
 func _update_sub_line(armor: int) -> void:
-	var parts := PackedStringArray()
-	if armor > 0:
-		parts.append(UiText.fmt("UI_ARMOR", {"armor": armor}))
-	var statuses := UiText.status_text(combatant)
-	if statuses != "":
-		parts.append(statuses)
-	_status_label.set_fitted_text(UiText.STATUS_SEPARATOR.join(parts))
+	_status_row.show_combatant(combatant, armor)
+
+
+## データにある絵（向きに合わせる）。無ければ null（図形で表示する）
+func _art_texture() -> Texture2D:
+	if combatant is HeroCombatant:
+		var hero: HeroData = (combatant as HeroCombatant).data
+		return hero.art_front if facing == UnitFigure.Facing.FRONT else hero.art_back
+	if combatant is AllyCombatant:
+		return (combatant as AllyCombatant).data.art_back
+	if combatant is EnemyCombatant:
+		return (combatant as EnemyCombatant).data.art_front
+	return null
+
+
+## 図形の形（主人公は魔法使い、クリーチャー・敵は種族ごと）
+func _figure_kind() -> UnitFigure.Kind:
+	var race := -1
+	if combatant is AllyCombatant:
+		race = (combatant as AllyCombatant).data.race
+	elif combatant is EnemyCombatant:
+		race = (combatant as EnemyCombatant).data.race
+	match race:
+		GameEnums.Race.BEAST:
+			return UnitFigure.Kind.BEAST
+		GameEnums.Race.SPIRIT:
+			return UnitFigure.Kind.SPIRIT
+		GameEnums.Race.MONSTER:
+			return UnitFigure.Kind.MONSTER
+	return UnitFigure.Kind.WIZARD
 
 
 func set_highlight(value: bool) -> void:

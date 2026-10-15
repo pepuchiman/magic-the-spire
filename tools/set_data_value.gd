@@ -3,7 +3,7 @@ extends SceneTree
 ## 他の項目（インスペクターで調整した値など）はそのまま残る。
 ## 実行：godot --headless -s tools/set_data_value.gd -- file=res://data/cards/fireball.tres key=uses_per_battle value=1
 ## 対応している項目の種類：
-##   整数、小数、真偽値（true/false）、文字列、StringName
+##   整数、小数、真偽値（true/false）、文字列、StringName、色（#RRGGBB の形。例：value=#1E2340）
 ##   選択肢（列挙型）：名前で指定できる（例：key=rarity value=RARE）
 ##   選択肢のリスト：カンマ区切りで指定する（例：key=targets value=ANY または value=ENEMY,SELF）
 ##   他のデータへの参照・その一覧：res:// から始まる場所で指定する
@@ -71,6 +71,11 @@ func _apply(resource: Resource, property: Dictionary, text: String) -> bool:
 			resource.set(key, text)
 		TYPE_STRING_NAME:
 			resource.set(key, StringName(text))
+		TYPE_COLOR:
+			if not Color.html_is_valid(text):
+				printerr("色は #RRGGBB の形で指定してください：%s" % text)
+				return false
+			resource.set(key, Color.html(text))
 		TYPE_OBJECT:
 			var single := _load_resource(text)
 			if single == null:
