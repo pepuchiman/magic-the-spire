@@ -1,14 +1,19 @@
 class_name CardView
 extends PanelContainer
-## カード1枚の表示。名前・種別・消費マナ・必要触媒・レアリティ（枠の色）・説明文を出す。
+## カード1枚の表示。上から「消費マナと名前」「絵」「説明文」の順。
+## 種別・レアリティ・残りの使用回数は絵の下端の帯に、必要触媒は絵の右上に重ねて出す（絵をできるだけ大きく見せるため）。
+## レアリティは枠の色でも分かる。
 ## 絵はカードのデータの「絵」に画像があれば表示される（無ければ種別の色と記号で仮表示）。
 
 ## 押された時（画面の進行役が、タップかドラッグかを判断する）
 signal pressed(card_view: CardView)
 
 const BASE_SIZE := Vector2(140, 200)
-## 絵の枠の高さ（card_scale が 1.0 の時）
-const ART_HEIGHT := 36.0
+## 絵の枠の高さ（card_scale が 1.0 の時）。横は約128なので、絵は約5:4の横長で表示される
+## （正方形の絵は上下が1割ずつ切れる。docs/art_style.md 参照）
+const ART_HEIGHT := 100.0
+## 絵の下端の帯（種別・レアリティ・残り回数）の高さ
+const BAND_HEIGHT := 18.0
 
 ## 表示の大きさ（1.0 が手札の大きさ。拡大表示などで大きくする）
 @export var card_scale: float = 1.0
@@ -29,7 +34,8 @@ var selected: bool = false
 @onready var _art: TextureRect = %Art
 @onready var _symbol: ShapeIcon = %Symbol
 @onready var _uses_label: FitLabel = %UsesLabel
-@onready var _catalysts: HBoxContainer = %Catalysts
+@onready var _catalysts: VBoxContainer = %Catalysts
+@onready var _info_band: PanelContainer = %InfoBand
 @onready var _desc_label: FitLabel = %DescLabel
 
 
@@ -80,6 +86,7 @@ func refresh() -> void:
 	_symbol.visible = card.art == null
 	_symbol.setup(ShapeIcon.card_type_shape(card.card_type), UiPalette.card_type_color(card.card_type).lightened(0.55))
 	_uses_label.set_fitted_text(UiText.fmt("UI_USES_LEFT", {"count": uses_left}) if uses_left >= 0 else "")
+	_uses_label.visible = uses_left >= 0  # 使用回数の制限がないカードは、種別の文字に幅を全部使う
 	_rebuild_catalysts()
 	_update_look()
 
@@ -94,14 +101,18 @@ func _rebuild_catalysts() -> void:
 			continue
 		var badge := PanelContainer.new()
 		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		badge.add_theme_stylebox_override("panel", UiPalette.make_box(colors[i], Color.TRANSPARENT, 0, int(10 * card_scale)))
-		badge.custom_minimum_size = Vector2(22, 20) * card_scale
+		var box := UiPalette.make_box(colors[i], Color(0, 0, 0, 0.6), maxi(1, int(card_scale)), int(9 * card_scale))
+		box.set_content_margin_all(0)
+		badge.add_theme_stylebox_override("panel", box)
+		badge.custom_minimum_size = Vector2(22, 18) * card_scale
 		var label := Label.new()
 		label.text = str(values[i])
 		label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		label.add_theme_font_size_override("font_size", int(13 * card_scale))
+		label.add_theme_font_size_override("font_size", int(12 * card_scale))
+		label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
+		label.add_theme_constant_override("outline_size", maxi(1, int(3 * card_scale)))
 		badge.add_child(label)
 		_catalysts.add_child(badge)
 
@@ -115,7 +126,9 @@ func _update_look() -> void:
 		border = UiPalette.SELECTED
 		border_width = int(5 * card_scale)
 	add_theme_stylebox_override("panel", UiPalette.make_box(UiPalette.PANEL, border, border_width, int(10 * card_scale)))
-	_cost_badge.add_theme_stylebox_override("panel", UiPalette.make_box(UiPalette.MANA, Color.TRANSPARENT, 0, int(15 * card_scale)))
+	var cost_box := UiPalette.make_box(UiPalette.MANA, Color.TRANSPARENT, 0, int(14 * card_scale))
+	cost_box.set_content_margin_all(0)  # 中の余白をなくし、名前の帯の高さに収める
+	_cost_badge.add_theme_stylebox_override("panel", cost_box)
 	# 使えないカードは暗く表示する
 	modulate = Color(1, 1, 1) if playable else Color(0.5, 0.5, 0.55)
 
@@ -126,14 +139,24 @@ func _apply_scale() -> void:
 	pivot_offset = custom_minimum_size / 2.0
 	var margin: MarginContainer = $Margin
 	for side: String in ["left", "top", "right", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, int(6 * card_scale))
-	($Margin/VBox/Top as Control).custom_minimum_size.y = 30 * card_scale
-	_cost_badge.custom_minimum_size = Vector2(30, 30) * card_scale
-	_cost_label.add_theme_font_size_override("font_size", int(20 * card_scale))
+		margin.add_theme_constant_override("margin_" + side, int(4 * card_scale))
+	($Margin/VBox/Top as Control).custom_minimum_size.y = 28 * card_scale
+	_cost_badge.custom_minimum_size = Vector2(28, 28) * card_scale
+	_cost_label.add_theme_font_size_override("font_size", int(19 * card_scale))
 	_name_label.max_font_size = int(18 * card_scale)
-	_type_label.custom_minimum_size.y = 18 * card_scale
-	_type_label.max_font_size = int(13 * card_scale)
 	_art_background.custom_minimum_size.y = ART_HEIGHT * card_scale
-	_uses_label.max_font_size = int(13 * card_scale)
-	_catalysts.custom_minimum_size.y = 20 * card_scale
+	_symbol.offset_top = 10 * card_scale
+	_symbol.offset_bottom = -(BAND_HEIGHT + 4) * card_scale
+	_catalysts.offset_left = -26 * card_scale
+	_catalysts.offset_top = 3 * card_scale
+	_catalysts.offset_right = -3 * card_scale
+	_catalysts.offset_bottom = 60 * card_scale
+	_info_band.offset_top = -BAND_HEIGHT * card_scale
+	var band := UiPalette.make_box(Color(0, 0, 0, 0.55), Color.TRANSPARENT, 0, 0)
+	band.set_content_margin_all(0)
+	band.content_margin_left = 4 * card_scale
+	band.content_margin_right = 4 * card_scale
+	_info_band.add_theme_stylebox_override("panel", band)
+	_type_label.max_font_size = int(12 * card_scale)
+	_uses_label.max_font_size = int(12 * card_scale)
 	_desc_label.max_font_size = int(14 * card_scale)

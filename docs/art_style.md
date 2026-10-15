@@ -10,10 +10,7 @@
 - **テーマ**：塔を登る若い魔法使いの冒険。神秘的だが暗すぎない、少し絵本寄りのダークファンタジー
 - **画風（既定案）**：手描き風の厚塗り（ペインタリー）、輪郭線はやや太め、明暗のコントラストはっきり
 - **スマホの小さい画面でも読める絵**：主題は1つ、シルエットで何かわかる、背景はシンプル
-- 【要決定】画風の候補（試し描きして1つに決める）
-  - A. 厚塗りファンタジー（既定案）
-  - B. フラットなベクター調（軽い・統一しやすい）
-  - C. ドット絵風（レトロ・小さくても映える）
+- 画風：**A. 厚塗りファンタジーに決定**（2026-10-15 の試し描きで決定。B は A との違いが小さく、C はこのモデルでは描けなかった）
 
 ## 2. カラーパレット
 
@@ -39,7 +36,7 @@ SD1.5 は 512px 前後で学習されているため、**小さく生成 → Hir
 
 | 素材 | 生成サイズ（SD1.5） | 仕上げサイズ | ゲーム内表示 | 保存先 |
 |---|---|---|---|---|
-| カードイラスト | 512×512 | 1024×1024（2倍） | カード上部の絵の枠（横長の枠なので、中央付近が切り取られて表示される） | `assets/cards/` |
+| カードイラスト | 512×512 | 1024×1024（2倍）→ 組み込み時に 512×512 | カードの絵の枠（約5:4の横長。正方形の絵は上下が1割ずつ切れる。下端には種別の帯、右上には触媒の印が重なる） | `assets/cards/` |
 | 敵キャラ（正面向き） | 512×768（縦長） | 1024×1536（2倍） | 画面右上、背景透過 | `assets/enemies/` |
 | 主人公（正面・背中の2枚） | 512×768 | 1024×1536（2倍） | 正面＝主人公選択など、背中＝戦闘の画面左下。背景透過 | `assets/player/` |
 | 自分のクリーチャー（背中向き） | 512×768 | 1024×1536（2倍） | 戦闘の主人公の斜め奥、背景透過 | `assets/creatures/` |
@@ -67,63 +64,83 @@ SD1.5 は 512px 前後で学習されているため、**小さく生成 → Hir
 ## 4. プロンプト雛形（ComfyUI / SD1.5 向け）
 
 > SD1.5 は先頭の単語ほど強く効く。トリガーワードと画風指定は必ず先頭に置く。
+> `(言葉:1.3)` のように書くと、その言葉を強める（1.0 が普通。1.2〜1.4 程度で使う）。
+> 2026-10-15 の試し描きの結果を反映済み（下の「試し描きで分かったこと」）。
 
 ### 共通ポジティブ（全素材の先頭に付ける）
 ```
 zrpgstyle, masterpiece, best quality,
 fantasy game illustration, painterly style, thick outlines, high contrast lighting,
-clean simple background, centered composition, single clear subject,
-deep indigo and purple color scheme, magical glow
+single clear subject
 ```
+- 色づかい・背景の言葉は、素材ごとの雛形で足す（キャラクターに「藍と紫」を入れると、背景が灰色にならないため）
 
 ### 共通ネガティブ
 ```
 worst quality, low quality, normal quality, bad anatomy,
 text, letters, watermark, signature, logo, frame, border, card frame,
 blurry, lowres, jpeg artifacts, extra fingers, deformed hands,
-cluttered background, multiple subjects, photo, realistic
+cluttered background, multiple subjects, photo, realistic,
+nsfw, nudity, bare skin, cleavage, bare legs
 ```
+- 人を描かない素材（敵・クリーチャー・カード・アイコン・背景）は、さらに `human, girl, woman, man, person, face` を足す
 
 ### カードイラスト
 ```
-[共通ポジティブ], {カードの内容を英語で1文}, {種別カラー} dominant color,
+[共通ポジティブ], deep indigo background, magical glow, centered composition, subject in the center, empty margins at top and bottom,
+(close-up of {カードの主役を英語で}:1.2), {カードの内容を英語で1文}, ({種別カラー} dominant color:1.3),
 spell effect, dynamic angle, icon-like readability
 ```
+- 主役は「魔法・物・生き物」にして、人物を描かない（カードの絵の枠は横長で、中央が切り取られるため。人物だと顔と胴しか見えない）
+- 主役は中央に置き、上下の端（各1割）と右上・下端に大事なものを置かない（ゲームでは上下が切れ、右上に触媒の印、下端に種別の帯が重なるため）。プロンプトに `subject in the center, empty margins at top and bottom` を入れる
 - 種別カラー：攻撃=`crimson red`、付与=`icy blue`、召喚=`emerald green`、空間=`golden`（状態効果の差し色=`toxic violet`）
-- 例（ファイアボール）：`... a young wizard's hand casting a blazing fireball, crimson red dominant color, ...`
+- 例（火球）：`... (close-up of a blazing fireball:1.2), a blazing fireball flying forward with a fiery trail, (crimson red dominant color:1.3), ...`
 
 ### 敵キャラ（正面向き）
 ```
-[共通ポジティブ], full body {敵の説明}, front view, facing the viewer, menacing but cute,
-plain flat gray background
+[共通ポジティブ], (plain flat gray background:1.2), simple background, solo, no humans,
+full body {敵の説明}, front view, facing the viewer, menacing monster, charming creature design
 ```
-→ 生成後に背景透過する（灰色背景のほうが切り抜きやすい）
+- `cute` は使わない（人の女の子が出やすくなるため）
+→ 生成後に背景透過する（tools/remove_gray_bg.gd。灰色背景のほうが切り抜きやすい）
 
 ### 主人公・自分のクリーチャー
 正面向き（主人公のみ。主人公選択などで使う）
 ```
-[共通ポジティブ], full body {主人公の説明}, front view, facing the viewer,
-plain flat gray background
+[共通ポジティブ], (plain flat gray background:1.2), simple background, solo,
+full body {主人公の説明}, front view, facing the viewer
 ```
 背中向き（戦闘で使う。主人公と自分のクリーチャー）
 ```
-[共通ポジティブ], full body {主人公・クリーチャーの説明}, seen from behind, back view, facing away from the viewer,
-plain flat gray background
+[共通ポジティブ], (plain flat gray background:1.2), simple background, solo,
+full body {主人公・クリーチャーの説明}, seen from behind, back view, facing away from the viewer
 ```
+- クリーチャーは `no humans` も足す
+- 体・服の色は `(red pointed wizard hat:1.3)`、`(green translucent slime:1.3)` のように強める（灰色の背景の指定で、体まで灰色になりやすいため。敵も同じ）
 → 正面と背中で、服装・色・持ち物をそろえる（同じキャラクターに見えるように）
 
 ### アイコン（状態効果・マップのマス・装備）
 ```
-[共通ポジティブ], game icon of {アイコンの内容}, {色} dominant color, simple shape, bold silhouette,
-plain dark background
+[共通ポジティブ], deep indigo background, magical glow, centered composition,
+game icon of {アイコンの内容}, ({色} dominant color:1.3), simple shape, bold silhouette
 ```
 
 ### 戦闘背景
 ```
-[共通ポジティブ], interior of an ancient magic tower, {階層の雰囲気},
+[共通ポジティブ], deep indigo and purple color scheme, magical glow,
+interior of an ancient magic tower, {階層の雰囲気},
 vertical composition, empty center area, no characters, soft depth of field
 ```
 → 中央を空けるのは、敵とカードが重なっても見やすくするため
+
+### 試し描きで分かったこと（2026-10-15、A-Zovya RPG V4-VAE）
+- 画風は A（厚塗り）が狙いどおり。B（フラット）は A との違いが小さい。C（ドット絵風）はこのモデルでは描けない（ドット絵用の LoRA が必要）
+- 主人公の背中向きは、そのまま描ける
+- 共通ポジティブに「deep indigo and purple color scheme」を入れると、全部が紫寄りになり、種別の色が弱くなる・背景が灰色にならない
+- 「cute」を入れた敵（スライム）は、人の女の子が主役になり、露出も出た → ネガティブで人と露出を防ぐ
+- カードは何もしないと魔法使いの上半身が主役になる → 魔法・物を主役にする（2回目の試し描きで、火球・盾・狼とも主役が分かる絵になった）
+- 灰色の背景を `:1.4` で強めると、体・服まで灰色になる → 背景は `:1.2` にして、体の色を強める
+- 灰色の背景は、生成すると中央が少し明るいグラデーションになる。tools/remove_gray_bg.gd は、少しずつ変わる灰色をたどって抜けるようにしてある
 
 ## 5. 生成設定（SD1.5・2070 SUPER／VRAM 8GB 想定）
 
@@ -133,8 +150,8 @@ vertical composition, empty center area, no characters, soft depth of field
 | 本命 | A-Zovya RPG Artist Tools **V4-VAE**（比較用に V3+VAE） | `zrpgstyle` | RPG・厚塗り向き。VAE内蔵版なのでVAE指定不要 |
 | 次点 | DreamShaper 8 | なし | 汎用。使う場合は共通ポジティブから `zrpgstyle` を外す |
 
-- 【要決定】試し描きの結果、採用したモデルとバージョンをここに記入：＿＿＿＿
-- **広告収益化を予定しているため、Civitai のモデルページでライセンス（CreativeML Open RAIL-M ＋ Addendum）の「画像の販売・商用利用」可否を確認し、確認日をここに記録する**：＿＿＿＿
+- 採用したモデル：A-Zovya RPG Artist Tools V4-VAE（aZovyaRPGArtistTools_v4VAE.safetensors）。2026-10-15 の試し描きで決定
+- **広告収益化を予定しているため、Civitai のモデルページでライセンス（CreativeML Open RAIL-M ＋ Addendum）の「画像の販売・商用利用」可否を確認し、確認日をここに記録する**：A-Zovya RPG Artist Tools V4-VAE は商用利用可（利用者が 2026-10-15 に確認）。anylora は未確認のため使わない
 - 非営利ライセンス（CC BY-NC 系など）や「画像販売禁止」のモデル・LoRA は使わない
 
 ### 基本設定（txt2img）
@@ -187,3 +204,8 @@ vertical composition, empty center area, no characters, soft depth of field
 | ファイル | モデル | seed | 生成サイズ / denoise | 備考 |
 |---|---|---|---|---|
 | （例）card_fireball.png | A-Zovya V4-VAE | 123456 | 512×512 / 0.4 | 基準絵として採用 |
+| card_fireball.png | A-Zovya V4-VAE | 3000 | 512×512 / 0.4 | 2026-10-15 試し描き2回目で採用（画風A）。512px に縮小 |
+| card_guard.png | A-Zovya V4-VAE | 3000 | 512×512 / 0.4 | 2026-10-15 試し描き2回目で採用（画風A）。512px に縮小 |
+| card_summon_wolf.png | A-Zovya V4-VAE | 3003 | 512×512 / 0.4 | 2026-10-15 試し描き2回目で採用（画風A）。512px に縮小 |
+| enemy_slime.png | A-Zovya V4-VAE | 4003 | 512×768 / 0.4 | 2026-10-15 試し描き3回目。組み込みの確認用（背景抜きの精度に課題） |
+| hero_flame_mage_back.png | A-Zovya V4-VAE | 4001 | 512×768 / 0.4 | 2026-10-15 試し描き3回目。組み込みの確認用（炎のまわりの光が少し残る） |

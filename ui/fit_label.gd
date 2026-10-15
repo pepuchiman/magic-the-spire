@@ -46,7 +46,10 @@ func _fits(font: Font, shown: String, font_size: int) -> bool:
 		return font.get_string_size(shown, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x <= size.x
 	var flags := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE
 	var text_size := font.get_multiline_string_size(shown, HORIZONTAL_ALIGNMENT_LEFT, size.x, font_size, -1, flags)
-	return text_size.y <= size.y and text_size.x <= size.x
+	# ラベルは行と行の間に「行間」を足して表示するので、その分も高さに含める
+	var lines := maxi(1, roundi(text_size.y / font.get_height(font_size)))
+	var height := text_size.y + (lines - 1) * get_theme_constant("line_spacing")
+	return height <= size.y and text_size.x <= size.x
 
 
 func _queue_fit() -> void:

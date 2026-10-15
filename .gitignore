@@ -3,3 +3,5 @@
 export_presets.cfg
 *.apk
 *.aab
+# 試し描きの画像（採用した絵だけ assets/ に入れる）
+art_trials/

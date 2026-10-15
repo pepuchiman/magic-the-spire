@@ -74,6 +74,10 @@
 - 絵の素材は art_style.md に従って作り、assets/ に置いて差し替える。画像がまだない所は図形で仮表示する（画像を置けば、その部分だけ差し替わるように作る）
 - アプリの書き出し（ビルド）は、指示があったときだけ行う。ゲームを変更しただけでは自動でビルドしない（トークンと時間の節約のため）。ただし、動作確認やテストのための画面なしの起動（--headless）は行ってよい
 - コミットと GitHub へのプッシュ（git push）は、指示があったときだけ行う
+- 画像の生成は、利用者が起動したこのパソコンの ComfyUI（http://127.0.0.1:8188）に tools/comfy_generate.gd から頼んでよい
+    - 画像は「直接受け取る機能」（SaveImageWebsocket）でプロジェクトの中（art_trials/）に保存し、ComfyUI のフォルダには保存させない
+    - ComfyUI の起動・停止、モデル・拡張機能の追加は利用者が行う。ライセンスを確認したモデル（docs/art_style.md に記録）だけを使う
+    - 試し描きの画像（art_trials/）は Git に入れない。採用した絵だけを assets/ に置く
 - プロジェクトフォルダ以外のファイルは絶対に変更、更新をしない（例外：%APPDATA%\MagicTheSpire\ の中の、このゲームのセーブデータなど、このプロジェクトに関連するファイルだけは、追加・書き換えしてよい。それ以外の %APPDATA%\ の中は変更しない）
 
 # ゲームデザインの方針
@@ -92,5 +96,8 @@
 - バトルの自動実行（コンソールに経過を表示。-- の後ろは省略可）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/simulate_battle.gd -- seed=1 enemy=boss_witch hero=flame_mage
 - ラン1周の自動実行（コンソールに経過を表示。-- の後ろは省略可）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/simulate_run.gd -- seed=1 hero=flame_mage dungeon=lost_forest
 - assets/ に置いた画像を、ファイル名でデータの絵の項目に結び付ける（先に --import を実行する）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/link_art.gd
+- 絵の生成（ComfyUI を起動しておく。結果は art_trials/ へ）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/comfy_generate.gd -- ids=card_fireball,enemy_slime count=4 style=A
+- 灰色の背景を透明にして assets/ に置く：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/remove_gray_bg.gd -- in=res://art_trials/enemy_slime/A_azovya_s4003.png out=res://assets/enemies/enemy_slime.png height=640
+- 画像を縮小して assets/ に置く：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/resize_image.gd -- in=res://art_trials/card_fireball/A_azovya_s3000.png out=res://assets/cards/card_fireball.png height=512
 - データの型から項目を削除した後、ファイルに残った古い項目を消す：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/resave_data.gd -- dir=res://data/enemies
 - スクリプトを追加・名前変更した後は、先に --headless --import を実行する（クラス名の登録のため）
