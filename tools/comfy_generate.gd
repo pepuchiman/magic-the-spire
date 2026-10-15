@@ -9,9 +9,15 @@ extends SceneTree
 ##   style  … 画風。A＝厚塗り（プロンプトのまま）、B＝フラット、C＝ドット絵風（省略時 A）
 ##   seed   … 最初の seed（省略時はランダム）
 ##   model  … 使うモデル（省略時 azovya。ライセンスを確認したモデルだけを MODELS に登録する）
+##   bg     … 背景を消すか。auto＝敵・主人公・クリーチャーだけ消す（省略時）、remove＝消す、keep＝消さない
+##            消す時は ComfyUI の Remove Background（BiRefNet）で透明つきの画像にし、名前の最後に _bg を付ける
 
 const SERVER := "127.0.0.1:8188"
 const WORKFLOW_PATH := "res://tools/comfy/txt2img_hires.json"
+## 背景を消す時の生成の手順（最後に背景を消して、透明つきの画像にする）
+const WORKFLOW_BG_PATH := "res://tools/comfy/txt2img_hires_bg.json"
+## bg=auto の時に背景を消す素材（id の始まり）
+const BG_REMOVE_PREFIXES: Array[String] = ["enemy_", "hero_", "creature_"]
 const PROMPTS_DIR := "res://prompts"
 const OUT_DIR := "res://art_trials"
 const LOG_PATH := "res://art_trials/generation_log.csv"
@@ -46,8 +52,9 @@ func _run() -> void:
 	var count := int(options.get("count", "4"))
 	var style := String(options.get("style", "A")).to_upper()
 	var model_key := String(options.get("model", "azovya"))
-	if ids.is_empty() or not STYLES.has(style) or not MODELS.has(model_key):
-		printerr("ids= を指定してください。style は A・B・C、model は %s のどれか" % ", ".join(MODELS.keys()))
+	var bg_mode := String(options.get("bg", "auto"))
+	if ids.is_empty() or not STYLES.has(style) or not MODELS.has(model_key) or not bg_mode in ["auto", "remove", "keep"]:
+		printerr("ids= を指定してください。style は A・B・C、model は %s、bg は auto・remove・keep のどれか" % ", ".join(MODELS.keys()))
 		quit(1)
 		return
 	var rows := _load_prompts()
@@ -57,8 +64,9 @@ func _run() -> void:
 			quit(1)
 			return
 	var workflow_text := FileAccess.get_file_as_string(WORKFLOW_PATH)
-	if workflow_text == "":
-		printerr("生成の手順が読めません：%s" % WORKFLOW_PATH)
+	var workflow_bg_text := FileAccess.get_file_as_string(WORKFLOW_BG_PATH)
+	if workflow_text == "" or workflow_bg_text == "":
+		printerr("生成の手順が読めません：%s、%s" % [WORKFLOW_PATH, WORKFLOW_BG_PATH])
 		quit(1)
 		return
 	root.add_child(_http)
@@ -73,9 +81,11 @@ func _run() -> void:
 		var size: PackedStringArray = String(row["size"]).split("x")
 		var prompt := String(row["prompt"]).replace(STYLE_A_WORDS, STYLES[style])
 		var saved: Array[String] = []
+		var remove_bg := should_remove_background(id, bg_mode)
+		var suffix := "_bg" if remove_bg else ""
 		for i in count:
 			var seed := first_seed + i
-			var workflow: Dictionary = _whole_numbers(JSON.parse_string(workflow_text))
+			var workflow: Dictionary = _whole_numbers(JSON.parse_string(workflow_bg_text if remove_bg else workflow_text))
 			workflow["1"]["inputs"]["ckpt_name"] = MODELS[model_key]
 			workflow["2"]["inputs"]["text"] = prompt
 			workflow["3"]["inputs"]["text"] = row["negative"]
@@ -89,13 +99,13 @@ func _run() -> void:
 				printerr("生成に失敗しました：%s seed %d" % [id, seed])
 				failed = true
 				continue
-			var path := OUT_DIR.path_join(id).path_join("%s_%s_s%d.png" % [style, model_key, seed])
+			var path := OUT_DIR.path_join(id).path_join("%s_%s_s%d%s.png" % [style, model_key, seed, suffix])
 			_save(path, png)
 			_log(path, model_key, seed, style, workflow)
 			saved.append(path)
 			print("保存しました：%s" % path)
 		if not saved.is_empty():
-			_make_sheet(OUT_DIR.path_join(id).path_join("_sheet_%s_%s_s%d.png" % [style, model_key, first_seed]), saved)
+			_make_sheet(OUT_DIR.path_join(id).path_join("_sheet_%s_%s_s%d%s.png" % [style, model_key, first_seed, suffix]), saved)
 	_ws.close()
 	print("生成が終わりました")
 	quit(1 if failed else 0)
@@ -213,10 +223,10 @@ func _make_sheet(path: String, files: Array[String]) -> void:
 		images.append(image)
 		width += image.get_width() + 8
 	var sheet := Image.create(maxi(width - 8, 1), HEIGHT, false, Image.FORMAT_RGBA8)
-	sheet.fill(Color(0.1, 0.1, 0.1))
+	sheet.fill(Color(0.2, 0.55, 0.3))  # 背景を消した絵の切り抜きが分かりやすい緑
 	var x := 0
 	for image: Image in images:
-		sheet.blit_rect(image, Rect2i(Vector2i.ZERO, image.get_size()), Vector2i(x, 0))
+		sheet.blend_rect(image, Rect2i(Vector2i.ZERO, image.get_size()), Vector2i(x, 0))  # 透明な部分は一覧の地の色になる
 		x += image.get_width() + 8
 	sheet.save_png(ProjectSettings.globalize_path(path))
 	print("一覧を作りました：%s" % path)
@@ -242,3 +252,16 @@ func _whole_numbers(value: Variant) -> Variant:
 	elif value is float and value == floorf(value) and absf(value) < 1e15:
 		return int(value)
 	return value
+
+
+## その素材の背景を消すか（bg_mode：auto・remove・keep）
+static func should_remove_background(id: String, bg_mode: String) -> bool:
+	match bg_mode:
+		"remove":
+			return true
+		"keep":
+			return false
+	for prefix: String in BG_REMOVE_PREFIXES:
+		if id.begins_with(prefix):
+			return true
+	return false

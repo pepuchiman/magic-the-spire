@@ -102,7 +102,8 @@ spell effect, dynamic angle, icon-like readability
 full body {敵の説明}, front view, facing the viewer, menacing monster, charming creature design
 ```
 - `cute` は使わない（人の女の子が出やすくなるため）
-→ 生成後に背景透過する（tools/remove_gray_bg.gd。灰色背景のほうが切り抜きやすい）
+→ 背景は ComfyUI の Remove Background（BiRefNet）で、生成と同時に消す（tools/comfy_generate.gd が敵・主人公・クリーチャーで自動で行う。5章「背景の切り抜き」）
+- スライムなど半透明になりやすいものは `solid opaque body, no bubble` を足す（泡や半透明の部分は切り抜きが不安定なため）
 
 ### 主人公・自分のクリーチャー
 正面向き（主人公のみ。主人公選択などで使う）
@@ -140,7 +141,8 @@ vertical composition, empty center area, no characters, soft depth of field
 - 「cute」を入れた敵（スライム）は、人の女の子が主役になり、露出も出た → ネガティブで人と露出を防ぐ
 - カードは何もしないと魔法使いの上半身が主役になる → 魔法・物を主役にする（2回目の試し描きで、火球・盾・狼とも主役が分かる絵になった）
 - 灰色の背景を `:1.4` で強めると、体・服まで灰色になる → 背景は `:1.2` にして、体の色を強める
-- 灰色の背景は、生成すると中央が少し明るいグラデーションになる。tools/remove_gray_bg.gd は、少しずつ変わる灰色をたどって抜けるようにしてある
+- 灰色の背景は、生成すると中央が少し明るいグラデーションになる。tools/remove_gray_bg.gd は、少しずつ変わる灰色をたどって抜けるようにしてある（2026-10-16 からは BiRefNet で消す。灰色抜きは BiRefNet が使えない時の予備）
+- BiRefNet で消すと、輪郭がきれいで光のにじみも残らない。灰色抜きでは、炎のまわりの光や泡の縁が残った
 
 ## 5. 生成設定（SD1.5・2070 SUPER／VRAM 8GB 想定）
 
@@ -172,6 +174,16 @@ vertical composition, empty center area, no characters, soft depth of field
 3. 気に入った構図が出たら、seed を固定して2段目だけ調整する
 - アップスケールモデルも商用利用可のライセンスか確認する
 
+### 背景の切り抜き（敵・主人公・クリーチャー）
+| 項目 | 内容 |
+|---|---|
+| 方法 | ComfyUI 標準の Remove Background ノード（txt2img_hires_bg.json の最後で、背景を消して透明つきの画像にする） |
+| モデル | BiRefNet（`birefnet.safetensors`、Hugging Face の Comfy-Org/BiRefNet。`ComfyUI/models/background_removal/` に置く） |
+| ライセンス | MIT（商用利用可。利用者が 2026-10-16 に確認） |
+| 予備 | BiRefNet が使えない時は tools/remove_gray_bg.gd（灰色の背景を色でたどって抜く。光や半透明の部分は残りやすい） |
+
+- 背景を消した絵は、`tools/resize_image.gd` の `trim=true` で透明な余白を切り落としてから縮小し、assets/ に置く
+
 ### その他
 - 画風固定：同じモデル・同じ共通プロンプトを使い回す。慣れたら画風LoRA（SD1.5用）で統一
 - 気に入った1枚の **seed とプロンプトを下の生成ログに記録**しておく
@@ -188,7 +200,7 @@ vertical composition, empty center area, no characters, soft depth of field
   2. `--headless -s tools/link_art.gd`（ファイル名でデータの絵の項目に結び付ける）
   3. 検証（`tools/validate_data.gd`）
 - 画像がまだ無い所は、図形で仮表示する（カード＝種別カラーと記号、キャラクター＝種族ごとの形、アイコン＝記号、戦闘背景＝ダンジョンの2色のグラデーション）
-- 後処理（背景透過・リサイズ・Godotのインポート設定）はスクリプト化して `tools/` に置く（実際の画像が届いてから作る）
+- 後処理はスクリプト化して `tools/` に置いている：背景の切り抜き（comfy_generate.gd の bg=、予備は remove_gray_bg.gd）、縮小と余白の切り落とし（resize_image.gd）。Godot の読み込み設定は初期設定のまま
 - 素材を差し替えてもゲームが壊れないよう、画像パスはデータ側（カード・主人公・クリーチャー・敵・装備・ダンジョンの絵の項目、アイコンは `data/config/icon_set.tres`）で管理する
 
 ## 7. 品質チェックリスト
@@ -207,5 +219,5 @@ vertical composition, empty center area, no characters, soft depth of field
 | card_fireball.png | A-Zovya V4-VAE | 3000 | 512×512 / 0.4 | 2026-10-15 試し描き2回目で採用（画風A）。512px に縮小 |
 | card_guard.png | A-Zovya V4-VAE | 3000 | 512×512 / 0.4 | 2026-10-15 試し描き2回目で採用（画風A）。512px に縮小 |
 | card_summon_wolf.png | A-Zovya V4-VAE | 3003 | 512×512 / 0.4 | 2026-10-15 試し描き2回目で採用（画風A）。512px に縮小 |
-| enemy_slime.png | A-Zovya V4-VAE | 4003 | 512×768 / 0.4 | 2026-10-15 試し描き3回目。組み込みの確認用（背景抜きの精度に課題） |
-| hero_flame_mage_back.png | A-Zovya V4-VAE | 4001 | 512×768 / 0.4 | 2026-10-15 試し描き3回目。組み込みの確認用（炎のまわりの光が少し残る） |
+| enemy_slime.png | A-Zovya V4-VAE | 5001 | 512×768 / 0.4 | 2026-10-16 BiRefNet で背景を消して採用（不透明な体のプロンプト）。高さ640に縮小 |
+| hero_flame_mage_back.png | A-Zovya V4-VAE | 4001 | 512×768 / 0.4 | 2026-10-15 試し描き3回目で採用。2026-10-16 に同じ seed で作り直し、BiRefNet で背景を消した。高さ768に縮小 |
