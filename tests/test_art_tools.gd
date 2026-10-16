@@ -57,3 +57,17 @@ func test_adopt_targets_follow_naming_rules() -> void:
 	assert_eq(Adopt.target_for("equip_type_ring")["path"], "res://assets/icons/equip_type_ring.png")
 	assert_eq(Adopt.target_for("map_rest")["path"], "res://assets/icons/map_rest.png")
 	assert_true(Adopt.target_for("unknown_x").is_empty(), "決まりにない名前は置かない")
+
+
+func test_add_lora_rewires_model_and_text_reading() -> void:
+	var workflow: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(Generate.WORKFLOW_BG_PATH))
+	Generate.add_lora(workflow, "test.safetensors", 0.6)
+	var lora: Dictionary = workflow[Generate.LORA_NODE]
+	assert_eq(lora["class_type"], "LoraLoader")
+	assert_eq(str(lora["inputs"]["model"][0]), "1", "LoRA はモデルから読み込む")
+	assert_eq(workflow["5"]["inputs"]["model"], [Generate.LORA_NODE, 0], "絵を描く部分は LoRA を通す")
+	assert_eq(workflow["9"]["inputs"]["model"], [Generate.LORA_NODE, 0])
+	assert_eq(workflow["2"]["inputs"]["clip"], [Generate.LORA_NODE, 1], "文字を読む部分も LoRA を通す")
+	assert_eq(str(workflow["6"]["inputs"]["vae"][0]), "1", "VAE（2番）はモデルのまま")
+	for key: String in Generate.LORAS:
+		assert_true(Generate.LORAS[key].has("file") and Generate.LORAS[key].has("triggers"), "LoRA の登録に、ファイル名と発動の言葉がある")

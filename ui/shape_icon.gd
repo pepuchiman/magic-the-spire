@@ -96,7 +96,11 @@ func _draw() -> void:
 		return
 	var origin := (size - Vector2(side, side)) / 2.0
 	if texture != null:
-		draw_texture_rect(texture, Rect2(origin, Vector2(side, side)), false)
+		# 縦横の比率を保って、正方形の枠の中央に収める（余白を切り落とした絵は正方形でないため）
+		var texture_size := texture.get_size()
+		var fit := side / maxf(texture_size.x, texture_size.y)
+		var drawn := texture_size * fit
+		draw_texture_rect(texture, Rect2(origin + (Vector2(side, side) - drawn) / 2.0, drawn), false)
 		return
 	_draw_shape(origin, side)
 

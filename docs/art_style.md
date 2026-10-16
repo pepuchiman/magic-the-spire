@@ -158,6 +158,9 @@ vertical composition, empty center area, no characters, soft depth of field
 | 次点 | DreamShaper 8 | なし | 汎用。使う場合は共通ポジティブから `zrpgstyle` を外す |
 
 - 採用したモデル：A-Zovya RPG Artist Tools V4-VAE（aZovyaRPGArtistTools_v4VAE.safetensors）。2026-10-15 の試し描きで決定
+- アイコン用：Game Icon Institute_mode v3.0（gameIconInstitute_v30.safetensors、checkpoints に置く）と LoRA の game Icon Institute_anfg_v3（game Icon Institute_anfg_v3-000018.safetensors、loras に置く）。どちらも商用利用可（利用者が 2026-10-16 に確認）
+  - 採用はモデルだけ（`model=icon bg=remove`）。LoRA（`lora=icon:0.6`）は宝箱・指輪・宝石に引っぱられる力が強く、指示どおりに描ける割合がモデルだけより低かった（2026-10-16 の試し描き）
+  - このモデルは指輪・杖・宝箱・王冠・紋章が得意。ローブ・鎧・焚き火・はてなマークは宝箱や壺・宝石になりやすい（描けない装備は、装備の種類のアイコンか図形の記号で表示する）
 - **広告収益化を予定しているため、Civitai のモデルページでライセンス（CreativeML Open RAIL-M ＋ Addendum）の「画像の販売・商用利用」可否を確認し、確認日をここに記録する**：A-Zovya RPG Artist Tools V4-VAE は商用利用可（利用者が 2026-10-15 に確認）。anylora は未確認のため使わない
 - 非営利ライセンス（CC BY-NC 系など）や「画像販売禁止」のモデル・LoRA は使わない
 
@@ -229,5 +232,5 @@ vertical composition, empty center area, no characters, soft depth of field
 | card_arcane_burst ほかカード16枚 | A-Zovya V4-VAE | 6000〜6003 | 512×512 / 0.4 | 2026-10-16 一括生成で採用（seed は art_trials/selection.csv の file 名） |
 | enemy_venom_spider・hero_flame_mage_front・bg_lost_forest・bg_frozen_cave | A-Zovya V4-VAE | 6000〜6003 | 512×768・512×912 / 0.4 | 2026-10-16 一括生成で採用 |
 | 描き直し12件（毒の霧・火の精霊のカード、敵6体、氷の魔法使い2枚、クリーチャー2体） | A-Zovya V4-VAE | 7000〜7003 | / 0.4 | 2026-10-16 改善した雛形（属性の色・背景色なし）で描き直して採用 |
-| アイコン4個（map_treasure・equip_type_ring・equip_type_weapon・equip_ring_sage） | A-Zovya V4-VAE | 6000〜6002 | 512×512 / 0.4 | 2026-10-16 採用。他のアイコンは人物が描かれるなど失敗したため、図形の記号のまま |
+| アイコン11個（map_battle・map_elite・map_treasure・map_boss・equip_type_ring・equip_type_weapon・equip_ring_small・equip_ring_sage・equip_staff_oak・equip_staff_silver・equip_staff_sapphire） | Game Icon Institute_mode v3.0（LoRA なし） | 10000〜10003 | 512×512 / 0.4 | 2026-10-16 採用。BiRefNet で背景を消し、余白を切り落とした。aZovya で作った4個はこれに差し替えた |
 | card_thorn_armor | A-Zovya V4-VAE | 8000 | 512×512 / 0.4 | 2026-10-16 「誰も着ていない鎧」の指定で3回目に採用 |

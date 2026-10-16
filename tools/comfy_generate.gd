@@ -9,6 +9,8 @@ extends SceneTree
 ##   style  … 画風。A＝厚塗り（プロンプトのまま）、B＝フラット、C＝ドット絵風（省略時 A）
 ##   seed   … 最初の seed（省略時はランダム）
 ##   model  … 使うモデル（省略時 azovya。ライセンスを確認したモデルだけを MODELS に登録する）
+##   lora   … 足す LoRA と強さ（例：lora=icon:0.6。省略時は使わない。ライセンスを確認したものだけを LORAS に登録する）
+##            LoRA の発動の言葉はプロンプトの先頭に自動で足す。ファイル名の印は「モデル_LoRA強さ」（例：icon_icon06）
 ##   bg     … 背景を消すか。auto＝敵・主人公・クリーチャーだけ消す（省略時）、remove＝消す、keep＝消さない
 ##            消す時は ComfyUI の Remove Background（BiRefNet）で透明つきの画像にし、名前の最後に _bg を付ける
 
@@ -23,12 +25,21 @@ const OUT_DIR := "res://art_trials"
 const LOG_PATH := "res://art_trials/generation_log.csv"
 ## 画像を受け取るノードの番号（txt2img_hires.json の中の番号）
 const SAVE_NODE := "11"
+## LoRA を足す時のノードの番号（手順のファイルで使っていない番号）
+const LORA_NODE := "90"
 ## 1枚あたりの待ち時間の上限（秒）
 const TIMEOUT := 600.0
 ## ライセンスを確認したモデル（docs/art_style.md に記録したもの）
 const MODELS := {
 	"azovya": "aZovyaRPGArtistTools_v4VAE.safetensors",
+	"icon": "gameIconInstitute_v30.safetensors",  # アイコン用（游戏图标研究所 3.0）
 }
+## ライセンスを確認した LoRA（docs/art_style.md に記録したもの）。file：ファイル名、triggers：発動の言葉
+const LORAS := {
+	"icon": {"file": "game Icon Institute_anfg_v3-000018.safetensors", "triggers": "game icon institute, game icon, ahfg"},
+}
+## a-Zovya RPG の発動の言葉（他のモデルでは外す）
+const AZOVYA_TRIGGER := "zrpgstyle, "
 ## 画風の言葉。A はプロンプトのまま、B・C は A の言葉を置き換える
 const STYLE_A_WORDS := "painterly style, thick outlines, high contrast lighting"
 const STYLES := {
@@ -53,6 +64,15 @@ func _run() -> void:
 	var style := String(options.get("style", "A")).to_upper()
 	var model_key := String(options.get("model", "azovya"))
 	var bg_mode := String(options.get("bg", "auto"))
+	var lora := String(options.get("lora", "")).split(":")
+	var lora_key := lora[0]
+	var lora_weight := float(lora[1]) if lora.size() > 1 else 0.6
+	if lora_key != "" and not LORAS.has(lora_key):
+		printerr("lora は %s のどれか" % ", ".join(LORAS.keys()))
+		quit(1)
+		return
+	# ファイル名に付ける印（モデルと LoRA の組み合わせが分かるように）
+	var tag := model_key if lora_key == "" else "%s_%s%02d" % [model_key, lora_key, roundi(lora_weight * 10)]
 	if ids.is_empty() or not STYLES.has(style) or not MODELS.has(model_key) or not bg_mode in ["auto", "remove", "keep"]:
 		printerr("ids= を指定してください。style は A・B・C、model は %s、bg は auto・remove・keep のどれか" % ", ".join(MODELS.keys()))
 		quit(1)
@@ -80,6 +100,10 @@ func _run() -> void:
 		var row: Dictionary = rows[id]
 		var size: PackedStringArray = String(row["size"]).split("x")
 		var prompt := String(row["prompt"]).replace(STYLE_A_WORDS, STYLES[style])
+		if model_key != "azovya":
+			prompt = prompt.replace(AZOVYA_TRIGGER, "")
+		if lora_key != "":
+			prompt = "%s, %s" % [LORAS[lora_key]["triggers"], prompt]
 		var saved: Array[String] = []
 		var remove_bg := should_remove_background(id, bg_mode)
 		var suffix := "_bg" if remove_bg else ""
@@ -93,19 +117,21 @@ func _run() -> void:
 			workflow["4"]["inputs"]["height"] = int(size[1])
 			workflow["5"]["inputs"]["seed"] = seed
 			workflow["9"]["inputs"]["seed"] = seed
+			if lora_key != "":
+				add_lora(workflow, LORAS[lora_key]["file"], lora_weight)
 			print("生成中：%s（画風%s・seed %d）%d/%d" % [id, style, seed, i + 1, count])
 			var png := await _generate(workflow)
 			if png.is_empty():
 				printerr("生成に失敗しました：%s seed %d" % [id, seed])
 				failed = true
 				continue
-			var path := OUT_DIR.path_join(id).path_join("%s_%s_s%d%s.png" % [style, model_key, seed, suffix])
+			var path := OUT_DIR.path_join(id).path_join("%s_%s_s%d%s.png" % [style, tag, seed, suffix])
 			_save(path, png)
-			_log(path, model_key, seed, style, workflow)
+			_log(path, MODELS[model_key] + ("" if lora_key == "" else " + %s:%s" % [LORAS[lora_key]["file"], lora_weight]), seed, style, workflow)
 			saved.append(path)
 			print("保存しました：%s" % path)
 		if not saved.is_empty():
-			_make_sheet(OUT_DIR.path_join(id).path_join("_sheet_%s_%s_s%d%s.png" % [style, model_key, first_seed, suffix]), saved)
+			_make_sheet(OUT_DIR.path_join(id).path_join("_sheet_%s_%s_s%d%s.png" % [style, tag, first_seed, suffix]), saved)
 	_ws.close()
 	print("生成が終わりました")
 	quit(1 if failed else 0)
@@ -196,14 +222,14 @@ func _save(path: String, data: PackedByteArray) -> void:
 
 
 ## 生成の記録（docs/art_style.md の生成ログに使う）
-func _log(path: String, model_key: String, seed: int, style: String, workflow: Dictionary) -> void:
+func _log(path: String, model_text: String, seed: int, style: String, workflow: Dictionary) -> void:
 	var is_new := not FileAccess.file_exists(LOG_PATH)
 	var file := FileAccess.open(LOG_PATH, FileAccess.READ_WRITE if not is_new else FileAccess.WRITE)
 	file.seek_end()
 	if is_new:
 		file.store_csv_line(PackedStringArray(["file", "model", "seed", "style", "size", "steps", "cfg", "hires_denoise", "date"]))
 	var size := "%dx%d" % [workflow["4"]["inputs"]["width"], workflow["4"]["inputs"]["height"]]
-	file.store_csv_line(PackedStringArray([path.trim_prefix(OUT_DIR + "/"), MODELS[model_key], str(seed), style, size,
+	file.store_csv_line(PackedStringArray([path.trim_prefix(OUT_DIR + "/"), model_text, str(seed), style, size,
 		str(workflow["5"]["inputs"]["steps"]), str(workflow["5"]["inputs"]["cfg"]),
 		str(workflow["9"]["inputs"]["denoise"]), Time.get_date_string_from_system()]))
 	file.close()
@@ -265,3 +291,17 @@ static func should_remove_background(id: String, bg_mode: String) -> bool:
 		if id.begins_with(prefix):
 			return true
 	return false
+
+
+## 生成の手順に LoRA を足す（モデルと文字の読み取りの間に挟み、それを使うようにつなぎ替える）
+static func add_lora(workflow: Dictionary, file: String, weight: float) -> void:
+	workflow[LORA_NODE] = {"class_type": "LoraLoader", "inputs": {
+		"model": ["1", 0], "clip": ["1", 1], "lora_name": file, "strength_model": weight, "strength_clip": weight}}
+	for node_id: String in workflow:
+		if node_id == LORA_NODE:
+			continue
+		var inputs: Dictionary = workflow[node_id]["inputs"]
+		for key: String in inputs:
+			var link: Variant = inputs[key]
+			if link is Array and link.size() == 2 and str(link[0]) == "1" and int(link[1]) in [0, 1]:
+				inputs[key] = [LORA_NODE, int(link[1])]  # 0＝絵を描く部分、1＝文字を読む部分

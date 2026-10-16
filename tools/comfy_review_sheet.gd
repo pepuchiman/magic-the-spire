@@ -10,6 +10,7 @@ extends SceneTree
 ##           （例：card_spark:3,card_meteor:x,card_curse:2x）
 ##   count … 候補の数（省略時 4）
 ##   style … 画風（省略時 A）
+##   tag   … ファイル名のモデルの印（省略時 azovya。LoRA を使った時は icon_icon06 など）
 
 const OUT_DIR := "res://art_trials"
 const MODEL_KEY := "azovya"
@@ -38,6 +39,7 @@ func _run() -> void:
 	var seed := int(options["seed"])
 	var count := int(options.get("count", "4"))
 	var style := String(options.get("style", "A"))
+	var tag := String(options.get("tag", MODEL_KEY))
 	var picks := {}
 	for pick: String in String(options.get("picks", "")).split(",", false):
 		var pair := pick.split(":")
@@ -48,7 +50,7 @@ func _run() -> void:
 	rows.add_theme_constant_override("separation", int(GAP))
 	var width := 0.0
 	for id: String in ids:
-		var row := _make_row(id, seed, count, style, String(picks.get(id, "")))
+		var row := _make_row(id, seed, count, style, tag, String(picks.get(id, "")))
 		rows.add_child(row)
 		width = maxf(width, row.get_combined_minimum_size().x)
 	var viewport := SubViewport.new()
@@ -76,7 +78,7 @@ func _run() -> void:
 	quit()
 
 
-func _make_row(id: String, seed: int, count: int, style: String, pick: String) -> HBoxContainer:
+func _make_row(id: String, seed: int, count: int, style: String, tag: String, pick: String) -> HBoxContainer:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", int(GAP))
 	var label := Label.new()
@@ -89,7 +91,7 @@ func _make_row(id: String, seed: int, count: int, style: String, pick: String) -
 	var failed := pick.ends_with("x")
 	var pick_number := int(pick.trim_suffix("x")) if pick.trim_suffix("x").is_valid_int() else -1
 	for i in count:
-		var path := _find_candidate(id, style, seed + i)
+		var path := _find_candidate(id, style, tag, seed + i)
 		var cell := PanelContainer.new()
 		var frame := StyleBoxFlat.new()
 		frame.bg_color = Color(0.2, 0.55, 0.3)  # 背景を消した絵の透明な部分はこの緑
@@ -133,9 +135,9 @@ func _make_row(id: String, seed: int, count: int, style: String, pick: String) -
 
 
 ## 候補の画像の場所（背景を消した絵は名前の最後が _bg）。無ければ空
-static func _find_candidate(id: String, style: String, seed: int) -> String:
+static func _find_candidate(id: String, style: String, tag: String, seed: int) -> String:
 	for suffix: String in ["", "_bg"]:
-		var path := OUT_DIR.path_join(id).path_join("%s_%s_s%d%s.png" % [style, MODEL_KEY, seed, suffix])
+		var path := OUT_DIR.path_join(id).path_join("%s_%s_s%d%s.png" % [style, tag, seed, suffix])
 		if FileAccess.file_exists(path):
 			return path
 	return ""

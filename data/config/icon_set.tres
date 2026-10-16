@@ -4,6 +4,9 @@
 [ext_resource type="Texture2D" path="res://assets/icons/equip_type_ring.png" id="1_x0bao"]
 [ext_resource type="Texture2D" path="res://assets/icons/equip_type_weapon.png" id="2_y3w0x"]
 [ext_resource type="Texture2D" path="res://assets/icons/map_treasure.png" id="3_umlhr"]
+[ext_resource type="Texture2D" path="res://assets/icons/map_battle.png" id="3_v24i8"]
+[ext_resource type="Texture2D" path="res://assets/icons/map_elite.png" id="4_evh84"]
+[ext_resource type="Texture2D" path="res://assets/icons/map_boss.png" id="6_p6aph"]
 
 [resource]
 script = ExtResource("1_lfpri")
@@ -16,12 +19,12 @@ status_icons = Dictionary[int, Texture2D]({
 5: null
 })
 map_node_icons = Dictionary[int, Texture2D]({
-0: null,
-1: null,
+0: ExtResource("3_v24i8"),
+1: ExtResource("4_evh84"),
 2: null,
 3: null,
 4: ExtResource("3_umlhr"),
-5: null
+5: ExtResource("6_p6aph")
 })
 equipment_type_icons = Dictionary[int, Texture2D]({
 0: ExtResource("1_x0bao"),

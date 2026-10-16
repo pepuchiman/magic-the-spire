@@ -68,9 +68,9 @@ static func target_for(id: String) -> Dictionary:
 		["hero_", "res://assets/player", 768, true],
 		["creature_", "res://assets/creatures", 640, true],
 		["bg_", "res://assets/backgrounds", 1280, false],
-		["status_", "res://assets/icons", 256, false],
-		["map_", "res://assets/icons", 256, false],
-		["equip_", "res://assets/icons", 256, false],
+		["status_", "res://assets/icons", 256, true],
+		["map_", "res://assets/icons", 256, true],
+		["equip_", "res://assets/icons", 256, true],
 	]
 	for rule: Array in rules:
 		if id.begins_with(rule[0]):

@@ -76,7 +76,7 @@
 - コミットと GitHub へのプッシュ（git push）は、指示があったときだけ行う
 - 画像の生成は、利用者が起動したこのパソコンの ComfyUI（http://127.0.0.1:8188）に tools/comfy_generate.gd から頼んでよい
     - 画像は「直接受け取る機能」（SaveImageWebsocket）でプロジェクトの中（art_trials/）に保存し、ComfyUI のフォルダには保存させない
-    - ComfyUI の起動・停止、モデル・拡張機能の追加は利用者が行う。ライセンスを確認したモデル（docs/art_style.md に記録）だけを使う（生成：A-Zovya RPG、背景の切り抜き：BiRefNet）
+    - ComfyUI の起動・停止、モデル・拡張機能の追加は利用者が行う。ライセンスを確認したモデル（docs/art_style.md に記録）だけを使う（生成：A-Zovya RPG、アイコン用：Game Icon Institute のモデルと LoRA、背景の切り抜き：BiRefNet）
     - 試し描きの画像（art_trials/）は Git に入れない。採用した絵だけを assets/ に置く
 - プロジェクトフォルダ以外のファイルは絶対に変更、更新をしない（例外：%APPDATA%\MagicTheSpire\ の中の、このゲームのセーブデータなど、このプロジェクトに関連するファイルだけは、追加・書き換えしてよい。それ以外の %APPDATA%\ の中は変更しない）
 
