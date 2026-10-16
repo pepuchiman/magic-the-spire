@@ -320,6 +320,8 @@ Game_Rule.md の「画面レイアウト案」のバトル画面に従って作�
     - 全体の管理役 Sound（効果音8つまで同時、BGM の切り替え、BGM・効果音の音量）。画面からは UiSound で鳴らす
     - 音は tools/generate_sounds.gd で合成（assets/sounds/）。種類ごとの音は data/config/sound_set.tres で差し替えられる
 - 7-4 画面遷移の演出、設定画面（音量・演出の速さ）
+    - 画面を切り替える時の暗転（ScreenFader）。設定（SettingsStore、user://settings.cfg）と設定画面（SettingsPanel）
+    - 設定画面はタイトル・マップ・戦闘の「設定」ボタンから開く。戦闘の演出の速さは設定に従う
 
 **完了条件**
 - 全画面で図形の表示が整い、画像・音声ファイルを入れればその部分が差し替わる

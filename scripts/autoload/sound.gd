@@ -26,7 +26,12 @@ var _fade_tween: Tween
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	# 閉じる時は、音を止めて少し待ってから終わる（音のデータを手放すため。_notification を参照）
+	get_tree().auto_accept_quit = false
 	_sounds = DataLoader.new().get_sounds()
+	var game := get_node_or_null("/root/Game")
+	if game != null and game.settings != null:
+		game.apply_settings()  # 保存されている音量にする（Game は Sound より先に準備される）
 	for i in PLAYER_COUNT:
 		var player := AudioStreamPlayer.new()
 		player.bus = BUS_SE
@@ -115,11 +120,26 @@ func _start_music(stream: AudioStream) -> void:
 		_bgm_player.play()
 
 
-## 終わる時に、切り替え途中の BGM と鳴っている音を片付ける（音のデータが残ったままにならないように）
+## 終わる時に片付ける
 func _exit_tree() -> void:
+	stop_all()
+
+
+## 切り替え途中の BGM と鳴っている音をすべて止めて、音のデータを手放す
+## （テストの終わりにも使う。止めてから少し待つと、音の仕組みがデータを手放す）
+func stop_all() -> void:
 	if _fade_tween != null:
 		_fade_tween.kill()
+	current_music = -1
 	for player: AudioStreamPlayer in _se_players + [_bgm_player]:
 		player.stop()
 		player.stream = null
-	_sounds = null
+
+
+## ウィンドウを閉じる時：音を止め、音の仕組みがデータを手放すのを少し待ってから終わる
+## （すぐ終わると「データが残ったまま」の警告が出る。中断データの保存は Game が同じ通知で行う）
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		stop_all()
+		await get_tree().create_timer(0.1).timeout
+		get_tree().quit()

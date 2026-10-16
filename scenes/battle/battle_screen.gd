@@ -34,8 +34,8 @@ const BIG_HIT_RATIO := 0.3
 @export var seed_value: int = 0
 
 @export_group("開発用")
-## 演出の速さ（1.0 が標準。0 にすると演出を待たずに進む。テスト用）
-@export_range(0.0, 3.0, 0.1) var animation_speed: float = 1.0
+## 演出の速さ（1.0 が標準。0 にすると演出を待たずに進む＝テスト用。-1 なら設定画面の「演出の速さ」に従う）
+@export_range(-1.0, 3.0, 0.1) var animation_speed: float = -1.0
 ## オンにすると、文章の代わりに翻訳キーの名前を表示する（長い文章で崩れないかの確認用）
 @export var debug_show_keys: bool = false
 ## オフにすると、画面を開いても自動でバトルを始めない（テスト用）
@@ -62,6 +62,8 @@ var _played_hand_index: int = -1
 var _shown_statuses: Dictionary = {}  # Combatant → {状態効果の種類: 値}
 ## 演出：種類ごとのエフェクトの一覧
 var _effects: EffectSet
+## 設定画面
+var _settings_panel: SettingsPanel
 
 @onready var _background: BattleBackground = %Background
 @onready var _header: PanelContainer = %Header
@@ -105,7 +107,9 @@ func _ready() -> void:
 	_deck_button.pressed.connect(_open_deck)
 	_discard_button.pressed.connect(_open_discard_pile)
 	_exhaust_button.pressed.connect(_open_exhaust_pile)
-	_settings_button.pressed.connect(func() -> void: _show_toast(UiText.t("UI_COMING_SOON")))
+	_settings_panel = SettingsPanel.new()
+	add_child(_settings_panel)
+	_settings_button.pressed.connect(_settings_panel.open)
 	_select_banner.confirmed.connect(confirm_discard)
 	_select_banner.cancelled.connect(cancel_selection)
 	_pile_popup.card_tapped.connect(_zoom_popup.open)
@@ -476,7 +480,15 @@ func _shake(step: float) -> void:
 
 
 func _step_time() -> float:
-	return STEP_TIME / animation_speed if animation_speed > 0.0 else 0.0
+	var speed := effective_speed()
+	return STEP_TIME / speed if speed > 0.0 else 0.0
+
+
+## 実際の演出の速さ（animation_speed が -1 なら設定の値）
+func effective_speed() -> float:
+	if animation_speed >= 0.0:
+		return animation_speed
+	return Game.settings.animation_speed if Game.settings != null else 1.0
 
 
 ## 操作のあとに呼ぶ。演出中でなければ、すぐに表示を合わせる

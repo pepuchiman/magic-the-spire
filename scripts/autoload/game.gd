@@ -42,6 +42,10 @@ var change_scenes: bool = true
 var run_save: RunSaveStore
 ## 最後に保存した中断データ（アプリを閉じる時に、プレイ時間だけを更新して書き直すのに使う）
 var _last_save: Dictionary = {}
+## 設定（音量・演出の速さ）
+var settings: SettingsStore
+## 画面を切り替える時の暗転
+var _fader: ScreenFader
 
 ## 入った時に中断データを保存する画面（中断したら、その画面の始めから再開する）
 const SAVE_SCREENS: Array[Screen] = [Screen.MAP, Screen.BATTLE, Screen.REWARD, Screen.REST, Screen.EVENT, Screen.TREASURE]
@@ -52,6 +56,10 @@ func _ready() -> void:
 	progress = ProgressStore.new()
 	progress.load_progress()
 	run_save = RunSaveStore.new()
+	settings = SettingsStore.new()
+	settings.load_settings()
+	_fader = ScreenFader.new()
+	add_child(_fader)
 
 
 ## アプリが閉じられる・裏に回る時：最後の中断データのプレイ時間だけを更新する
@@ -88,7 +96,7 @@ func go_to(screen: Screen) -> void:
 	screen_requested.emit(screen)
 	UiSound.music(music_for(screen))
 	if change_scenes:
-		get_tree().change_scene_to_file(SCENE_PATHS[screen])
+		_fader.fade(get_tree().change_scene_to_file.bind(SCENE_PATHS[screen]))  # 暗転してから切り替える
 
 
 ## 画面ごとの BGM（ボスのマスのバトルはボス戦の曲）
@@ -203,3 +211,11 @@ func _record_clear() -> void:
 ## 報酬・休憩・イベントが終わった時（マップへ戻る）
 func finish_node() -> void:
 	go_to(Screen.MAP)
+
+
+## 設定の音量を、音の通り道に反映する（起動時と、設定画面で変えた時）
+func apply_settings() -> void:
+	var sound := get_node_or_null("/root/Sound")
+	if sound != null:
+		sound.set_volume(&"BGM", settings.bgm_volume)
+		sound.set_volume(&"SE", settings.se_volume)

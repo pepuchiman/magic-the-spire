@@ -22,6 +22,9 @@ func _ready() -> void:
 	%ConfirmYesButton.pressed.connect(_on_confirm_new_game)
 	%DebugResetButton.visible = OS.is_debug_build()
 	%DebugResetButton.pressed.connect(reset_data)
+	var settings_panel := SettingsPanel.new()
+	add_child(settings_panel)
+	%SettingsButton.pressed.connect(settings_panel.open)
 	%ContinueButton.disabled = not Game.has_saved_run()
 
 

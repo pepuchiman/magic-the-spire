@@ -90,3 +90,9 @@ func _play_first_card(screen: BattleScreen) -> CardData:
 			return card
 	fail_test("使えるカードがない")
 	return null
+
+
+func after_all() -> void:
+	# 鳴らした BGM を止めて、音のデータを手放す（テストの終わりにデータが残ったままにならないように）
+	get_tree().root.get_node("Sound").stop_all()
+	await get_tree().create_timer(0.2).timeout

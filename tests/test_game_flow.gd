@@ -306,3 +306,9 @@ func _play_any_card(screen: BattleScreen) -> bool:
 		if result == Battle.PlayResult.OK:
 			return true
 	return false
+
+
+func after_all() -> void:
+	# 鳴らした BGM を止めて、音のデータを手放す（テストの終わりにデータが残ったままにならないように）
+	get_tree().root.get_node("Sound").stop_all()
+	await get_tree().create_timer(0.2).timeout

@@ -93,7 +93,6 @@ UI_DISCARD_TITLE,ゴミ箱（{count}枚）
 UI_MANA,マナ {current}/{base}
 UI_FLOOR,{floor}階
 UI_SETTINGS,設定
-UI_COMING_SOON,準備中です
 UI_HP,{hp}/{max}
 UI_ARMOR,アーマー {armor}
 UI_CATALYST,{color} {value}（+{power}）
@@ -153,3 +152,11 @@ PARAM_DEFENSE,防御力
 UI_USES_LEFT,残り{count}回
 UI_EXHAUST_PILE,破棄 {count}
 UI_EXHAUST_TITLE,破棄されたカード（{count}枚）
+UI_SETTINGS_TITLE,設定
+UI_BGM_VOLUME,BGM の音量
+UI_SE_VOLUME,効果音の音量
+UI_VOLUME_PERCENT,{value}%
+UI_ANIMATION_SPEED,戦闘の演出の速さ
+UI_SPEED_SLOW,ゆっくり
+UI_SPEED_NORMAL,ふつう
+UI_SPEED_FAST,はやい
