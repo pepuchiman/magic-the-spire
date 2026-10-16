@@ -201,4 +201,5 @@ func _valid_index() -> DataIndex:
 	index.config = GameConfig.new()
 	index.icons = IconSet.create_default()
 	index.effects = EffectSet.create_default()
+	index.sounds = SoundSet.create_default()
 	return index

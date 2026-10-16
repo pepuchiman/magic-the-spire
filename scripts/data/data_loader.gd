@@ -73,6 +73,11 @@ func get_effects() -> EffectSet:
 	return index.effects if index != null and index.effects != null else EffectSet.create_default()
 
 
+## 種類ごとの音の一覧（無ければ空の一覧。音は鳴らない）
+func get_sounds() -> SoundSet:
+	return index.sounds if index != null and index.sounds != null else SoundSet.new()
+
+
 func _fill(target: Dictionary, items: Array) -> void:
 	for item: Resource in items:
 		if item != null:

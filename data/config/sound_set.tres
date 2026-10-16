@@ -1,0 +1,82 @@
+[gd_resource type="Resource" script_class="SoundSet" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/sounds/se_attack_blow.wav" id="1_yosl7"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_attack_slash.wav" id="2_dvcna"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_attack_pierce.wav" id="3_6k2uc"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_attack_fire.wav" id="4_m4nwt"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_attack_water.wav" id="5_yjmc3"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_attack_wind.wav" id="6_u7pj8"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_fire.wav" id="7_v8xp0"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_ice.wav" id="8_1ltjp"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_water.wav" id="9_p4dr3"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_wind.wav" id="10_jfgua"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_lightning.wav" id="11_plecu"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_arcane.wav" id="12_xm4wv"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_poison.wav" id="13_ho2t0"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_heal.wav" id="14_4fxnv"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_armor.wav" id="15_v43v2"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_buff.wav" id="16_1rtu2"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_debuff.wav" id="17_ibjdm"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_summon.wav" id="18_v38q1"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_button.wav" id="19_pjpb3"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_draw.wav" id="20_30mtk"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_card_play.wav" id="21_yu8kl"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_damage.wav" id="22_5qaaf"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_death.wav" id="23_q60ae"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_paralyzed.wav" id="24_sglxj"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_turn_start.wav" id="25_1xerf"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_victory.wav" id="26_bjbhn"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_defeat.wav" id="27_ul6px"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_reward.wav" id="28_rs8rb"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_map_step.wav" id="29_6r2l5"]
+[ext_resource type="AudioStream" path="res://assets/sounds/se_equip.wav" id="30_ftc1v"]
+[ext_resource type="AudioStream" path="res://assets/sounds/bgm_title.wav" id="31_e4nof"]
+[ext_resource type="AudioStream" path="res://assets/sounds/bgm_map.wav" id="32_nh0ia"]
+[ext_resource type="AudioStream" path="res://assets/sounds/bgm_battle.wav" id="33_5osl7"]
+[ext_resource type="AudioStream" path="res://assets/sounds/bgm_boss.wav" id="34_gq3kl"]
+[ext_resource type="Script" path="res://scripts/resources/sound_set.gd" id="35_s77l6"]
+
+[resource]
+script = ExtResource("35_s77l6")
+attack_sounds = Dictionary[int, AudioStream]({
+0: ExtResource("1_yosl7"),
+1: ExtResource("2_dvcna"),
+2: ExtResource("3_6k2uc"),
+3: ExtResource("4_m4nwt"),
+4: ExtResource("5_yjmc3"),
+5: ExtResource("6_u7pj8")
+})
+card_sounds = Dictionary[int, AudioStream]({
+1: ExtResource("7_v8xp0"),
+2: ExtResource("8_1ltjp"),
+3: ExtResource("9_p4dr3"),
+4: ExtResource("10_jfgua"),
+5: ExtResource("11_plecu"),
+6: ExtResource("12_xm4wv"),
+7: ExtResource("13_ho2t0"),
+8: ExtResource("14_4fxnv"),
+9: ExtResource("15_v43v2"),
+10: ExtResource("16_1rtu2"),
+11: ExtResource("17_ibjdm"),
+12: ExtResource("18_v38q1")
+})
+event_sounds = Dictionary[int, AudioStream]({
+0: ExtResource("19_pjpb3"),
+1: ExtResource("20_30mtk"),
+2: ExtResource("21_yu8kl"),
+3: ExtResource("22_5qaaf"),
+4: ExtResource("23_q60ae"),
+5: ExtResource("24_sglxj"),
+6: ExtResource("25_1xerf"),
+7: ExtResource("26_bjbhn"),
+8: ExtResource("27_ul6px"),
+9: ExtResource("28_rs8rb"),
+10: ExtResource("29_6r2l5"),
+11: ExtResource("30_ftc1v")
+})
+music = Dictionary[int, AudioStream]({
+0: ExtResource("31_e4nof"),
+1: ExtResource("32_nh0ia"),
+2: ExtResource("33_5osl7"),
+3: ExtResource("34_gq3kl")
+})

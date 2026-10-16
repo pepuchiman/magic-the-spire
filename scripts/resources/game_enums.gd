@@ -53,3 +53,9 @@ enum MapNodeType { BATTLE, ELITE, EVENT, REST, TREASURE, BOSS }  # 通常戦・�
 
 ## カードの効果エフェクト（カードを使った時に、対象の位置に出る演出）
 enum CardEffect { NONE, FIRE, ICE, WATER, WIND, LIGHTNING, ARCANE, POISON, HEAL, ARMOR, BUFF, DEBUFF, SUMMON }  # なし・炎・氷・水・風・雷・魔力・毒・回復・アーマー・強化・弱体化・召喚
+
+## 効果音（攻撃・カードの効果以外）
+enum SoundEvent { BUTTON, CARD_DRAW, CARD_PLAY, DAMAGE, DEATH, PARALYZED, TURN_START, VICTORY, DEFEAT, REWARD, MAP_STEP, EQUIP }  # ボタン・カードを引く・カードを使う・ダメージ・倒れる・麻痺・ターン開始・勝利・敗北・報酬・マップの移動・装備
+
+## BGM
+enum Music { TITLE, MAP, BATTLE, BOSS }  # タイトル・マップ（報酬・休憩・イベント・宝箱も）・バトル・ボス戦

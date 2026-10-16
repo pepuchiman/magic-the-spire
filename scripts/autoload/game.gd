@@ -86,8 +86,20 @@ func go_to(screen: Screen) -> void:
 	if run != null and not run.finished and SAVE_SCREENS.has(screen):
 		save_run()
 	screen_requested.emit(screen)
+	UiSound.music(music_for(screen))
 	if change_scenes:
 		get_tree().change_scene_to_file(SCENE_PATHS[screen])
+
+
+## 画面ごとの BGM（ボスのマスのバトルはボス戦の曲）
+func music_for(screen: Screen) -> GameEnums.Music:
+	match screen:
+		Screen.BATTLE:
+			var boss := run != null and run.current_node != null and run.current_node.type == GameEnums.MapNodeType.BOSS
+			return GameEnums.Music.BOSS if boss else GameEnums.Music.BATTLE
+		Screen.MAP, Screen.REWARD, Screen.REST, Screen.EVENT, Screen.TREASURE:
+			return GameEnums.Music.MAP
+	return GameEnums.Music.TITLE
 
 
 func go_to_title() -> void:

@@ -116,7 +116,7 @@ static func make_box(color: Color, border_color: Color = Color.TRANSPARENT, bord
 	return box
 
 
-## ボタンの見た目を、指定した色で整える（押せない時は暗く）
+## ボタンの見た目を、指定した色で整える（押せない時は暗く）。押した時にボタンの音も鳴らす
 static func style_button(button: Button, color: Color) -> void:
 	button.add_theme_stylebox_override("normal", make_box(color, color.lightened(0.3), 2, 14))
 	button.add_theme_stylebox_override("hover", make_box(color.lightened(0.12), color.lightened(0.4), 2, 14))
@@ -124,3 +124,10 @@ static func style_button(button: Button, color: Color) -> void:
 	button.add_theme_stylebox_override("disabled", make_box(color.darkened(0.6), color.darkened(0.3), 2, 14))
 	button.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 	button.add_theme_color_override("font_disabled_color", Color(1, 1, 1, 0.35))
+	if not button.pressed.is_connected(_play_button_sound):
+		button.pressed.connect(_play_button_sound)
+
+
+## ボタンを押した時の音（style_button で整えたボタンに付く）
+static func _play_button_sound() -> void:
+	UiSound.event(GameEnums.SoundEvent.BUTTON)

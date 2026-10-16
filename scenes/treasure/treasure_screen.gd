@@ -47,8 +47,10 @@ func open() -> void:
 ## 中身を取る（装備なら装備する。同じ種類の装備は入れ替わる）
 func take() -> void:
 	if content.has("equipment"):
+		UiSound.event(GameEnums.SoundEvent.EQUIP)
 		RewardGenerator.equip(Game.run, content["equipment"])
 	else:
+		UiSound.event(GameEnums.SoundEvent.REWARD)
 		RewardGenerator.take(Game.run, content["card"])
 	Game.finish_node()
 

@@ -234,7 +234,9 @@ func _connect_battle() -> void:
 		_push({"type": "card", "card": instance.data, "targets": battle.effect_targets(instance.data, target),
 			"hand_index": _played_hand_index}))
 	battle.turn_started.connect(func(turn_number: int) -> void:
-		_push({"type": "banner", "text": UiText.fmt("UI_TURN_BANNER", {"turn": turn_number})}))
+		_push({"type": "banner", "text": UiText.fmt("UI_TURN_BANNER", {"turn": turn_number}), "sound": GameEnums.SoundEvent.TURN_START}))
+	battle.cards_drawn.connect(func(_cards: Array[CardInstance]) -> void:
+		_push({"type": "sound", "sound": GameEnums.SoundEvent.CARD_DRAW}))
 	battle.timing_reached.connect(func(timing: Battle.Timing) -> void:
 		if timing == Battle.Timing.ENEMY_TURN_START:
 			_push({"type": "banner", "text": UiText.t("UI_ENEMY_TURN")}))
@@ -285,7 +287,12 @@ func _play_event(event: Dictionary) -> float:
 	match event["type"]:
 		"banner":
 			_show_toast(event["text"])
+			if event.has("sound"):
+				_sound(event["sound"], step)
 			return step
+		"sound":
+			_sound(event["sound"], step)
+			return 0.0
 		"card":
 			return _play_card_event(event, step)
 		"damage", "heal", "armor":
@@ -302,10 +309,16 @@ func _play_event(event: Dictionary) -> float:
 				if event["poison"]:
 					color = UiPalette.POISON  # 毒のダメージは色を変える
 					_spawn_effect(_effects.card_effects.get(GameEnums.CardEffect.POISON), view, step * 1.5)
+					if step > 0.0:
+						UiSound.card(GameEnums.CardEffect.POISON)
 				elif event["attack"] and source_view != null and not source is HeroCombatant:
 					# クリーチャー・敵の攻撃：相手へ踏み込み、相手の位置に攻撃エフェクト（主人公のカードはカードの演出で見せる）
 					source_view.play_attack_motion(step * 0.6, _center_of(view.effect_anchor()) - _center_of(source_view.effect_anchor()))
 					_spawn_effect(_effects.attack_effects.get(_attack_effect_of(source)), view, step * 1.2)
+					if step > 0.0:
+						UiSound.attack(_attack_effect_of(source))
+				else:
+					_sound(GameEnums.SoundEvent.DAMAGE, step)  # 主人公のカード・棘のダメージ
 				if event["hp_damage"] >= event["target"].get_max_hp() * BIG_HIT_RATIO:
 					_shake(step)  # 大きなダメージは画面を揺らす
 			elif event["type"] == "heal":
@@ -320,6 +333,7 @@ func _play_event(event: Dictionary) -> float:
 			var target: Combatant = event["target"]
 			if target != battle.hero and target != battle.main_enemy:
 				_remove_view(target, step)  # 薄くなって消える
+				_sound(GameEnums.SoundEvent.DEATH, step)
 			return step
 		"summon":
 			_ensure_view(event["unit"])
@@ -347,6 +361,7 @@ func _play_event(event: Dictionary) -> float:
 			var prevented_view: UnitSprite = _views.get(event["target"])
 			if prevented_view != null:
 				FloatingNumber.spawn(_effect_layer, _center_of(prevented_view.effect_anchor()), UiText.t("UI_PARALYZED_POPUP"), UiPalette.STATUS, step * 2.0)
+				_sound(GameEnums.SoundEvent.PARALYZED, step)
 			return step
 	return 0.0
 
@@ -363,6 +378,7 @@ func _play_card_event(event: Dictionary, step: float) -> float:
 			target_views.append(_views[target])
 	if target_views.is_empty() and _views.has(battle.hero):
 		target_views.append(_views[battle.hero])  # 対象を選ばないカード（ドローなど）は主人公の位置に出す
+	UiSound.event(GameEnums.SoundEvent.CARD_PLAY)
 	var fly_time := step * 0.5
 	var ghost: CardView = CARD_SCENE.instantiate()
 	ghost.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -382,6 +398,7 @@ func _play_card_event(event: Dictionary, step: float) -> float:
 	tween.tween_property(ghost, "modulate:a", 0.2, fly_time)
 	tween.chain().tween_callback(func() -> void:
 		ghost.queue_free()
+		UiSound.card(card.visual_effect)
 		for view: UnitSprite in target_views:
 			if is_instance_valid(view):
 				_spawn_effect(effect_scene, view, step * 1.4))
@@ -476,6 +493,7 @@ func _check_battle_state() -> void:
 	if battle.phase == Battle.Phase.ENDED:
 		if mode != Mode.ENDED:
 			mode = Mode.ENDED
+			_sound(GameEnums.SoundEvent.VICTORY if battle.result.won else GameEnums.SoundEvent.DEFEAT, _step_time())
 			_select_banner.hide()
 			_result_overlay.open(battle.result, "UI_NEXT" if is_run_battle() else "UI_BACK_TO_TITLE")
 	elif battle.phase == Battle.Phase.DISCARDING and mode != Mode.DISCARD_SELECT:
@@ -802,3 +820,9 @@ func _on_result_closed() -> void:
 		Game.finish_battle(battle.result)
 	else:
 		Game.go_to_title()
+
+
+## 効果音を鳴らす（演出の速さが0の時＝テストの時は鳴らさない）
+func _sound(type: GameEnums.SoundEvent, step: float) -> void:
+	if step > 0.0:
+		UiSound.event(type)

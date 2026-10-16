@@ -49,6 +49,7 @@ func select_node(node: MapNode) -> void:
 ## 選んだノードへ進む
 func proceed() -> void:
 	if selected_node != null:
+		UiSound.event(GameEnums.SoundEvent.MAP_STEP)
 		Game.enter_node(selected_node)
 
 

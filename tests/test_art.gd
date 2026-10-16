@@ -148,6 +148,7 @@ func _index() -> DataIndex:
 	index.enemies.assign([slime])
 	index.icons = IconSet.create_default()
 	index.effects = EffectSet.create_default()
+	index.sounds = SoundSet.create_default()
 	return index
 
 

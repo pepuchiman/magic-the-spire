@@ -7,7 +7,7 @@
 
 # 詳細資料
 - ゲーム仕様：@docs/Game_Rule.md
-- ゲーム要素の一覧（状態効果・種族・エフェクトなど。今後も追加される）：@docs/Game_Elements.md
+- ゲーム要素の一覧（状態効果・種族・エフェクト・音など。今後も追加される）：@docs/Game_Elements.md
 - 開発計画：@docs/Dev_Plan.md
 - イラストの作り方・素材の名前の決まり：docs/art_style.md（絵の作業をする時に読む）
 
@@ -72,6 +72,7 @@
 - バトルのルールなどのロジックを変更したら、テストを追加・更新し、全テストが通ることを確認する
 - 何か変えたら、警告も含めてエラーが残っていないか見てから報告すること
 - 絵の素材は art_style.md に従って作り、assets/ に置いて差し替える。画像がまだない所は図形で仮表示する（画像を置けば、その部分だけ差し替わるように作る）
+- 音の素材は今は tools/generate_sounds.gd で合成した仮の音（assets/sounds/）。本物の音は同じ名前で差し替える（docs/Game_Elements.md「効果音・BGM」）
 - アプリの書き出し（ビルド）は、指示があったときだけ行う。ゲームを変更しただけでは自動でビルドしない（トークンと時間の節約のため）。ただし、動作確認やテストのための画面なしの起動（--headless）は行ってよい
 - コミットと GitHub へのプッシュ（git push）は、指示があったときだけ行う
 - 画像の生成は、利用者が起動したこのパソコンの ComfyUI（http://127.0.0.1:8188）に tools/comfy_generate.gd から頼んでよい
@@ -100,5 +101,6 @@
 - 背景を消した絵を、余白を切り落として縮小し assets/ に置く：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/resize_image.gd -- in=res://art_trials/enemy_slime/A_azovya_s5001_bg.png out=res://assets/enemies/enemy_slime.png height=640 trim=true
 - （予備）灰色の背景を色でたどって透明にする（BiRefNet が使えない時）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/remove_gray_bg.gd -- in=res://art_trials/enemy_slime/A_azovya_s4003.png out=res://assets/enemies/enemy_slime.png height=640
 - 画像を縮小して assets/ に置く：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/resize_image.gd -- in=res://art_trials/card_fireball/A_azovya_s3000.png out=res://assets/cards/card_fireball.png height=512
+- 効果音・BGM を作る（まだ無い音だけ。-- force=true で全部作り直す。作ったあと --import → generate_sample_data.gd → rebuild_data_index.gd）：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/generate_sounds.gd
 - データの型から項目を削除した後、ファイルに残った古い項目を消す：& "C:\Program Files\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe" --headless -s tools/resave_data.gd -- dir=res://data/enemies
 - スクリプトを追加・名前変更した後は、先に --headless --import を実行する（クラス名の登録のため）

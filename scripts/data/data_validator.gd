@@ -91,6 +91,7 @@ static func validate_index(index: DataIndex) -> PackedStringArray:
 	errors.append_array(_check_art(index))
 	errors.append_array(_check_icons(index.icons))
 	errors.append_array(_check_effects(index.effects))
+	errors.append_array(_check_sounds(index.sounds))
 	return errors
 
 
@@ -185,6 +186,8 @@ static func check_unregistered(index: DataIndex, tres_paths: PackedStringArray) 
 	var registered: Dictionary = {}
 	if index.config != null:
 		registered[index.config.resource_path] = true
+	if index.sounds != null:
+		registered[index.sounds.resource_path] = true
 	if index.effects != null:
 		registered[index.effects.resource_path] = true
 	if index.icons != null:
@@ -462,4 +465,30 @@ static func _check_effects(effects: EffectSet) -> PackedStringArray:
 			if not node is Node2D or not node.has_method("play"):
 				errors.append("エフェクトの一覧：%s「%s」のシーンが決まり（Node2D で play を持つ）に合っていません" % [group[0], type_name])
 			node.free()
+	return errors
+
+
+## 音の一覧に、すべての種類の音が登録されているか（カードの「なし」は除く）
+static func _check_sounds(sounds: SoundSet) -> PackedStringArray:
+	var errors := PackedStringArray()
+	if sounds == null:
+		errors.append("音の一覧（data/config/sound_set.tres）が索引にありません")
+		return errors
+	var groups := [
+		["攻撃の音", sounds.attack_sounds, GameEnums.AttackEffect],
+		["カードの効果の音", sounds.card_sounds, GameEnums.CardEffect],
+		["効果音", sounds.event_sounds, GameEnums.SoundEvent],
+		["BGM", sounds.music, GameEnums.Music],
+	]
+	for group: Array in groups:
+		var registered: Dictionary = group[1]
+		var enum_dict: Dictionary = group[2]
+		for type_name: String in enum_dict.keys():
+			if type_name == "NONE":
+				continue
+			var stream: AudioStream = registered.get(enum_dict[type_name])
+			if stream == null:
+				errors.append("音の一覧：%s「%s」の音が登録されていません" % [group[0], type_name])
+			elif stream.resource_path.begins_with("res://") and not FileAccess.file_exists(stream.resource_path):
+				errors.append("音の一覧：%s「%s」の音のファイルが見つかりません（%s）" % [group[0], type_name, stream.resource_path])
 	return errors

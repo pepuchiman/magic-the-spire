@@ -39,6 +39,7 @@ func _ready() -> void:
 
 ## カードを取る
 func take(card: CardData) -> void:
+	UiSound.event(GameEnums.SoundEvent.REWARD)
 	RewardGenerator.take(Game.run, card)
 	_after_cards()
 
@@ -51,6 +52,7 @@ func skip() -> void:
 
 ## 見つけた装備を装備する（同じ種類の装備は入れ替わる）
 func equip_found() -> void:
+	UiSound.event(GameEnums.SoundEvent.EQUIP)
 	RewardGenerator.equip(Game.run, found_equipment)
 	Game.finish_node()
 

@@ -206,6 +206,8 @@ func _init() -> void:
 	_save_new(GameConfig.new(), "res://data/config/game_config.tres")
 	_save_new(IconSet.create_default(), "res://data/config/icon_set.tres")
 	_save_new(EffectSet.create_default(), "res://data/config/effect_set.tres")
+	if FileAccess.file_exists(SoundSet.path_for("bgm_", "TITLE")):
+		_save_new(SoundSet.create_default(), "res://data/config/sound_set.tres")  # 音は tools/generate_sounds.gd で先に作る
 
 	# --- ダンジョン（階数は仮の値） ---
 	var dungeon := DungeonData.new()

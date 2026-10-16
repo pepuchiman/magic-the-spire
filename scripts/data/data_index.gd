@@ -16,3 +16,5 @@ extends Resource
 @export var icons: IconSet
 ## 種類ごとのエフェクトの一覧
 @export var effects: EffectSet
+## 種類ごとの音の一覧
+@export var sounds: SoundSet

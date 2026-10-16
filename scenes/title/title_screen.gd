@@ -8,6 +8,7 @@ extends Control
 
 
 func _ready() -> void:
+	UiSound.music(GameEnums.Music.TITLE)
 	UiPalette.style_button(%NewGameButton, UiPalette.BUTTON_ACCENT)
 	UiPalette.style_button(%ContinueButton, UiPalette.BUTTON_ACCENT.darkened(0.15))
 	UiPalette.style_button(%SettingsButton, UiPalette.BUTTON)

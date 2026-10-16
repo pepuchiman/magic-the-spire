@@ -7,6 +7,7 @@ const INDEX_PATH := "res://data/data_index.tres"
 const CONFIG_PATH := "res://data/config/game_config.tres"
 const ICONS_PATH := "res://data/config/icon_set.tres"
 const EFFECTS_PATH := "res://data/config/effect_set.tres"
+const SOUNDS_PATH := "res://data/config/sound_set.tres"
 
 
 func _init() -> void:
@@ -30,6 +31,10 @@ func _init() -> void:
 		index.effects = ResourceLoader.load(EFFECTS_PATH, "", ResourceLoader.CACHE_MODE_REPLACE)
 	else:
 		push_error("エフェクトの一覧がありません：%s" % EFFECTS_PATH)
+	if ResourceLoader.exists(SOUNDS_PATH):
+		index.sounds = ResourceLoader.load(SOUNDS_PATH, "", ResourceLoader.CACHE_MODE_REPLACE)
+	else:
+		push_error("音の一覧がありません：%s（tools/generate_sounds.gd → --import → tools/generate_sample_data.gd の順に実行）" % SOUNDS_PATH)
 
 	var err := ResourceSaver.save(index, INDEX_PATH)
 	if err != OK:
