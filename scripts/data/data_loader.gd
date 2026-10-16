@@ -68,6 +68,11 @@ func get_icons() -> IconSet:
 	return index.icons if index != null and index.icons != null else IconSet.new()
 
 
+## 種類ごとのエフェクトの一覧（無ければ、ui/effects/ のシーンを使う初期の一覧）
+func get_effects() -> EffectSet:
+	return index.effects if index != null and index.effects != null else EffectSet.create_default()
+
+
 func _fill(target: Dictionary, items: Array) -> void:
 	for item: Resource in items:
 		if item != null:

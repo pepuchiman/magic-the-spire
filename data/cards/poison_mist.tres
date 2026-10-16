@@ -20,4 +20,5 @@ cost_mana = 1
 required_green = 1
 effects = Array[ExtResource("1_p2dt8")]([SubResource("Resource_7m5ul")])
 description_key = &"CARD_POISON_MIST_DESC"
+visual_effect = 7
 art = ExtResource("1_4pf8k")

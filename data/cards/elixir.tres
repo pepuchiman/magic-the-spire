@@ -21,4 +21,5 @@ cost_mana = 1
 uses_per_battle = 1
 effects = Array[ExtResource("1_jxa2u")]([SubResource("Resource_53g3h")])
 description_key = &"CARD_ELIXIR_DESC"
+visual_effect = 8
 art = ExtResource("1_cct7l")

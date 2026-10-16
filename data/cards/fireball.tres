@@ -19,4 +19,5 @@ cost_mana = 2
 required_red = 1
 effects = Array[ExtResource("1_7gd24")]([SubResource("Resource_t81un")])
 description_key = &"CARD_FIREBALL_DESC"
+visual_effect = 1
 art = ExtResource("1_j11nj")

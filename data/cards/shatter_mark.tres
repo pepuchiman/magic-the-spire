@@ -23,4 +23,5 @@ duration = 1
 duration_turns = 2
 effects = Array[ExtResource("1_vuj1l")]([SubResource("Resource_mlukc")])
 description_key = &"CARD_SHATTER_MARK_DESC"
+visual_effect = 11
 art = ExtResource("1_huf5a")

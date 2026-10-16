@@ -205,6 +205,7 @@ func _init() -> void:
 	# --- ゲーム全体の設定（数値は仮） ---
 	_save_new(GameConfig.new(), "res://data/config/game_config.tres")
 	_save_new(IconSet.create_default(), "res://data/config/icon_set.tres")
+	_save_new(EffectSet.create_default(), "res://data/config/effect_set.tres")
 
 	# --- ダンジョン（階数は仮の値） ---
 	var dungeon := DungeonData.new()

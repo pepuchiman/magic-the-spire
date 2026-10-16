@@ -22,6 +22,8 @@ const CARD_SCENE := preload("res://ui/card_view.tscn")
 const DRAG_THRESHOLD := 16.0
 ## 演出1つ分の基本の長さ（秒）
 const STEP_TIME := 0.45
+## このダメージ以上（最大HPに対する割合）なら画面を揺らす
+const BIG_HIT_RATIO := 0.3
 
 @export_group("サンプル戦の設定（この画面だけをエディタで実行した時に使う）")
 @export var hero_id: StringName = &"flame_mage"
@@ -54,6 +56,12 @@ var _drag: Dictionary = {}
 var _drag_ghost: CardView
 var _drag_target: UnitSprite
 var _toast_tween: Tween
+## 演出：最後に使ったカードの手札の位置（カードが飛んでいく出発点）
+var _played_hand_index: int = -1
+## 演出：キャラクターごとに最後に見せた状態効果の値（新しく付いた状態効果の印を出すため）
+var _shown_statuses: Dictionary = {}  # Combatant → {状態効果の種類: 値}
+## 演出：種類ごとのエフェクトの一覧
+var _effects: EffectSet
 
 @onready var _background: BattleBackground = %Background
 @onready var _header: PanelContainer = %Header
@@ -91,6 +99,7 @@ func _ready() -> void:
 		DebugKeyLocale.enable()
 	_zoom_popup.move_to_front()  # デッキ一覧の上にも拡大表示を出せるように
 	_apply_styles()
+	_effects = Game.data.get_effects() if Game.data != null else EffectSet.create_default()
 	_hand_view.card_pressed.connect(_on_card_pressed)
 	_end_turn_button.pressed.connect(request_end_turn)
 	_deck_button.pressed.connect(_open_deck)
@@ -153,6 +162,7 @@ func _begin(new_battle: Battle) -> void:
 func try_play_card(hand_index: int, target: Combatant = null) -> Battle.PlayResult:
 	if not _can_operate():
 		return Battle.PlayResult.NOT_PLAYER_TURN
+	_played_hand_index = hand_index  # カードが飛んでいく演出の出発点
 	var result := battle.play_card(hand_index, target)
 	if result == Battle.PlayResult.NEEDS_REPLACE:
 		_pending_summon_index = hand_index
@@ -169,6 +179,7 @@ func choose_replace(ally: AllyCombatant) -> void:
 		return
 	var index := _pending_summon_index
 	_leave_select()
+	_played_hand_index = index
 	battle.play_card(index, null, ally)
 	_after_action()
 
@@ -219,6 +230,9 @@ func is_idle() -> bool:
 # ---------- ルールのシグナル → 演出の待ち行列 ----------
 
 func _connect_battle() -> void:
+	battle.card_played.connect(func(instance: CardInstance, target: Combatant) -> void:
+		_push({"type": "card", "card": instance.data, "targets": battle.effect_targets(instance.data, target),
+			"hand_index": _played_hand_index}))
 	battle.turn_started.connect(func(turn_number: int) -> void:
 		_push({"type": "banner", "text": UiText.fmt("UI_TURN_BANNER", {"turn": turn_number})}))
 	battle.timing_reached.connect(func(timing: Battle.Timing) -> void:
@@ -226,9 +240,10 @@ func _connect_battle() -> void:
 			_push({"type": "banner", "text": UiText.t("UI_ENEMY_TURN")}))
 	battle.damage_dealt.connect(func(source: Combatant, target: Combatant, detail: Dictionary) -> void:
 		_push({"type": "damage", "source": source, "target": target, "hp": target.hp, "armor": target.armor,
-			"amount": detail["after_defense"], "poison": detail.get("poison", false)}))
+			"amount": detail["after_defense"], "poison": detail.get("poison", false), "attack": detail.get("attack", false),
+			"hp_damage": detail.get("hp_damage", 0)}))
 	battle.status_changed.connect(func(target: Combatant) -> void:
-		_push({"type": "status", "target": target}))
+		_push({"type": "status", "target": target, "statuses": _status_values(target)}))
 	battle.attack_prevented.connect(func(combatant: Combatant) -> void:
 		_push({"type": "prevented", "target": combatant}))
 	battle.healed.connect(func(target: Combatant, amount: int) -> void:
@@ -271,6 +286,8 @@ func _play_event(event: Dictionary) -> float:
 		"banner":
 			_show_toast(event["text"])
 			return step
+		"card":
+			return _play_card_event(event, step)
 		"damage", "heal", "armor":
 			var view: UnitSprite = _views.get(event["target"])
 			if view == null:
@@ -280,11 +297,17 @@ func _play_event(event: Dictionary) -> float:
 			var text := "-%d" % event["amount"]
 			if event["type"] == "damage":
 				view.play_hit_flash(step)
-				var source_view: UnitSprite = _views.get(event["source"])
-				if source_view != null:
-					source_view.play_attack_motion(step * 0.6)
+				var source: Combatant = event["source"]
+				var source_view: UnitSprite = _views.get(source)
 				if event["poison"]:
 					color = UiPalette.POISON  # 毒のダメージは色を変える
+					_spawn_effect(_effects.card_effects.get(GameEnums.CardEffect.POISON), view, step * 1.5)
+				elif event["attack"] and source_view != null and not source is HeroCombatant:
+					# クリーチャー・敵の攻撃：相手へ踏み込み、相手の位置に攻撃エフェクト（主人公のカードはカードの演出で見せる）
+					source_view.play_attack_motion(step * 0.6, _center_of(view.effect_anchor()) - _center_of(source_view.effect_anchor()))
+					_spawn_effect(_effects.attack_effects.get(_attack_effect_of(source)), view, step * 1.2)
+				if event["hp_damage"] >= event["target"].get_max_hp() * BIG_HIT_RATIO:
+					_shake(step)  # 大きなダメージは画面を揺らす
 			elif event["type"] == "heal":
 				color = UiPalette.HEAL
 				text = "+%d" % event["amount"]
@@ -296,20 +319,29 @@ func _play_event(event: Dictionary) -> float:
 		"died":
 			var target: Combatant = event["target"]
 			if target != battle.hero and target != battle.main_enemy:
-				_remove_view(target)
+				_remove_view(target, step)  # 薄くなって消える
 			return step
 		"summon":
 			_ensure_view(event["unit"])
+			_place_unit(event["unit"])
+			var summoned: UnitSprite = _views[event["unit"]]
+			if not summoned.is_inside_tree():
+				return step  # すでに倒れて立ち位置がない（演出の時点では、ルール側の処理は全部終わっている）
+			summoned.play_appear(step)
+			_spawn_effect(_effects.card_effects.get(GameEnums.CardEffect.SUMMON), summoned, step * 1.5)
 			if event["replaced"] != null:
-				_remove_view(event["replaced"])
+				_remove_view(event["replaced"], step)
 			return step
 		"status":
-			var status_view: UnitSprite = _views.get(event["target"])
+			var status_target: Combatant = event["target"]
+			var status_view: UnitSprite = _views.get(status_target)
 			if status_view != null:
 				status_view.refresh_statuses()  # 状態効果の一覧を表示し直す
-			var status_info: UnitInfoPanel = _info_panels.get(event["target"])
+				_float_new_statuses(status_target, event["statuses"], status_view, step)
+			var status_info: UnitInfoPanel = _info_panels.get(status_target)
 			if status_info != null:
 				status_info.refresh_statuses()
+			_shown_statuses[status_target] = event["statuses"]
 			return step * 0.4
 		"prevented":
 			var prevented_view: UnitSprite = _views.get(event["target"])
@@ -317,6 +349,113 @@ func _play_event(event: Dictionary) -> float:
 				FloatingNumber.spawn(_effect_layer, _center_of(prevented_view.effect_anchor()), UiText.t("UI_PARALYZED_POPUP"), UiPalette.STATUS, step * 2.0)
 			return step
 	return 0.0
+
+
+## カードを使った演出：カードが手札から最初の対象へ飛び、着いたら対象全員の位置に効果エフェクトを出す
+func _play_card_event(event: Dictionary, step: float) -> float:
+	if step <= 0.0:
+		return 0.0
+	var card: CardData = event["card"]
+	var targets: Array = event["targets"]
+	var target_views: Array[UnitSprite] = []
+	for target: Combatant in targets:
+		if _views.has(target):
+			target_views.append(_views[target])
+	if target_views.is_empty() and _views.has(battle.hero):
+		target_views.append(_views[battle.hero])  # 対象を選ばないカード（ドローなど）は主人公の位置に出す
+	var fly_time := step * 0.5
+	var ghost: CardView = CARD_SCENE.instantiate()
+	ghost.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_effect_layer.add_child(ghost)
+	ghost.set_card(card)
+	var origin := _card_origin(event["hand_index"]) - CardView.BASE_SIZE / 2.0
+	var hand_card := _hand_view.get_view(event["hand_index"])
+	if hand_card != null:
+		hand_card.modulate.a = 0.0  # 手札の表示は演出のあとで作り直すので、飛んでいる間は手札のカードを隠す
+	var goal := _center_of(target_views[0].effect_anchor()) - CardView.BASE_SIZE / 2.0 if not target_views.is_empty() else origin
+	ghost.position = origin
+	var effect_scene: PackedScene = _effects.card_effects.get(card.visual_effect)
+	var tween := ghost.create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(ghost, "position", goal, fly_time).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	tween.tween_property(ghost, "scale", Vector2(0.4, 0.4), fly_time)
+	tween.tween_property(ghost, "modulate:a", 0.2, fly_time)
+	tween.chain().tween_callback(func() -> void:
+		ghost.queue_free()
+		for view: UnitSprite in target_views:
+			if is_instance_valid(view):
+				_spawn_effect(effect_scene, view, step * 1.4))
+	return fly_time + (step * 0.7 if effect_scene != null else 0.0)
+
+
+## エフェクトのシーンを、キャラクターの姿の中心に出す（シーンが無い・演出なしの時は何もしない）
+func _spawn_effect(scene: PackedScene, view: UnitSprite, duration: float) -> void:
+	if scene == null or view == null or duration <= 0.0 or not view.is_inside_tree():
+		return
+	var effect := scene.instantiate()
+	_effect_layer.add_child(effect)
+	var anchor := view.effect_anchor()
+	effect.position = _center_of(anchor)
+	effect.play(minf(anchor.size.x, anchor.size.y) * 1.1, duration)
+
+
+## 新しく付いた（値が増えた）状態効果の印を、キャラクターの上に浮かべる
+func _float_new_statuses(target: Combatant, now: Dictionary, view: UnitSprite, step: float) -> void:
+	if step <= 0.0:
+		return
+	var before: Dictionary = _shown_statuses.get(target, {})
+	var center := _center_of(view.effect_anchor())
+	var index := 0
+	for type: int in now:
+		if now[type] <= before.get(type, 0):
+			continue
+		var icon := ShapeIcon.new()
+		icon.size = Vector2(56, 56)
+		icon.setup(ShapeIcon.status_shape(type), UiPalette.status_color(type), UiIcons.status(type))
+		_effect_layer.add_child(icon)
+		icon.position = center - icon.size / 2.0 + Vector2(index * 40.0 - 20.0, -20.0)
+		var tween := icon.create_tween().set_parallel(true)
+		tween.tween_property(icon, "position:y", icon.position.y - 70.0, step * 2.0)
+		tween.tween_property(icon, "modulate:a", 0.0, step * 2.0).set_delay(step * 0.8)
+		tween.chain().tween_callback(icon.queue_free)
+		index += 1
+
+
+## 状態効果の今の値の一覧（種類 → 値）
+static func _status_values(combatant: Combatant) -> Dictionary:
+	var values := {}
+	for type: int in combatant.statuses:
+		var status: StatusInstance = combatant.statuses[type]
+		values[type] = maxi(status.value, 1) + maxi(status.turns, 0)
+	return values
+
+
+## クリーチャー・敵の攻撃エフェクトの種類
+static func _attack_effect_of(source: Combatant) -> GameEnums.AttackEffect:
+	if source is AllyCombatant:
+		return (source as AllyCombatant).data.attack_effect
+	if source is EnemyCombatant:
+		return (source as EnemyCombatant).data.attack_effect
+	return GameEnums.AttackEffect.BLOW
+
+
+## カードが飛んでいく出発点（手札のそのカードの中心。分からなければ手札の場所の中央）
+func _card_origin(hand_index: int) -> Vector2:
+	var view := _hand_view.get_view(hand_index)
+	if view != null:
+		return _center_of(view)
+	return _center_of(_hand_view)
+
+
+## 画面を少し揺らす
+func _shake(step: float) -> void:
+	if step <= 0.0:
+		return
+	var safe_area: Control = $SafeArea
+	var tween := create_tween()
+	for i in 4:
+		tween.tween_property(safe_area, "position", Vector2(randf_range(-8, 8), randf_range(-6, 6)), step * 0.08)
+	tween.tween_property(safe_area, "position", Vector2.ZERO, step * 0.08)
 
 
 func _step_time() -> float:
@@ -440,12 +579,25 @@ func _place(view: UnitSprite, slot: Control) -> void:
 	view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
-func _remove_view(combatant: Combatant) -> void:
+## キャラクターの姿を消す。duration が 0 より大きければ、薄くなって消える演出をする
+func _remove_view(combatant: Combatant, duration: float = 0.0) -> void:
 	var view: UnitSprite = _views.get(combatant)
 	if view == null:
 		return
 	_views.erase(combatant)
-	view.queue_free()
+	_shown_statuses.erase(combatant)
+	view.play_death(duration)
+
+
+## 召喚されたキャラクターを、今の並び順の立ち位置に置く（演出の途中で使う）
+func _place_unit(combatant: Combatant) -> void:
+	var view: UnitSprite = _views.get(combatant)
+	if view == null:
+		return
+	var index := battle.allies.find(combatant) if combatant is AllyCombatant else battle.enemy_allies.find(combatant)
+	var slots := _ally_slots if combatant is AllyCombatant else _enemy_creature_slots
+	if index >= 0 and index < slots.size():
+		_place(view, slots[index])
 
 
 ## 主人公・敵本体は情報の枠、クリーチャーは足元のHPを、その時点の値にする

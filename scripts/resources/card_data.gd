@@ -32,8 +32,8 @@ extends Resource
 @export var effects: Array[EffectData] = []
 ## 効果詳細の文章のキー（例：CARD_FIREBALL_DESC）
 @export var description_key: StringName
-## 効果エフェクト（フェーズ7で使う）
-@export var visual_effect: StringName
+## 効果エフェクト（カードを使った時に、対象の位置に出る演出。種類ごとの演出は data/config/effect_set.tres で決める）
+@export var visual_effect: GameEnums.CardEffect = GameEnums.CardEffect.NONE
 ## カードの絵（空なら種別の色と記号で仮表示。tools/link_art.gd で assets/cards/card_<ID>.png を結び付けられる）
 @export var art: Texture2D
 

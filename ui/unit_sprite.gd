@@ -16,6 +16,9 @@ var show_plate: bool = false
 var highlighted: bool = false
 ## 今表示しているアーマーの値（演出の途中の値）
 var _shown_armor: int = 0
+## 踏み込みの動き（途中で次の動きが来た時に止めるため）と、動く前の姿の位置
+var _motion_tween: Tween
+var _body_home: Vector2 = Vector2.ZERO
 
 @onready var _intent_label: FitLabel = %IntentLabel
 @onready var _body: Control = %Body
@@ -132,14 +135,51 @@ func effect_anchor() -> Control:
 	return _body
 
 
-## 攻撃した時の小さな動き
-func play_attack_motion(duration: float) -> void:
+## 攻撃した時の動き：相手の方向（direction）へ少し踏み込んで戻る。
+## 姿（_body）は行動予告の下に並んでいるので、元の位置は 0 ではない。動く前の位置を覚えておき、そこへ戻す
+func play_attack_motion(duration: float, direction: Vector2 = Vector2.ZERO) -> void:
 	if duration <= 0.0:
 		return
-	_body.pivot_offset = _body.size / 2.0
-	var tween := create_tween()
-	tween.tween_property(_body, "scale", Vector2(1.15, 1.15), duration * 0.4)
-	tween.tween_property(_body, "scale", Vector2.ONE, duration * 0.6)
+	var home := _stop_motion()
+	var step := direction.normalized() * minf(direction.length() * 0.25, 60.0)
+	_motion_tween = create_tween()
+	_motion_tween.tween_property(_body, "position", home + step, duration * 0.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	_motion_tween.tween_property(_body, "position", home, duration * 0.65).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUAD)
+
+
+## 倒れた時の動き：薄くなりながら沈んで消える（終わったら自分を消す）
+func play_death(duration: float) -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if duration <= 0.0:
+		queue_free()
+		return
+	var home := _stop_motion()
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(self, "modulate:a", 0.0, duration)
+	tween.tween_property(_body, "position:y", home.y + _body.size.y * 0.25, duration).set_ease(Tween.EASE_IN)
+	tween.chain().tween_callback(queue_free)
+
+
+## 動きの途中なら止めて元の位置に戻し、元の位置を返す（続けて攻撃した時に、位置がずれていかないように）
+func _stop_motion() -> Vector2:
+	if _motion_tween != null and _motion_tween.is_valid():
+		_motion_tween.kill()
+		_body.position = _body_home
+	else:
+		_body_home = _body.position
+	return _body_home
+
+
+## 召喚された時の動き：下から伸びるように現れる
+func play_appear(duration: float) -> void:
+	if duration <= 0.0:
+		return
+	_body.pivot_offset = Vector2(_body.size.x / 2.0, _body.size.y)
+	_body.scale = Vector2(0.6, 0.0)
+	modulate.a = 0.0
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(_body, "scale", Vector2.ONE, duration).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	tween.tween_property(self, "modulate:a", 1.0, duration * 0.5)
 
 
 ## ダメージを受けた時の点滅

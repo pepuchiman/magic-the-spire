@@ -20,4 +20,5 @@ targets = Array[int]([2])
 cost_mana = 1
 effects = Array[ExtResource("1_p6gln")]([SubResource("Resource_p4odi")])
 description_key = &"CARD_MEDITATION_DESC"
+visual_effect = 6
 art = ExtResource("1_yw31x")

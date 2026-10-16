@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EffectSet" format=3]
+
+[ext_resource type="PackedScene" path="res://ui/effects/blow.tscn" id="1_sbg6q"]
+[ext_resource type="PackedScene" path="res://ui/effects/slash.tscn" id="2_c76m4"]
+[ext_resource type="PackedScene" path="res://ui/effects/pierce.tscn" id="3_4cxow"]
+[ext_resource type="PackedScene" path="res://ui/effects/fire.tscn" id="4_gxtvx"]
+[ext_resource type="PackedScene" path="res://ui/effects/water.tscn" id="5_tcf6n"]
+[ext_resource type="PackedScene" path="res://ui/effects/wind.tscn" id="6_x3a3q"]
+[ext_resource type="PackedScene" path="res://ui/effects/ice.tscn" id="7_2bo63"]
+[ext_resource type="PackedScene" path="res://ui/effects/lightning.tscn" id="8_vr7tx"]
+[ext_resource type="PackedScene" path="res://ui/effects/arcane.tscn" id="9_be1md"]
+[ext_resource type="PackedScene" path="res://ui/effects/poison.tscn" id="10_stgvb"]
+[ext_resource type="PackedScene" path="res://ui/effects/heal.tscn" id="11_gxdhi"]
+[ext_resource type="PackedScene" path="res://ui/effects/armor.tscn" id="12_w2uvk"]
+[ext_resource type="PackedScene" path="res://ui/effects/buff.tscn" id="13_eose5"]
+[ext_resource type="PackedScene" path="res://ui/effects/debuff.tscn" id="14_q81vx"]
+[ext_resource type="PackedScene" path="res://ui/effects/summon.tscn" id="15_rcbmo"]
+[ext_resource type="Script" path="res://scripts/resources/effect_set.gd" id="16_1mq22"]
+
+[resource]
+script = ExtResource("16_1mq22")
+attack_effects = Dictionary[int, PackedScene]({
+0: ExtResource("1_sbg6q"),
+1: ExtResource("2_c76m4"),
+2: ExtResource("3_4cxow"),
+3: ExtResource("4_gxtvx"),
+4: ExtResource("5_tcf6n"),
+5: ExtResource("6_x3a3q")
+})
+card_effects = Dictionary[int, PackedScene]({
+1: ExtResource("4_gxtvx"),
+2: ExtResource("7_2bo63"),
+3: ExtResource("5_tcf6n"),
+4: ExtResource("6_x3a3q"),
+5: ExtResource("8_vr7tx"),
+6: ExtResource("9_be1md"),
+7: ExtResource("10_stgvb"),
+8: ExtResource("11_gxdhi"),
+9: ExtResource("12_w2uvk"),
+10: ExtResource("13_eose5"),
+11: ExtResource("14_q81vx"),
+12: ExtResource("15_rcbmo")
+})

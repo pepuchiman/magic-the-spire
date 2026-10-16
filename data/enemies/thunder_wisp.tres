@@ -21,4 +21,5 @@ id = &"thunder_wisp"
 name_key = &"ENEMY_THUNDER_WISP_NAME"
 max_hp = 16
 attack = 4
+attack_effect = 5
 pattern = Array[ExtResource("1_0e10c")]([SubResource("Resource_pe47n"), SubResource("Resource_uvbnn"), SubResource("Resource_16ga4")])

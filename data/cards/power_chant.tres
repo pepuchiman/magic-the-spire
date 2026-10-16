@@ -22,4 +22,5 @@ cost_mana = 1
 duration = 2
 effects = Array[ExtResource("1_rdafo")]([SubResource("Resource_8p8ox")])
 description_key = &"CARD_POWER_CHANT_DESC"
+visual_effect = 10
 art = ExtResource("1_3f66e")

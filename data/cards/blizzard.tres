@@ -20,4 +20,5 @@ cost_mana = 3
 required_blue = 3
 effects = Array[ExtResource("1_8rd8g")]([SubResource("Resource_x4i1v")])
 description_key = &"CARD_BLIZZARD_DESC"
+visual_effect = 2
 art = ExtResource("1_u0ovo")

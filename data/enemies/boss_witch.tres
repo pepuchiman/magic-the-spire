@@ -23,5 +23,6 @@ name_key = &"ENEMY_BOSS_WITCH_NAME"
 max_hp = 80
 defense = 1
 attack = 8
+attack_effect = 3
 art_front = ExtResource("1_wsd1h")
 pattern = Array[ExtResource("1_fcipq")]([SubResource("Resource_1furh"), SubResource("Resource_wx4p2"), SubResource("Resource_vukon")])

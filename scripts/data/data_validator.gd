@@ -90,6 +90,7 @@ static func validate_index(index: DataIndex) -> PackedStringArray:
 		errors.append("ゲーム全体の設定（data/config/game_config.tres）が索引にありません")
 	errors.append_array(_check_art(index))
 	errors.append_array(_check_icons(index.icons))
+	errors.append_array(_check_effects(index.effects))
 	return errors
 
 
@@ -184,6 +185,8 @@ static func check_unregistered(index: DataIndex, tres_paths: PackedStringArray) 
 	var registered: Dictionary = {}
 	if index.config != null:
 		registered[index.config.resource_path] = true
+	if index.effects != null:
+		registered[index.effects.resource_path] = true
 	if index.icons != null:
 		registered[index.icons.resource_path] = true
 	for list: Array in _all_lists(index):
@@ -433,3 +436,30 @@ static func _collect_translation_keys(index: DataIndex) -> Array[Array]:
 		if dungeon != null:
 			result.append(["ダンジョン %s の名前" % dungeon.id, dungeon.name_key])
 	return result
+
+
+## エフェクトの一覧に、すべての種類のシーンが登録されているか（カードの「なし」は除く）
+static func _check_effects(effects: EffectSet) -> PackedStringArray:
+	var errors := PackedStringArray()
+	if effects == null:
+		errors.append("エフェクトの一覧（data/config/effect_set.tres）が索引にありません")
+		return errors
+	var groups := [
+		["攻撃エフェクト", effects.attack_effects, GameEnums.AttackEffect],
+		["カードの効果エフェクト", effects.card_effects, GameEnums.CardEffect],
+	]
+	for group: Array in groups:
+		var registered: Dictionary = group[1]
+		var enum_dict: Dictionary = group[2]
+		for type_name: String in enum_dict.keys():
+			if type_name == "NONE":
+				continue
+			var scene: PackedScene = registered.get(enum_dict[type_name])
+			if scene == null:
+				errors.append("エフェクトの一覧：%s「%s」のシーンが登録されていません" % [group[0], type_name])
+				continue
+			var node := scene.instantiate()
+			if not node is Node2D or not node.has_method("play"):
+				errors.append("エフェクトの一覧：%s「%s」のシーンが決まり（Node2D で play を持つ）に合っていません" % [group[0], type_name])
+			node.free()
+	return errors

@@ -7,7 +7,7 @@
 
 # 詳細資料
 - ゲーム仕様：@docs/Game_Rule.md
-- ゲーム要素の一覧（状態効果・種族など。今後も追加される）：@docs/Game_Elements.md
+- ゲーム要素の一覧（状態効果・種族・エフェクトなど。今後も追加される）：@docs/Game_Elements.md
 - 開発計画：@docs/Dev_Plan.md
 - イラストの作り方・素材の名前の決まり：docs/art_style.md（絵の作業をする時に読む）
 

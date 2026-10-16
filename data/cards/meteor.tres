@@ -23,4 +23,5 @@ required_red = 2
 required_blue = 2
 effects = Array[ExtResource("1_xrwl1")]([SubResource("Resource_rox6t")])
 description_key = &"CARD_METEOR_DESC"
+visual_effect = 1
 art = ExtResource("1_7hxie")

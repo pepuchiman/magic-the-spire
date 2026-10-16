@@ -18,5 +18,6 @@ id = &"goblin"
 name_key = &"ENEMY_GOBLIN_NAME"
 max_hp = 26
 attack = 5
+attack_effect = 1
 art_front = ExtResource("1_k871p")
 pattern = Array[ExtResource("1_dk6at")]([SubResource("Resource_powyv"), SubResource("Resource_tsokr")])

@@ -23,4 +23,5 @@ uses_per_battle = 1
 required_green = 1
 effects = Array[ExtResource("1_u1cho")]([SubResource("Resource_b62ik")])
 description_key = &"CARD_SUMMON_WOLF_DESC"
+visual_effect = 12
 art = ExtResource("1_wywsg")

@@ -22,4 +22,5 @@ required_red = 1
 required_blue = 1
 effects = Array[ExtResource("1_rafry")]([SubResource("Resource_ed61r")])
 description_key = &"CARD_STEAM_BLAST_DESC"
+visual_effect = 3
 art = ExtResource("1_iwypk")

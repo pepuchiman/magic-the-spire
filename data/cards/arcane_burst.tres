@@ -19,4 +19,5 @@ targets = Array[int]([6])
 cost_mana = 1
 effects = Array[ExtResource("1_l2fna")]([SubResource("Resource_6g5l5")])
 description_key = &"CARD_ARCANE_BURST_DESC"
+visual_effect = 6
 art = ExtResource("1_owcf1")

@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ui/effects/procedural_effect.gd" id="1_effect"]
+
+[node name="Effect_blow" type="Node2D"]
+script = ExtResource("1_effect")
+kind = 0
+color = Color(1, 0.95, 0.8, 1)
+particle_count = 10

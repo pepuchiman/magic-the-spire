@@ -25,4 +25,5 @@ cost_mana = 2
 required_blue = 1
 effects = Array[ExtResource("1_y2wvb")]([SubResource("Resource_numng"), SubResource("Resource_ogtd6")])
 description_key = &"CARD_THUNDERBOLT_DESC"
+visual_effect = 5
 art = ExtResource("1_1gi4p")

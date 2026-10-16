@@ -407,6 +407,15 @@ func _decide_intent(enemy: EnemyCombatant) -> void:
 # ---------- カードの効果 ----------
 
 ## カードのターゲット種別から、効果を与える相手の一覧を作る。
+## カードの効果が届く相手の一覧（画面の演出用。効果を与える相手とダメージを与える相手を合わせたもの）
+func effect_targets(card: CardData, chosen: Combatant) -> Array[Combatant]:
+	var list := _resolve_targets(card, chosen)
+	for target: Combatant in _resolve_targets(card, chosen, true):
+		if not list.has(target):
+			list.append(target)
+	return list
+
+
 ## for_damage が true の時は、ダメージを与える相手の一覧を作る：
 ## 自分側だけを指すターゲット種別（自分・自分のクリーチャーなど）は除く。
 ## 「敵」「いずれか1体」「全員」は、選んだ相手・含まれる相手にそのままダメージを与える（自分側でも）
@@ -504,6 +513,7 @@ func _summon_ally(ally_data: AllyData, replace_ally: AllyCombatant) -> void:
 func _deal_damage(source: Combatant, target: Combatant, base_damage: int, is_attack: bool = true) -> void:
 	var amount := modified_damage(source, target, base_damage) if is_attack else base_damage
 	var detail := DamageCalc.apply(target, amount)
+	detail["attack"] = is_attack  # 画面の演出用（攻撃なら攻撃エフェクトを出す。棘の反撃は false）
 	_log("%s → %s ダメージ%d（アーマー-%d HP-%d 残りHP%d）" % [
 		source.id if source != null else "-", target.id, amount, detail["armor_absorbed"], detail["hp_damage"], target.hp])
 	damage_dealt.emit(source, target, detail)

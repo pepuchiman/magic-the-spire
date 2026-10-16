@@ -50,3 +50,6 @@ enum StatusType { POISON, PARALYSIS, WEAK, VULNERABLE, STRENGTH, THORNS }  # 毒
 
 ## マップのノードの種類（エリート戦・宝箱はフェーズ5で使う）
 enum MapNodeType { BATTLE, ELITE, EVENT, REST, TREASURE, BOSS }  # 通常戦・エリート戦・イベント・休憩・宝箱・ボス
+
+## カードの効果エフェクト（カードを使った時に、対象の位置に出る演出）
+enum CardEffect { NONE, FIRE, ICE, WATER, WIND, LIGHTNING, ARCANE, POISON, HEAL, ARMOR, BUFF, DEBUFF, SUMMON }  # なし・炎・氷・水・風・雷・魔力・毒・回復・アーマー・強化・弱体化・召喚

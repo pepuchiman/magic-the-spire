@@ -20,4 +20,5 @@ cost_mana = 3
 required_red = 3
 effects = Array[ExtResource("1_tpd3l")]([SubResource("Resource_yia27")])
 description_key = &"CARD_INFERNO_DESC"
+visual_effect = 1
 art = ExtResource("1_7fbyt")

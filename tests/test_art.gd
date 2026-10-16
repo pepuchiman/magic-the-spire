@@ -147,6 +147,7 @@ func _index() -> DataIndex:
 	slime.id = &"slime"
 	index.enemies.assign([slime])
 	index.icons = IconSet.create_default()
+	index.effects = EffectSet.create_default()
 	return index
 
 

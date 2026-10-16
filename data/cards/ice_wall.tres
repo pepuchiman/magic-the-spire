@@ -21,4 +21,5 @@ cost_mana = 1
 required_blue = 1
 effects = Array[ExtResource("1_3051y")]([SubResource("Resource_4kus2")])
 description_key = &"CARD_ICE_WALL_DESC"
+visual_effect = 9
 art = ExtResource("1_m8sem")

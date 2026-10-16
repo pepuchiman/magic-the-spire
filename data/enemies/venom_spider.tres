@@ -21,5 +21,6 @@ id = &"venom_spider"
 name_key = &"ENEMY_VENOM_SPIDER_NAME"
 max_hp = 18
 attack = 3
+attack_effect = 2
 art_front = ExtResource("1_p4tv1")
 pattern = Array[ExtResource("1_fimnm")]([SubResource("Resource_wuvvt"), SubResource("Resource_6swf0"), SubResource("Resource_75ofq")])

@@ -23,4 +23,5 @@ required_green = 1
 duration = 2
 effects = Array[ExtResource("1_l7xrv")]([SubResource("Resource_w1q8j")])
 description_key = &"CARD_THORN_ARMOR_DESC"
+visual_effect = 9
 art = ExtResource("1_tgvmo")

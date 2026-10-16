@@ -200,4 +200,5 @@ func _valid_index() -> DataIndex:
 	index.enemies.append(enemy)
 	index.config = GameConfig.new()
 	index.icons = IconSet.create_default()
+	index.effects = EffectSet.create_default()
 	return index

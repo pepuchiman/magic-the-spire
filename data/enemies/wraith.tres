@@ -23,5 +23,6 @@ name_key = &"ENEMY_WRAITH_NAME"
 max_hp = 36
 defense = 1
 attack = 6
+attack_effect = 5
 art_front = ExtResource("1_fvq15")
 pattern = Array[ExtResource("1_l0kss")]([SubResource("Resource_tf0j3"), SubResource("Resource_c8chv"), SubResource("Resource_y6reu")])

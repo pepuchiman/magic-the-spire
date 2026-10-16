@@ -6,6 +6,7 @@ extends SceneTree
 const INDEX_PATH := "res://data/data_index.tres"
 const CONFIG_PATH := "res://data/config/game_config.tres"
 const ICONS_PATH := "res://data/config/icon_set.tres"
+const EFFECTS_PATH := "res://data/config/effect_set.tres"
 
 
 func _init() -> void:
@@ -25,6 +26,10 @@ func _init() -> void:
 		index.icons = ResourceLoader.load(ICONS_PATH, "", ResourceLoader.CACHE_MODE_REPLACE)
 	else:
 		push_error("アイコンの一覧がありません：%s" % ICONS_PATH)
+	if ResourceLoader.exists(EFFECTS_PATH):
+		index.effects = ResourceLoader.load(EFFECTS_PATH, "", ResourceLoader.CACHE_MODE_REPLACE)
+	else:
+		push_error("エフェクトの一覧がありません：%s" % EFFECTS_PATH)
 
 	var err := ResourceSaver.save(index, INDEX_PATH)
 	if err != OK:

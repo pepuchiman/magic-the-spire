@@ -14,3 +14,5 @@ extends Resource
 @export var config: GameConfig
 ## 種類ごとのアイコンの一覧
 @export var icons: IconSet
+## 種類ごとのエフェクトの一覧
+@export var effects: EffectSet

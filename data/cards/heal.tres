@@ -20,4 +20,5 @@ cost_mana = 2
 required_green = 1
 effects = Array[ExtResource("1_ad4at")]([SubResource("Resource_8vmo3")])
 description_key = &"CARD_HEAL_DESC"
+visual_effect = 8
 art = ExtResource("1_eg4es")
