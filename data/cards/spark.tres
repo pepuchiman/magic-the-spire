@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CardData" format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_4u0cv"]
+[ext_resource type="Texture2D" path="res://assets/cards/card_spark.png" id="1_yabgl"]
 [ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_yabgl"]
 [ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_q4c78"]
 
@@ -17,3 +18,4 @@ targets = Array[int]([6])
 cost_mana = 1
 effects = Array[ExtResource("1_4u0cv")]([SubResource("Resource_04wvq")])
 description_key = &"CARD_SPARK_DESC"
+art = ExtResource("1_yabgl")

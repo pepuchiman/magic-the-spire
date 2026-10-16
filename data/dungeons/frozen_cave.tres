@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="DungeonData" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_frozen_cave.png" id="1_fbfbi"]
 [ext_resource type="Resource" path="res://data/enemies/frost_giant.tres" id="1_ojgkj"]
 [ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="2_7rmt3"]
 [ext_resource type="Resource" path="res://data/enemies/ogre.tres" id="3_dqoxe"]
@@ -25,5 +26,6 @@ normal_enemies = Array[ExtResource("2_7rmt3")]([ExtResource("9_y52is"), ExtResou
 elite_enemies = Array[ExtResource("2_7rmt3")]([ExtResource("3_dqoxe"), ExtResource("4_fbfbi")])
 boss = ExtResource("1_ojgkj")
 events = Array[ExtResource("5_yi477")]([ExtResource("6_poqgu"), ExtResource("7_e21ec"), ExtResource("8_0qath")])
+background = ExtResource("1_fbfbi")
 background_top = Color(0.16470589, 0.2901961, 0.41960785, 1)
 background_bottom = Color(0.08627451, 0.11372549, 0.21176471, 1)

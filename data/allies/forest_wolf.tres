@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="AllyData" format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/ally_data.gd" id="1_0g0hj"]
+[ext_resource type="Texture2D" path="res://assets/creatures/creature_forest_wolf_back.png" id="1_anopk"]
 
 [resource]
 script = ExtResource("1_0g0hj")
@@ -9,3 +10,4 @@ name_key = &"ALLY_FOREST_WOLF_NAME"
 max_hp = 16
 attack = 5
 attack_effect = 2
+art_back = ExtResource("1_anopk")

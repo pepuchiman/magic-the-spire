@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="EnemyData" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/enemies/enemy_ogre.png" id="1_833kp"]
 [ext_resource type="Script" path="res://scripts/resources/enemy_action_data.gd" id="1_q844f"]
 [ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="2_833kp"]
 
@@ -20,4 +21,5 @@ id = &"ogre"
 name_key = &"ENEMY_OGRE_NAME"
 max_hp = 45
 attack = 8
+art_front = ExtResource("1_833kp")
 pattern = Array[ExtResource("1_q844f")]([SubResource("Resource_0plj4"), SubResource("Resource_6qsie"), SubResource("Resource_g7aci")])

@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CardData" format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_ad4at"]
+[ext_resource type="Texture2D" path="res://assets/cards/card_heal.png" id="1_eg4es"]
 [ext_resource type="Script" path="res://scripts/resources/heal_effect.gd" id="2_eg4es"]
 [ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_38iky"]
 
@@ -19,3 +20,4 @@ cost_mana = 2
 required_green = 1
 effects = Array[ExtResource("1_ad4at")]([SubResource("Resource_8vmo3")])
 description_key = &"CARD_HEAL_DESC"
+art = ExtResource("1_eg4es")

@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="CardData" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/cards/card_inferno.png" id="1_7fbyt"]
 [ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_tpd3l"]
 [ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_7fbyt"]
 [ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_sw1ux"]
@@ -19,3 +20,4 @@ cost_mana = 3
 required_red = 3
 effects = Array[ExtResource("1_tpd3l")]([SubResource("Resource_yia27")])
 description_key = &"CARD_INFERNO_DESC"
+art = ExtResource("1_7fbyt")

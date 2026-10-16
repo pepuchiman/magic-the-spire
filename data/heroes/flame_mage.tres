@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/resources/hero_data.gd" id="1_mnaov"]
 [ext_resource type="Texture2D" path="res://assets/player/hero_flame_mage_back.png" id="1_xk3s1"]
+[ext_resource type="Texture2D" path="res://assets/player/hero_flame_mage_front.png" id="2_0xfqe"]
 [ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="2_xk3s1"]
 [ext_resource type="Resource" path="res://data/cards/spark.tres" id="3_0xfqe"]
 [ext_resource type="Resource" path="res://data/cards/guard.tres" id="4_qygxs"]
@@ -12,6 +13,7 @@
 script = ExtResource("1_mnaov")
 id = &"flame_mage"
 name_key = &"HERO_FLAME_MAGE_NAME"
+art_front = ExtResource("2_0xfqe")
 art_back = ExtResource("1_xk3s1")
 catalyst_red = 1
 catalyst_power_red = 1

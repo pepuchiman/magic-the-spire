@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="AllyData" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/creatures/creature_fire_sprite_back.png" id="1_c4u6e"]
 [ext_resource type="Script" path="res://scripts/resources/ally_data.gd" id="1_w5dtl"]
 
 [resource]
@@ -9,3 +10,4 @@ name_key = &"ALLY_FIRE_SPRITE_NAME"
 attack = 4
 race = 1
 attack_effect = 3
+art_back = ExtResource("1_c4u6e")

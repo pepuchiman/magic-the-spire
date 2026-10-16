@@ -2,13 +2,14 @@
 class_name FieldPlatform
 extends Control
 ## キャラクターが立つ「台」（楕円）。枠いっぱいに楕円を描く。
+## 戦闘背景の絵が透けて見えるよう、半透明の影のような色にしている（色はインスペクターで変えられる）。
 ## 位置と大きさは、エディターで枠を動かして調整する。
 
-@export var fill_color: Color = Color(0.22, 0.19, 0.36):
+@export var fill_color: Color = Color(0.06, 0.05, 0.14, 0.45):
 	set(value):
 		fill_color = value
 		queue_redraw()
-@export var border_color: Color = Color(0.35, 0.30, 0.50):
+@export var border_color: Color = Color(0.75, 0.70, 1.0, 0.3):
 	set(value):
 		border_color = value
 		queue_redraw()

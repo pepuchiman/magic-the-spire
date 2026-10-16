@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="EnemyData" format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/enemy_action_data.gd" id="1_2ah5k"]
+[ext_resource type="Texture2D" path="res://assets/enemies/enemy_frost_giant.png" id="1_5wlaw"]
 [ext_resource type="Resource" path="res://data/enemies/goblin.tres" id="2_5wlaw"]
 [ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="3_fi2jl"]
 
@@ -27,4 +28,5 @@ name_key = &"ENEMY_FROST_GIANT_NAME"
 max_hp = 95
 defense = 1
 attack = 9
+art_front = ExtResource("1_5wlaw")
 pattern = Array[ExtResource("1_2ah5k")]([SubResource("Resource_ji272"), SubResource("Resource_ufl78"), SubResource("Resource_47qti"), SubResource("Resource_6rd1k")])

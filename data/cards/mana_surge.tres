@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="CardData" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/cards/card_mana_surge.png" id="1_cqa5r"]
 [ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_yd8pd"]
 [ext_resource type="Script" path="res://scripts/resources/modify_param_effect.gd" id="2_cqa5r"]
 [ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_y1jsr"]
@@ -21,3 +22,4 @@ uses_per_battle = 1
 duration = 2
 effects = Array[ExtResource("1_yd8pd")]([SubResource("Resource_hl0tr")])
 description_key = &"CARD_MANA_SURGE_DESC"
+art = ExtResource("1_cqa5r")

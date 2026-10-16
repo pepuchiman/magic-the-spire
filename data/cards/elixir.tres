@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="CardData" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/cards/card_elixir.png" id="1_cct7l"]
 [ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_jxa2u"]
 [ext_resource type="Script" path="res://scripts/resources/heal_effect.gd" id="2_cct7l"]
 [ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_hqmuo"]
@@ -20,3 +21,4 @@ cost_mana = 1
 uses_per_battle = 1
 effects = Array[ExtResource("1_jxa2u")]([SubResource("Resource_53g3h")])
 description_key = &"CARD_ELIXIR_DESC"
+art = ExtResource("1_cct7l")

@@ -7,10 +7,10 @@
 [ext_resource type="Script" uid="uid://cs3l20ktxg5h" path="res://ui/card_zoom_popup.gd" id="5_zoom"]
 [ext_resource type="Script" uid="uid://bg7ty3vk1hfgc" path="res://ui/pile_popup.gd" id="6_pile"]
 [ext_resource type="Script" uid="uid://dimg3py4ltxlp" path="res://ui/result_overlay.gd" id="7_result"]
-[ext_resource type="Script" path="res://ui/field_platform.gd" id="8_platform"]
+[ext_resource type="Script" uid="uid://b8q3lcfeiychk" path="res://ui/field_platform.gd" id="8_platform"]
 [ext_resource type="PackedScene" path="res://ui/unit_info_panel.tscn" id="9_info"]
-[ext_resource type="Script" path="res://ui/unit_detail_popup.gd" id="10_detail"]
-[ext_resource type="Script" path="res://ui/battle_background.gd" id="11_bg"]
+[ext_resource type="Script" uid="uid://dvei4qkfyryha" path="res://ui/unit_detail_popup.gd" id="10_detail"]
+[ext_resource type="Script" uid="uid://chnm7qhmf72xv" path="res://ui/battle_background.gd" id="11_bg"]
 
 [node name="BattleScreen" type="Control" unique_id=1262949869]
 layout_mode = 3
@@ -93,62 +93,62 @@ theme_override_font_sizes/font_size = 22
 text = "UI_SETTINGS"
 autowrap_mode = 3
 
-[node name="Field" type="Control" parent="SafeArea/Main"]
+[node name="Field" type="Control" parent="SafeArea/Main" unique_id=315797651]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 48.0
 mouse_filter = 2
 
-[node name="EnemyPlatform" type="Control" parent="SafeArea/Main/Field"]
+[node name="EnemyPlatform" type="Control" parent="SafeArea/Main/Field" unique_id=2018084928]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.42
-anchor_top = 0.34
-anchor_right = 0.98
-anchor_bottom = 0.47
+anchor_left = 0.607
+anchor_top = 0.373
+anchor_right = 0.793
+anchor_bottom = 0.438
 mouse_filter = 2
 script = ExtResource("8_platform")
 
-[node name="HeroPlatform" type="Control" parent="SafeArea/Main/Field"]
+[node name="HeroPlatform" type="Control" parent="SafeArea/Main/Field" unique_id=1436172529]
 layout_mode = 1
-anchors_preset = -1
-anchor_top = 0.9
-anchor_right = 0.5
-anchor_bottom = 1.0
+anchor_left = 0.137
+anchor_top = 0.948
+anchor_right = 0.303
+anchor_bottom = 0.998
+offset_left = -0.35199738
+offset_top = 7.9519653
+offset_right = -0.35198975
+offset_bottom = 7.9519653
 mouse_filter = 2
 script = ExtResource("8_platform")
 
-[node name="EnemyMainSlot" type="Control" parent="SafeArea/Main/Field"]
+[node name="EnemyMainSlot" type="Control" parent="SafeArea/Main/Field" unique_id=459812958]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = -1
 anchor_left = 0.52
 anchor_right = 0.88
 anchor_bottom = 0.46
 mouse_filter = 2
 
-[node name="EnemyCreatureSlot1" type="Control" parent="SafeArea/Main/Field"]
+[node name="EnemyCreatureSlot1" type="Control" parent="SafeArea/Main/Field" unique_id=1683049251]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = -1
 anchor_left = 0.4
 anchor_top = 0.18
 anchor_right = 0.62
 anchor_bottom = 0.5
 mouse_filter = 2
 
-[node name="EnemyCreatureSlot2" type="Control" parent="SafeArea/Main/Field"]
+[node name="EnemyCreatureSlot2" type="Control" parent="SafeArea/Main/Field" unique_id=1093641024]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = -1
 anchor_left = 0.77
 anchor_top = 0.18
 anchor_right = 0.99
 anchor_bottom = 0.5
 mouse_filter = 2
 
-[node name="EnemyInfo" parent="SafeArea/Main/Field" instance=ExtResource("9_info")]
+[node name="EnemyInfo" parent="SafeArea/Main/Field" unique_id=957340324 instance=ExtResource("9_info")]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
@@ -159,37 +159,34 @@ anchor_bottom = 0.34
 offset_right = 0.0
 offset_bottom = 0.0
 
-[node name="AllySlot2" type="Control" parent="SafeArea/Main/Field"]
+[node name="AllySlot2" type="Control" parent="SafeArea/Main/Field" unique_id=1768399627]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = -1
 anchor_left = 0.43
 anchor_top = 0.5
 anchor_right = 0.59
 anchor_bottom = 0.76
 mouse_filter = 2
 
-[node name="AllySlot1" type="Control" parent="SafeArea/Main/Field"]
+[node name="AllySlot1" type="Control" parent="SafeArea/Main/Field" unique_id=248938143]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = -1
 anchor_left = 0.27
 anchor_top = 0.55
 anchor_right = 0.44
 anchor_bottom = 0.83
 mouse_filter = 2
 
-[node name="HeroSlot" type="Control" parent="SafeArea/Main/Field"]
+[node name="HeroSlot" type="Control" parent="SafeArea/Main/Field" unique_id=1510075244]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = -1
 anchor_left = 0.02
 anchor_top = 0.44
 anchor_right = 0.42
 anchor_bottom = 1.0
 mouse_filter = 2
 
-[node name="HeroInfo" parent="SafeArea/Main/Field" instance=ExtResource("9_info")]
+[node name="HeroInfo" parent="SafeArea/Main/Field" unique_id=1623985539 instance=ExtResource("9_info")]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
@@ -360,9 +357,9 @@ autowrap_mode = 3
 
 [node name="ToastLabel" type="Label" parent="." unique_id=1203280704]
 unique_name_in_owner = true
-z_index = 2
 auto_translate_mode = 2
 visible = false
+z_index = 2
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.47
@@ -387,10 +384,10 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="UnitDetailPopup" type="ColorRect" parent="."]
+[node name="UnitDetailPopup" type="ColorRect" parent="." unique_id=1678937713]
 unique_name_in_owner = true
-z_index = 2
 visible = false
+z_index = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

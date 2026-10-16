@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="EnemyData" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/enemies/enemy_bat.png" id="1_3p0q2"]
 [ext_resource type="Script" path="res://scripts/resources/enemy_action_data.gd" id="1_w5w5p"]
 [ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="2_3p0q2"]
 
@@ -18,4 +19,5 @@ id = &"bat"
 name_key = &"ENEMY_BAT_NAME"
 max_hp = 14
 attack = 3
+art_front = ExtResource("1_3p0q2")
 pattern = Array[ExtResource("1_w5w5p")]([SubResource("Resource_jcxsq"), SubResource("Resource_4pae2"), SubResource("Resource_yobf3")])

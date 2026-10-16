@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="CardData" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/cards/card_frost_lance.png" id="1_px2ex"]
 [ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_s15rb"]
 [ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_px2ex"]
 [ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_ulhns"]
@@ -18,3 +19,4 @@ cost_mana = 2
 required_blue = 1
 effects = Array[ExtResource("1_s15rb")]([SubResource("Resource_nftl5")])
 description_key = &"CARD_FROST_LANCE_DESC"
+art = ExtResource("1_px2ex")

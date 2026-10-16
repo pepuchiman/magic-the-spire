@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="EquipmentData" format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/modify_param_effect.gd" id="1_5fdwn"]
+[ext_resource type="Texture2D" path="res://assets/icons/equip_ring_sage.png" id="1_slikc"]
 [ext_resource type="Script" path="res://scripts/resources/equipment_data.gd" id="2_slikc"]
 
 [sub_resource type="Resource" id="Resource_tbt6i"]
@@ -19,3 +20,4 @@ id = &"ring_sage"
 name_key = &"EQUIP_RING_SAGE_NAME"
 rarity = 3
 modifiers = Array[ExtResource("1_5fdwn")]([SubResource("Resource_tbt6i"), SubResource("Resource_5at5e")])
+icon = ExtResource("1_slikc")

@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CardData" format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_l2fna"]
+[ext_resource type="Texture2D" path="res://assets/cards/card_arcane_burst.png" id="1_owcf1"]
 [ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_owcf1"]
 [ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_g0f11"]
 
@@ -18,3 +19,4 @@ targets = Array[int]([6])
 cost_mana = 1
 effects = Array[ExtResource("1_l2fna")]([SubResource("Resource_6g5l5")])
 description_key = &"CARD_ARCANE_BURST_DESC"
+art = ExtResource("1_owcf1")

@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CardData" format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_3051y"]
+[ext_resource type="Texture2D" path="res://assets/cards/card_ice_wall.png" id="1_m8sem"]
 [ext_resource type="Script" path="res://scripts/resources/armor_effect.gd" id="2_m8sem"]
 [ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_cs4th"]
 
@@ -20,3 +21,4 @@ cost_mana = 1
 required_blue = 1
 effects = Array[ExtResource("1_3051y")]([SubResource("Resource_4kus2")])
 description_key = &"CARD_ICE_WALL_DESC"
+art = ExtResource("1_m8sem")

@@ -41,3 +41,19 @@ func test_trim_transparent_cuts_empty_margins() -> void:
 	assert_eq(trimmed.get_size(), Vector2i(28, 18), "絵のある部分＋余白4だけが残る")
 	var empty := Image.create(10, 10, false, Image.FORMAT_RGBA8)
 	assert_eq(Resize.trim_transparent(empty).get_size(), Vector2i(10, 10), "全部透明なら、そのまま")
+
+
+func test_adopt_targets_follow_naming_rules() -> void:
+	var Adopt := load("res://tools/adopt_art.gd")
+	var card: Dictionary = Adopt.target_for("card_spark")
+	assert_eq(card["path"], "res://assets/cards/card_spark.png")
+	assert_false(card["trim"], "カードは余白を切り落とさない")
+	var enemy: Dictionary = Adopt.target_for("enemy_bat")
+	assert_eq(enemy["path"], "res://assets/enemies/enemy_bat.png")
+	assert_true(enemy["trim"], "背景を消した敵は余白を切り落とす")
+	assert_eq(Adopt.target_for("creature_forest_wolf_back")["path"], "res://assets/creatures/creature_forest_wolf_back.png")
+	assert_eq(Adopt.target_for("hero_frost_mage_front")["path"], "res://assets/player/hero_frost_mage_front.png")
+	assert_eq(Adopt.target_for("bg_lost_forest")["path"], "res://assets/backgrounds/bg_lost_forest.png")
+	assert_eq(Adopt.target_for("equip_type_ring")["path"], "res://assets/icons/equip_type_ring.png")
+	assert_eq(Adopt.target_for("map_rest")["path"], "res://assets/icons/map_rest.png")
+	assert_true(Adopt.target_for("unknown_x").is_empty(), "決まりにない名前は置かない")

@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CardData" format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_l7xrv"]
+[ext_resource type="Texture2D" path="res://assets/cards/card_thorn_armor.png" id="1_tgvmo"]
 [ext_resource type="Script" path="res://scripts/resources/status_effect.gd" id="2_tgvmo"]
 [ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_y87wa"]
 
@@ -22,3 +23,4 @@ required_green = 1
 duration = 2
 effects = Array[ExtResource("1_l7xrv")]([SubResource("Resource_w1q8j")])
 description_key = &"CARD_THORN_ARMOR_DESC"
+art = ExtResource("1_tgvmo")

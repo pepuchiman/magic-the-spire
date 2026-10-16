@@ -24,7 +24,7 @@
 | 空間カード | 魔法の金 `#E8B84A` | 種別「空間」 |
 | 呪い・状態異常 | 毒の紫 `#8E4AD9` | 状態効果（毒・呪いなど）の差し色 |
 
-- 1枚のイラストで使う主要色は3色まで。カード種別の色を必ず1つ含める
+- 1枚のイラストで使う主要色は3色まで。主の色は魔法・生き物の属性の色（火＝朱、氷＝青、毒＝紫 など）にし、カード種別の色は差し色として必ず含める（2026-10-16 変更。種別の色を主にすると、氷の攻撃が赤くなるなど属性が伝わらなかったため）
 - カード種別はゲームの種別（召喚・攻撃・付与・空間）に合わせる。弱体・毒などを与える付与カードは、氷の青を主に、毒の紫を差し色にする
 - ゲーム内の色は `ui/ui_palette.gd` がこの表に合わせている（色を変える時は両方を直す）
 
@@ -88,17 +88,18 @@ nsfw, nudity, bare skin, cleavage, bare legs
 ### カードイラスト
 ```
 [共通ポジティブ], deep indigo background, magical glow, centered composition, subject in the center, empty margins at top and bottom,
-(close-up of {カードの主役を英語で}:1.2), {カードの内容を英語で1文}, ({種別カラー} dominant color:1.3),
+(close-up of {カードの主役を英語で}:1.2), {カードの内容を英語で1文}, ({属性の色} dominant color:1.3), {種別カラー} accents,
 spell effect, dynamic angle, icon-like readability
 ```
 - 主役は「魔法・物・生き物」にして、人物を描かない（カードの絵の枠は横長で、中央が切り取られるため。人物だと顔と胴しか見えない）
 - 主役は中央に置き、上下の端（各1割）と右上・下端に大事なものを置かない（ゲームでは上下が切れ、右上に触媒の印、下端に種別の帯が重なるため）。プロンプトに `subject in the center, empty margins at top and bottom` を入れる
-- 種別カラー：攻撃=`crimson red`、付与=`icy blue`、召喚=`emerald green`、空間=`golden`（状態効果の差し色=`toxic violet`）
-- 例（火球）：`... (close-up of a blazing fireball:1.2), a blazing fireball flying forward with a fiery trail, (crimson red dominant color:1.3), ...`
+- 属性の色：その魔法・生き物らしい色（例：火球＝`crimson red`、吹雪＝`icy blue`、毒の霧＝`toxic violet`、茨の鎧＝`emerald green`、雷撃＝`electric yellow`）
+- 種別カラー（差し色）：攻撃=`crimson red`、付与=`icy blue`、召喚=`emerald green`、空間=`golden`
+- 例（火球）：`... (close-up of a blazing fireball:1.2), a blazing fireball flying forward with a fiery trail, (crimson red dominant color:1.3), crimson red accents, ...`
 
 ### 敵キャラ（正面向き）
 ```
-[共通ポジティブ], (plain flat gray background:1.2), simple background, solo, no humans,
+[共通ポジティブ], simple plain background, solo, no humans,
 full body {敵の説明}, front view, facing the viewer, menacing monster, charming creature design
 ```
 - `cute` は使わない（人の女の子が出やすくなるため）
@@ -108,16 +109,18 @@ full body {敵の説明}, front view, facing the viewer, menacing monster, charm
 ### 主人公・自分のクリーチャー
 正面向き（主人公のみ。主人公選択などで使う）
 ```
-[共通ポジティブ], (plain flat gray background:1.2), simple background, solo,
+[共通ポジティブ], simple plain background, solo,
 full body {主人公の説明}, front view, facing the viewer
 ```
 背中向き（戦闘で使う。主人公と自分のクリーチャー）
 ```
-[共通ポジティブ], (plain flat gray background:1.2), simple background, solo,
+[共通ポジティブ], simple plain background, solo,
 full body {主人公・クリーチャーの説明}, seen from behind, back view, facing away from the viewer
 ```
 - クリーチャーは `no humans` も足す
-- 体・服の色は `(red pointed wizard hat:1.3)`、`(green translucent slime:1.3)` のように強める（灰色の背景の指定で、体まで灰色になりやすいため。敵も同じ）
+- 体・服の色は `(red pointed wizard hat:1.3)`、`(green slime:1.3)` のように必ず強める（色の指定がないと、灰色や黒一色になりやすい。敵も同じ）
+- 背景は BiRefNet で消すので、背景の色は指定しない（2026-10-16 変更。灰色の背景を指定すると、体まで灰色になったため）
+- 人の形でない生き物（動物・精霊・光の球など）は、形を具体的に書き（`four-legged animal`、`floating ball of lightning` など）、ネガティブに `humanoid, anthro, werewolf, muscular man` を足す（足さないと、コウモリ男・狼男のような人型になる）
 → 正面と背中で、服装・色・持ち物をそろえる（同じキャラクターに見えるように）
 
 ### アイコン（状態効果・マップのマス・装備）
@@ -141,6 +144,8 @@ vertical composition, empty center area, no characters, soft depth of field
 - 「cute」を入れた敵（スライム）は、人の女の子が主役になり、露出も出た → ネガティブで人と露出を防ぐ
 - カードは何もしないと魔法使いの上半身が主役になる → 魔法・物を主役にする（2回目の試し描きで、火球・盾・狼とも主役が分かる絵になった）
 - 灰色の背景を `:1.4` で強めると、体・服まで灰色になる → 背景は `:1.2` にして、体の色を強める
+- 装備・マップのアイコンは、物を描かせても人物（装備を身に着けた人）が出やすく、小さく表示すると記号より読みにくい → 状態効果・マップ・多くの装備は図形の記号のままにした（2026-10-16）
+- 雷の精（光の球の生き物）は、3回描き直しても「怒った目のある雷の球」にならなかった → 図形のまま。鎧は「誰も着ていない、台の上の鎧（object only）」と書くと人が出なくなった
 - 灰色の背景は、生成すると中央が少し明るいグラデーションになる。tools/remove_gray_bg.gd は、少しずつ変わる灰色をたどって抜けるようにしてある（2026-10-16 からは BiRefNet で消す。灰色抜きは BiRefNet が使えない時の予備）
 - BiRefNet で消すと、輪郭がきれいで光のにじみも残らない。灰色抜きでは、炎のまわりの光や泡の縁が残った
 
@@ -221,3 +226,8 @@ vertical composition, empty center area, no characters, soft depth of field
 | card_summon_wolf.png | A-Zovya V4-VAE | 3003 | 512×512 / 0.4 | 2026-10-15 試し描き2回目で採用（画風A）。512px に縮小 |
 | enemy_slime.png | A-Zovya V4-VAE | 5001 | 512×768 / 0.4 | 2026-10-16 BiRefNet で背景を消して採用（不透明な体のプロンプト）。高さ640に縮小 |
 | hero_flame_mage_back.png | A-Zovya V4-VAE | 4001 | 512×768 / 0.4 | 2026-10-15 試し描き3回目で採用。2026-10-16 に同じ seed で作り直し、BiRefNet で背景を消した。高さ768に縮小 |
+| card_arcane_burst ほかカード16枚 | A-Zovya V4-VAE | 6000〜6003 | 512×512 / 0.4 | 2026-10-16 一括生成で採用（seed は art_trials/selection.csv の file 名） |
+| enemy_venom_spider・hero_flame_mage_front・bg_lost_forest・bg_frozen_cave | A-Zovya V4-VAE | 6000〜6003 | 512×768・512×912 / 0.4 | 2026-10-16 一括生成で採用 |
+| 描き直し12件（毒の霧・火の精霊のカード、敵6体、氷の魔法使い2枚、クリーチャー2体） | A-Zovya V4-VAE | 7000〜7003 | / 0.4 | 2026-10-16 改善した雛形（属性の色・背景色なし）で描き直して採用 |
+| アイコン4個（map_treasure・equip_type_ring・equip_type_weapon・equip_ring_sage） | A-Zovya V4-VAE | 6000〜6002 | 512×512 / 0.4 | 2026-10-16 採用。他のアイコンは人物が描かれるなど失敗したため、図形の記号のまま |
+| card_thorn_armor | A-Zovya V4-VAE | 8000 | 512×512 / 0.4 | 2026-10-16 「誰も着ていない鎧」の指定で3回目に採用 |

@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CardData" format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/effect_data.gd" id="1_8rd8g"]
+[ext_resource type="Texture2D" path="res://assets/cards/card_blizzard.png" id="1_u0ovo"]
 [ext_resource type="Script" path="res://scripts/resources/damage_effect.gd" id="2_u0ovo"]
 [ext_resource type="Script" path="res://scripts/resources/card_data.gd" id="3_yyttb"]
 
@@ -19,3 +20,4 @@ cost_mana = 3
 required_blue = 3
 effects = Array[ExtResource("1_8rd8g")]([SubResource("Resource_x4i1v")])
 description_key = &"CARD_BLIZZARD_DESC"
+art = ExtResource("1_u0ovo")

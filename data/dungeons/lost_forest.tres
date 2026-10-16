@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="DungeonData" format=3]
 
 [ext_resource type="Resource" path="res://data/enemies/boss_witch.tres" id="1_fs8ae"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_lost_forest.png" id="1_po6od"]
 [ext_resource type="Script" path="res://scripts/resources/event_data.gd" id="2_tes4l"]
 [ext_resource type="Script" path="res://scripts/resources/enemy_data.gd" id="3_6aos1"]
 [ext_resource type="Resource" path="res://data/events/altar.tres" id="3_fjkxm"]
@@ -23,5 +24,6 @@ normal_enemies = Array[ExtResource("3_6aos1")]([ExtResource("4_fjkxm"), ExtResou
 elite_enemies = Array[ExtResource("3_6aos1")]([ExtResource("3_kj40p"), ExtResource("4_rfc6l")])
 boss = ExtResource("1_fs8ae")
 events = Array[ExtResource("2_tes4l")]([ExtResource("3_fjkxm"), ExtResource("4_ihtdj"), ExtResource("5_kj40p")])
+background = ExtResource("1_po6od")
 background_top = Color(0.14117648, 0.2509804, 0.18431373, 1)
 background_bottom = Color(0.078431375, 0.12156863, 0.13333334, 1)
